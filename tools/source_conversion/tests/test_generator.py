@@ -56,7 +56,7 @@ class TestGenerator(unittest.TestCase):
         self.assertIn("this.loadSetting('baseUrlSelection')", js)
 
         # Test generated url usages
-        self.assertIn('${this.baseUrl}/search?q', js)
+        self.assertIn('${this.baseUrl}/search?q=${encodeURIComponent(keyword)}', js)
 
     def test_labeled_mirrors(self):
         ir = self.get_base_ir()
@@ -91,7 +91,7 @@ class TestGenerator(unittest.TestCase):
         ir = self.get_base_ir()
         ir["details"]["manualPatchRequired"] = True
         js = generate_venera_js(ir)
-        self.assertIn('throw new Error("MANUAL PATCH REQUIRED: comic loadInfo must be implemented in patch layer.");', js)
+        self.assertIn("throw new Error('MANUAL PATCH REQUIRED: parseDetailsCustom must be implemented in patch layer.');", js)
 
     def test_fail_closed_chapters(self):
         ir = self.get_base_ir()
@@ -104,6 +104,56 @@ class TestGenerator(unittest.TestCase):
         ir["pages"]["manualPatchRequired"] = True
         js = generate_venera_js(ir)
         self.assertIn('let res = await Network.get', js)
+
+    def test_chapter_object_generation(self):
+        ir = self.get_base_ir()
+        ir["chapters"]["isJson"] = False
+        ir["chapters"]["selector"] = "div.chapter-list li a"
+        ir["chapters"]["fields"] = {"url": "@href", "name": "text"}
+        ir["chapters"]["reverse"] = True
+        js = generate_venera_js(ir)
+        self.assertIn("let chaptersObj = {};", js)
+        self.assertIn("chaptersList.reverse();", js)
+        self.assertIn("chaptersObj[ch.id] = ch.title", js)
+        self.assertIn("return this.parseChaptersCustom(chaptersObj, res.body);", js)
+
+    def test_chapter_object_generation_no_reverse(self):
+        ir = self.get_base_ir()
+        ir["chapters"]["isJson"] = False
+        ir["chapters"]["selector"] = "div.chapter-list li a"
+        ir["chapters"]["fields"] = {"url": "@href", "name": "text"}
+        ir["chapters"]["reverse"] = False
+        js = generate_venera_js(ir)
+        self.assertNotIn("chaptersList.reverse();", js)
+
+    def test_safe_partial_details(self):
+        ir = self.get_base_ir()
+        ir["details"]["manualPatchRequired"] = False
+        ir["details"]["fields"] = {"title": "h1", "description": "p", "thumbnail": "img@src"}
+        ir["details"]["selector"] = "html"
+        js = generate_venera_js(ir)
+        self.assertIn('let titleEl = doc.querySelector("h1");', js)
+        self.assertIn('let descEl = doc.querySelector("p");', js)
+        self.assertNotIn("parseDetailsCustom", js)
+
+    def test_pagination_generation(self):
+        ir = self.get_base_ir()
+        ir["explore"]["popular"] = {
+            "url": "https://example.com/popular/{{page}}",
+            "selector": "div.comic-item",
+            "fields": {"url": "a@href", "title": "h3 a", "thumbnail": "img@src"},
+            "pagination": {
+                "hasNextStrategy": "compareAttributes",
+                "nextSelector": "a.next",
+                "currentSelector": "a.current",
+                "attribute": "href"
+            }
+        }
+        js = generate_venera_js(ir)
+        self.assertIn('let nextEl = doc.querySelector("a.next");', js)
+        self.assertIn('let currEl = doc.querySelector("a.current");', js)
+        self.assertIn('let hasNext = nextEl && currEl && nextEl.attributes["href"] !== currEl.attributes["href"];', js)
+        self.assertIn('let outMaxPage = hasNext ? page + 1 : page;', js)
 
 if __name__ == "__main__":
     unittest.main()

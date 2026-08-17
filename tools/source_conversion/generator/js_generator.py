@@ -139,6 +139,22 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
         title_expr = parse_field_extractor("title", tab_fields.get("title", ".title"), "el")
         cover_expr = parse_field_extractor("cover", tab_fields.get("thumbnail", "img@src"), "el")
 
+        pagination = tab_def.get("pagination")
+        if pagination and pagination.get("hasNextStrategy") == "compareAttributes":
+            next_sel = pagination.get("nextSelector")
+            curr_sel = pagination.get("currentSelector")
+            attr = pagination.get("attribute")
+            pagination_js = f"""                let nextEl = doc.querySelector("{next_sel}");
+                let currEl = doc.querySelector("{curr_sel}");
+                let hasNext = nextEl && currEl && nextEl.attributes["{attr}"] !== currEl.attributes["{attr}"];
+                let outMaxPage = hasNext ? page + 1 : page;
+"""
+            max_page_expr = "outMaxPage"
+        else:
+            pagination_js = ""
+            max_page_expr = "1"
+
+
         day_calc = ""
         if "{{day}}" in tab_url:
             day_calc = '                let days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];\n                let day = days[new Date().getDay()];\n'
@@ -167,10 +183,10 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
                     title: {title_expr},
                     cover: {cover_expr},
                 }}));
-                doc.dispose();
+{pagination_js}                doc.dispose();
                 return {{
                     comics: comics,
-                    maxPage: 1,
+                    maxPage: {max_page_expr},
                 }};
             }}
         }}"""
@@ -199,6 +215,21 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     search_title_expr = parse_field_extractor("title", search_fields.get("title", ".title"), "el")
     search_cover_expr = parse_field_extractor("cover", search_fields.get("thumbnail", "img@src"), "el")
 
+    pagination = search_dict.get("pagination")
+    if pagination and pagination.get("hasNextStrategy") == "compareAttributes":
+        next_sel = pagination.get("nextSelector")
+        curr_sel = pagination.get("currentSelector")
+        attr = pagination.get("attribute")
+        search_pagination_js = f"""            let nextEl = doc.querySelector("{next_sel}");
+            let currEl = doc.querySelector("{curr_sel}");
+            let hasNext = nextEl && currEl && nextEl.attributes["{attr}"] !== currEl.attributes["{attr}"];
+            let outMaxPage = hasNext ? page + 1 : page;
+"""
+        search_max_page_expr = "outMaxPage"
+    else:
+        search_pagination_js = ""
+        search_max_page_expr = "100"
+
     if search_fail_closed:
         search_body = f"            {search_fail_closed}"
     else:
@@ -214,10 +245,10 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
                 title: {search_title_expr},
                 cover: {search_cover_expr},
             }}));
-            doc.dispose();
+{search_pagination_js}            doc.dispose();
             return {{
                 comics: comics,
-                maxPage: 100,
+                maxPage: {search_max_page_expr},
             }};"""
 
     # 6. Extract details
@@ -225,7 +256,7 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     details_manual = details_dict.get("manualPatchRequired", False)
     details_fields = details_dict.get("fields", {})
 
-    details_fail_closed = enforce_fail_closed(details_manual, "comic loadInfo", False)
+    details_fail_closed = enforce_fail_closed(details_manual, "comic loadInfo", True)
 
     title_sel = details_fields.get("title", "h1.subj, h3.subj")
     author_sel = details_fields.get("author", ".author:nth-of-type(1)")
@@ -251,11 +282,11 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
             let author = authorEl ? authorEl.text : "";
             let description = descEl ? descEl.text : "";
             let cover = {thumb_extractor};
-            doc.dispose();
+{"" if details_manual else "            doc.dispose();"}
 
             let chapters = await this.loadChapters(id);
 
-            return new ComicDetails({{
+            {"let comicDetails = " if details_manual else "return "}new ComicDetails({{
                 title: title,
                 subtitle: author,
                 subTitle: author,
@@ -263,7 +294,11 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
                 description: description,
                 tags: {{}},
                 chapters: chapters,
-            }});"""
+            }});{f'''
+
+            comicDetails = this.parseDetailsCustom(comicDetails, doc);
+            doc.dispose();
+            return comicDetails;''' if details_manual else ""}"""
 
     # 7. Extract chapters & pages
     chapters_dict = ir_data.get("chapters", {})
@@ -303,18 +338,70 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
                 images: images,
             }};"""
 
-    if chapters_fail_closed:
+    chapters_is_json = chapters_dict.get("isJson", False)
+    if not chapters_is_json and chapters_dict.get("selector"):
+        chap_sel = chapters_dict.get("selector")
+        chap_url_field = chapters_dict.get("fields", {}).get("url", "@href")
+        chap_title_field = chapters_dict.get("fields", {}).get("name", "text")
+        chap_reverse = chapters_dict.get("reverse", False)
+
+        url_extractor = parse_field_extractor("url", chap_url_field, "el")
+        title_extractor = parse_field_extractor("name", chap_title_field, "el")
+
+        reverse_js = "        chaptersList.reverse();\n" if chap_reverse else ""
+
         chapters_body = f"""    loadChapters = async (comicUrl) => {{
-{chapters_fail_closed}
+        let url = comicUrl.startsWith("http") ? comicUrl : `${{{base_url_ref}}}${{comicUrl}}`;
+        let res = await Network.get(url, {class_name}.headers);
+        if (res.status !== 200) {{
+            throw new Error(`Failed to load chapters, status: ${{res.status}}`);
+        }}
+        let doc = new HtmlDocument(res.body);
+        let elements = doc.querySelectorAll("{chap_sel}");
+
+        let chaptersList = elements.map(el => ({{
+            id: {url_extractor},
+            title: {title_extractor},
+        }}));
+{reverse_js}
+        let chaptersObj = {{}};
+        for (let ch of chaptersList) {{
+            if (ch.id) {{
+                chaptersObj[ch.id] = ch.title || "";
+            }}
+        }}
+        doc.dispose();
+
+        // Hook for custom chapter parsing
+        return this.parseChaptersCustom(chaptersObj, res.body);
+    }}"""
+        chapters_fail_closed = ""
+        parse_chapters_custom = f"""    /**
+     * Placeholder hook for custom chapter transformations.
+     */
+    parseChaptersCustom = (chaptersObj, htmlBody) => {{
+{"        throw new Error('MANUAL PATCH REQUIRED: parseChaptersCustom must be implemented in patch layer.');" if chapters_manual else "        return chaptersObj;"}
     }}"""
     else:
-        chapters_body = f"""    /**
+        if chapters_fail_closed:
+            chapters_body = f"""    loadChapters = async (comicUrl) => {{
+{chapters_fail_closed}
+    }}"""
+            parse_chapters_custom = ""
+        else:
+            chapters_body = f"""    /**
      * [MANUAL PATCH HOOK] Load and parse chapters
      * Upstream Webtoons uses mobile JSON API: {chapters_url}
      * Manual patch is required for episode title parsing, season numbering, and offsets.
      */
     loadChapters = async (comicUrl) => {{
         return this.parseChaptersCustom(comicUrl);
+    }}"""
+            parse_chapters_custom = f"""    /**
+     * Placeholder hook to be overridden by manual patch layer.
+     */
+    parseChaptersCustom = async (comicUrl) => {{
+        throw new Error("MANUAL PATCH REQUIRED: parseChaptersCustom must be implemented in patch layer.");
     }}"""
 
     cookies_init = ""
@@ -405,13 +492,15 @@ class {class_name} extends ComicSource {{
     // =========================================================================
 
 {chapters_body}
-
+{f'''
     /**
-     * Placeholder hook to be overridden by manual patch layer.
+     * Placeholder hook to be overridden by manual patch layer for Details.
      */
-    parseChaptersCustom = async (comicUrl) => {{
-        throw new Error("MANUAL PATCH REQUIRED: parseChaptersCustom must be implemented in patch layer.");
+    parseDetailsCustom = (comicDetails, htmlDoc) => {{
+        throw new Error('MANUAL PATCH REQUIRED: parseDetailsCustom must be implemented in patch layer.');
     }}
+''' if details_manual else ""}
+{parse_chapters_custom}
 
     /**
      * Placeholder hook for special page variants (e.g. MotionToon).

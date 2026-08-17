@@ -36,27 +36,39 @@ def extract_generic(extensions_root: str, source_path: str, timestamp: str = Non
     kt_files = []
     for root, _, files in os.walk(os.path.join(source_dir, "src")):
         for file in files:
-            if file.endswith(".kt") and file != "Dto.kt" and file != "Filters.kt":
+            if file.endswith(".kt") and file not in ["Dto.kt", "Filters.kt"]:
                 kt_files.append(os.path.join(root, file))
 
-    # If there are multiple, try to find the one matching the source name
-    kt_facts = []
+    if not kt_files:
+        raise FileNotFoundError(f"No Kotlin source files found in {source_dir}")
+
+    # Heuristic: the file with the same name as the source
+    source_name = os.path.basename(source_dir).lower()
+    main_kt = kt_files[0]
     for kt_file in kt_files:
-        facts = kotlin_parser.parse_kotlin_source(kt_file)
-        kt_facts.append({"file": os.path.basename(kt_file), "facts": facts})
+        if os.path.basename(kt_file).lower() == f"{source_name}.kt":
+            main_kt = kt_file
+            break
 
     if not timestamp:
         timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    # Combine data
-    result = {
-        "schemaVersion": "0.1.0",
-        "gradle_metadata": gradle_meta,
-        "kotlin_facts": kt_facts,
-        "generatedTimestamp": timestamp,
-    }
+    import generic_html_extractor
 
-    return result
+    lang = source_path.split("/")[0] if "/" in source_path else "en"
+    ir_data = generic_html_extractor.extract(main_kt, gradle_meta, timestamp, lang)
+
+    try:
+        import subprocess
+        commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            cwd=extensions_root, text=True
+        ).strip()
+        ir_data["provenance"]["upstreamCommit"] = commit
+    except Exception:
+        pass
+
+    return ir_data
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generic Extraction CLI for Keiyoushi Sources.")

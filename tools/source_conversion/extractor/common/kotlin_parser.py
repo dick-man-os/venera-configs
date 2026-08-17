@@ -87,3 +87,41 @@ def parse_kotlin_source(kt_path: str) -> Dict[str, Any]:
     # We will rely on selector_analyzer for the actual analysis of provided selectors
 
     return facts
+
+
+def extract_method_body(content: str, method_name: str) -> Optional[str]:
+    """
+    Extracts the body of a Kotlin method given its name.
+    This handles balanced curly braces.
+    """
+    pattern = re.compile(rf"fun\s+{method_name}\s*\([^)]*\)[^{{]*{{")
+    match = pattern.search(content)
+    if not match:
+        return None
+
+    start_idx = match.end() - 1 # Points to the '{'
+    brace_count = 0
+    in_string = False
+    escape = False
+
+    for i in range(start_idx, len(content)):
+        char = content[i]
+        if in_string:
+            if escape:
+                escape = False
+            elif char == '\\':
+                escape = True
+            elif char == '"':
+                in_string = False
+            continue
+
+        if char == '"':
+            in_string = True
+        elif char == '{':
+            brace_count += 1
+        elif char == '}':
+            brace_count -= 1
+            if brace_count == 0:
+                return content[start_idx:i+1]
+
+    return None

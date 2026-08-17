@@ -122,7 +122,8 @@
           "method": { "type": "string", "enum": ["GET", "POST"] },
           "selector": { "type": "string" },
           "fields": { "type": "object" },
-          "manualPatchRequired": { "type": "boolean" }
+          "manualPatchRequired": { "type": "boolean" },
+          "pagination": { "type": "object" }
         }
       }
     },
@@ -133,7 +134,8 @@
         "method": { "type": "string", "enum": ["GET", "POST"] },
         "selector": { "type": "string" },
         "fields": { "type": "object" },
-        "manualPatchRequired": { "type": "boolean" }
+        "manualPatchRequired": { "type": "boolean" },
+        "pagination": { "type": "object" }
       },
       "if": {
         "properties": {
@@ -174,7 +176,9 @@
         "isJson": { "type": "boolean" },
         "listPath": { "type": "string" },
         "fields": { "type": "object" },
-        "manualPatchRequired": { "type": "boolean" }
+        "manualPatchRequired": { "type": "boolean" },
+        "selector": { "type": "string" },
+        "reverse": { "type": "boolean" }
       }
     },
     "pages": {
