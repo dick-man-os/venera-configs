@@ -67,3 +67,8 @@ python tools/source_conversion/extractor/webtoons_extractor.py --extensions-root
 ```bash
 python tools/source_conversion/validator/validate_ir.py sources_ir/webtoons.json
 ```
+
+### 3. Generate Venera Base JavaScript
+```bash
+python tools/source_conversion/generator/js_generator.py --input sources_ir/webtoons.json --output sources_generated/webtoons.base.js
+```
