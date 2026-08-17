@@ -245,7 +245,10 @@ def extract(kt_path: str, gradle_meta: Dict[str, Any], timestamp: str, raw_lang:
         # Fallback to gradle
         base_url = gradle_meta.get("baseUrl", base_url)
 
-    mirrors = gradle_meta.get("mirrors", [])
+    mirrors = []
+    if "sources" in gradle_meta and gradle_meta["sources"]:
+        mirrors = gradle_meta["sources"][0].get("mirrors", [])
+
     if mirrors:
         base_url = mirrors[0]["url"]
 

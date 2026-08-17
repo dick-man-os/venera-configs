@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "0.2",
+  "id": "zh-Hans_manhuashe",
+  "name": "Manhuashe",
+  "languages": [
+    "zh-Hans"
+  ],
+  "contentOrigins": [
+    "CN"
+  ],
+  "contentWarning": "MIXED",
+  "sourceType": "html",
+  "baseUrl": "https://www.311s.com",
+  "explore": {
+    "popular": {
+      "selector": "div.comic-list > div.comic-item",
+      "fields": {
+        "title": "h3 a",
+        "url": "a@href",
+        "thumbnail": "img@src"
+      },
+      "manualPatchRequired": false,
+      "pagination": {
+        "hasNextStrategy": "compareAttributes",
+        "nextSelector": "div.pagination > a.next",
+        "currentSelector": "div.pagination > a.on",
+        "attribute": "href"
+      },
+      "url": "{{baseUrl}}/category/order/hits/page/{{page}}",
+      "method": "GET"
+    },
+    "latest": {
+      "selector": "div.comic-list > div.comic-item",
+      "fields": {
+        "title": "h3 a",
+        "url": "a@href",
+        "thumbnail": "img@src"
+      },
+      "manualPatchRequired": false,
+      "pagination": {
+        "hasNextStrategy": "compareAttributes",
+        "nextSelector": "div.pagination > a.next",
+        "currentSelector": "div.pagination > a.on",
+        "attribute": "href"
+      },
+      "url": "{{baseUrl}}/category/order/addtime/page/{{page}}",
+      "method": "GET"
+    }
+  },
+  "search": {
+    "selector": "div.comic-list > div.comic-item",
+    "fields": {
+      "title": "h3 a",
+      "url": "a@href",
+      "thumbnail": "img@src"
+    },
+    "manualPatchRequired": false,
+    "pagination": {
+      "hasNextStrategy": "compareAttributes",
+      "nextSelector": "div.pagination > a.next",
+      "currentSelector": "div.pagination > a.on",
+      "attribute": "href"
+    },
+    "url": "{{baseUrl}}/search/{{query}}/{{page}}",
+    "method": "GET"
+  },
+  "details": {
+    "url": "{{comicUrl}}",
+    "method": "GET",
+    "selector": "html",
+    "fields": {
+      "title": "div.comic-meta-info > h1",
+      "thumbnail": "div.comic-cover-large > img@src",
+      "description": "div.comic-description > p"
+    },
+    "manualPatchRequired": true
+  },
+  "chapters": {
+    "url": "{{comicUrl}}",
+    "method": "GET",
+    "isJson": false,
+    "selector": "#chapter-list > div.chapter-item > a",
+    "fields": {
+      "url": "@href",
+      "name": "text"
+    },
+    "reverse": true,
+    "manualPatchRequired": false
+  },
+  "pages": {
+    "url": "{{chapterUrl}}",
+    "method": "GET",
+    "selector": "div.comic-content > img",
+    "fields": {
+      "imageUrl": "@src"
+    },
+    "manualPatchRequired": false
+  },
+  "provenance": {
+    "type": "converted",
+    "upstreamProject": "keiyoushi",
+    "upstreamPackage": "eu.kanade.tachiyomi.extension.zh.manhuashe",
+    "upstreamCommit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+    "upstreamVersion": "1.0",
+    "upstreamLicense": "Apache-2.0",
+    "converterVersion": "0.1.0",
+    "generatedTimestamp": "2026-08-17T10:00:00Z"
+  },
+  "mirrors": [
+    {
+      "url": "https://www.311s.com"
+    },
+    {
+      "url": "https://www.m206.com"
+    }
+  ]
+}

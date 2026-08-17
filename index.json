@@ -207,5 +207,11 @@
         "fileName": "webtoons.js",
         "key": "en_webtoons",
         "version": "1.0.0"
+    },
+    {
+        "name": "Manhuashe",
+        "fileName": "manhuashe.js",
+        "key": "zh_Hans_manhuashe",
+        "version": "1.0.0"
     }
 ]

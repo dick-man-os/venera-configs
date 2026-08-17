@@ -155,5 +155,28 @@ class TestGenerator(unittest.TestCase):
         self.assertIn('let hasNext = nextEl && currEl && nextEl.attributes["href"] !== currEl.attributes["href"];', js)
         self.assertIn('let outMaxPage = hasNext ? page + 1 : page;', js)
 
+    def test_text_field_grammar(self):
+        ir = self.get_base_ir()
+        ir["chapters"]["isJson"] = False
+        ir["chapters"]["selector"] = "div.chapter-list li a"
+        ir["chapters"]["fields"] = {"url": "@href", "name": "text"}
+        js = generate_venera_js(ir)
+        self.assertIn('title: (el.text || \'\'),', js)
+
+    def test_key_sanitization(self):
+        cases = [
+            ("zh-Hans_manhuashe", "zh_Hans_manhuashe"),
+            ("zh-Hant_example", "zh_Hant_example"),
+            ("en_webtoons", "en_webtoons"),
+            ("some-source--with---hyphens", "some_source_with_hyphens"),
+            ("en", "en")
+        ]
+
+        for input_id, expected_key in cases:
+            ir = self.get_base_ir()
+            ir["id"] = input_id
+            js = generate_venera_js(ir)
+            self.assertIn(f'key = "{expected_key}"', js)
+
 if __name__ == "__main__":
     unittest.main()

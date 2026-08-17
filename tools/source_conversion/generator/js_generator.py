@@ -24,6 +24,8 @@ except ImportError as e:
     raise ImportError(f"Failed to import validate_ir_data from {validator_dir}: {e}")
 
 
+import re
+
 def parse_field_extractor(field_name: str, grammar_expr: str, var_name: str = "el") -> str:
     grammar_expr = grammar_expr.strip()
     if not grammar_expr:
@@ -34,6 +36,8 @@ def parse_field_extractor(field_name: str, grammar_expr: str, var_name: str = "e
     elif "@" in grammar_expr:
         child_sel, attr = grammar_expr.split("@", 1)
         return f"({var_name}.querySelector('{child_sel}') ? ({var_name}.querySelector('{child_sel}').attributes['{attr}'] || '') : '')"
+    elif grammar_expr == "text":
+        return f"({var_name}.text || '')"
     else:
         return f"({var_name}.querySelector('{grammar_expr}') ? {var_name}.querySelector('{grammar_expr}').text : '')"
 
@@ -43,7 +47,13 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     # 1. Extract metadata & provenance
     name = ir_data.get("name", "Webtoons")
     source_id = ir_data.get("id", "en_webtoons")
-    class_name = "".join(part.capitalize() for part in source_id.split("_")) + "Source"
+
+    # Sanitize key for VeneraX runtime (only A-Z, a-z, 0-9, _)
+    sanitized_key = re.sub(r'[^A-Za-z0-9_]', '_', source_id)
+    sanitized_key = re.sub(r'_+', '_', sanitized_key)
+
+    class_name_raw = "".join(part.capitalize() for part in source_id.split("_"))
+    class_name = "".join(c for c in class_name_raw if c.isalnum()) + "Source"
     base_url = ir_data.get("baseUrl", "https://www.webtoons.com")
     mobile_url = ir_data.get("mobileUrl", "https://m.webtoons.com")
 
@@ -259,7 +269,7 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     details_fail_closed = enforce_fail_closed(details_manual, "comic loadInfo", True)
 
     title_sel = details_fields.get("title", "h1.subj, h3.subj")
-    author_sel = details_fields.get("author", ".author:nth-of-type(1)")
+    author_sel = details_fields.get("author", ".author")
     desc_sel = details_fields.get("description", "#_asideDetail p.summary")
     thumb_sel = details_fields.get("thumbnail", ".detail_header .thmb img@src")
 
@@ -439,7 +449,7 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
 
 class {class_name} extends ComicSource {{
     name = "{name}"
-    key = "{source_id}"
+    key = "{sanitized_key}"
     version = "1.0.0"
     minAppVersion = "1.6.0"{base_url_getter}
     static mobileUrl = "{mobile_url}"
