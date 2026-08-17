@@ -30,6 +30,18 @@ def analyze_selector(selector: str) -> Dict[str, str]:
                 "reason": f"Uses unsupported Jsoup selector matching {pattern}"
             }
 
+    # Check :not(...)
+    not_match = re.search(r":not\(([^)]+)\)", selector)
+    if not_match:
+        expr = not_match.group(1).strip()
+        # package:html supports simple :not, but complex :not with combinators or multiple pseudos might fail
+        if any(c in expr for c in [' ', '>', '+', '~', ':']):
+            return {
+                "classification": "TRANSFORMABLE",
+                "reason": f"Uses complex :not({expr}), may need manual filtering",
+                "suggestion": "Filter elements manually in JS"
+            }
+
     # jQuery / Jsoup specific pseudo-classes that might be transformable
     # e.g., :eq(n) -> [n], :first -> [0], :last -> [-1], :lt(n), :gt(n)
     transformable_patterns = [

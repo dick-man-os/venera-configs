@@ -1,5 +1,6 @@
 import re
 from typing import Any, Dict, List, Optional
+from urllib.parse import urlparse
 
 def parse_gradle_metadata(build_gradle_path: str) -> Dict[str, Any]:
     """Parse a Keiyoushi build.gradle.kts file for extension metadata."""
@@ -11,6 +12,7 @@ def parse_gradle_metadata(build_gradle_path: str) -> Dict[str, Any]:
         "is_multisrc": False,
         "is_modern": False,
         "is_legacy": False,
+        "version_classification": "UNKNOWN"
     }
 
     # Extract top-level Keiyoushi metadata
@@ -29,51 +31,83 @@ def parse_gradle_metadata(build_gradle_path: str) -> Dict[str, Any]:
     # Detect multisrc
     theme_match = re.search(r'themePkg\s*=\s*"([^"]+)"|themeClass\s*=\s*"([^"]+)"', content)
     if theme_match or 'ext-multisrc' in content or 'multisrcLibrary' in content or 'theme' in content.lower():
-        # A more robust check for multisrc
         if re.search(r'project\(":lib-multisrc:', content):
             metadata["is_multisrc"] = True
 
-    # Detect modern vs legacy
+    # Detect modern vs legacy precisely
     if metadata["libVersion"]:
-        if metadata["libVersion"].startswith("1.6") or metadata["libVersion"].startswith("1.5"):
+        if metadata["libVersion"] == "1.6":
             metadata["is_modern"] = True
-        elif metadata["libVersion"].startswith("1.4") or metadata["libVersion"].startswith("1.3"):
+            metadata["version_classification"] = "MODERN_KEISOURCE"
+        elif metadata["libVersion"] == "1.4":
             metadata["is_legacy"] = True
+            metadata["version_classification"] = "LEGACY_HTTPSOURCE"
 
-    # Extract source {} blocks
-    # We will find all source blocks and extract them.
-    # Source block looks like: source { ... }
-    # Nested braces might be present (e.g. baseUrl { mirrors(...) })
+    # String/comment-safe brace scanner
+    blocks = []
+    state = "NORMAL"
+    brace_depth = 0
+    in_source = False
+    source_start_idx = -1
 
-    # A simple approach to find blocks that start with "source {" and end with "}" at the same indentation
-    # Since we can't easily do nested braces with simple regex, we'll try an iterative bracket matcher
-    # or just look for 'source {' and find the matching '}'
+    i = 0
+    while i < len(content):
+        c = content[i]
+        if state == "NORMAL":
+            if c == '"':
+                if content[i:i+3] == '"""':
+                    state = "TRIPLE_QUOTE"
+                    i += 2
+                else:
+                    state = "QUOTE"
+            elif c == '/' and i + 1 < len(content):
+                if content[i+1] == '/':
+                    state = "LINE_COMMENT"
+                    i += 1
+                elif content[i+1] == '*':
+                    state = "BLOCK_COMMENT"
+                    i += 1
+            else:
+                if not in_source and content[i:i+6] == "source" and brace_depth == 0:
+                    m = re.match(r'source\s*\{', content[i:])
+                    if m:
+                        in_source = True
+                        source_start_idx = i
+                        brace_depth = 1
+                        i += len(m.group(0))
+                        continue
+                elif in_source:
+                    if c == '{':
+                        brace_depth += 1
+                    elif c == '}':
+                        brace_depth -= 1
+                        if brace_depth == 0:
+                            blocks.append(content[source_start_idx:i+1])
+                            in_source = False
+
+        elif state == "QUOTE":
+            if c == '\\':
+                state = "QUOTE_ESCAPE"
+            elif c == '"':
+                state = "NORMAL"
+        elif state == "QUOTE_ESCAPE":
+            state = "QUOTE"
+        elif state == "TRIPLE_QUOTE":
+            if c == '"' and content[i:i+3] == '"""':
+                state = "NORMAL"
+                i += 2
+        elif state == "LINE_COMMENT":
+            if c == '\n':
+                state = "NORMAL"
+        elif state == "BLOCK_COMMENT":
+            if c == '*' and i + 1 < len(content) and content[i+1] == '/':
+                state = "NORMAL"
+                i += 1
+        i += 1
+
 
     sources = []
-
-    idx = 0
-    while True:
-        idx = content.find("source {", idx)
-        if idx == -1:
-            break
-
-        brace_count = 0
-        end_idx = -1
-        for i in range(idx + 6, len(content)):
-            if content[i] == '{':
-                brace_count += 1
-            elif content[i] == '}':
-                brace_count -= 1
-                if brace_count == 0:
-                    end_idx = i
-                    break
-
-        if end_idx == -1:
-            break
-
-        source_block = content[idx:end_idx+1]
-        idx = end_idx + 1
-
+    for source_block in blocks:
         source_meta = {}
 
         s_name = re.search(r'name\s*=\s*"([^"]+)"', source_block)
@@ -94,19 +128,41 @@ def parse_gradle_metadata(build_gradle_path: str) -> Dict[str, Any]:
         if s_versionId:
             source_meta["versionId"] = int(s_versionId.group(1))
 
-        # Check for baseUrl
         s_base_url_simple = re.search(r'baseUrl\s*=\s*"([^"]+)"', source_block)
         if s_base_url_simple:
             source_meta["baseUrl"] = s_base_url_simple.group(1)
         else:
-            # Check for mirrors or custom
             mirrors_match = re.search(r'mirrors\s*\((.*?)\)', source_block, re.DOTALL)
             custom_match = re.search(r'custom\s*\(', source_block)
             if mirrors_match:
-                urls = re.findall(r'"([^"]+)"', mirrors_match.group(1))
-                if urls:
-                    source_meta["baseUrl"] = urls[0]
-                    source_meta["mirrors"] = urls
+                inner_text = mirrors_match.group(1)
+
+                labeled_matches = re.findall(r'"([^"]+)"\s*to\s*"([^"]+)"', inner_text)
+
+                # Check for unlabeled matches
+                # We need to be careful to not count URLs inside labeled matches as unlabeled matches.
+                # A safe way is to remove labeled matches from inner_text first.
+                stripped_text = re.sub(r'"[^"]+"\s*to\s*"[^"]+"', '', inner_text)
+                unlabeled_matches = re.findall(r'"([^"]+)"', stripped_text)
+
+                if labeled_matches and unlabeled_matches:
+                    raise ValueError("Mixed labeled and unlabeled mirrors are not permitted.")
+
+                if labeled_matches:
+                    mirrors = []
+                    for label, url in labeled_matches:
+                        mirrors.append({"label": label, "url": url})
+                    if mirrors:
+                        source_meta["baseUrl"] = mirrors[0]["url"]
+                        source_meta["mirrors"] = mirrors
+                else:
+                    unlabeled_matches = re.findall(r'"([^"]+)"', inner_text)
+                    if unlabeled_matches:
+                        mirrors = []
+                        for url in unlabeled_matches:
+                            mirrors.append({"url": url})
+                        source_meta["baseUrl"] = mirrors[0]["url"]
+                        source_meta["mirrors"] = mirrors
             if custom_match:
                 source_meta["customBaseUrl"] = True
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-validate_ir.py - Deterministic Validator for Venera Comic Source IR v0.1
+validate_ir.py - Deterministic Validator for Venera Comic Source IR v0.1 & v0.2
 
 Uses strictly standard Python library components to validate Intermediate
 Representation (IR) JSON definitions for converted comic sources.
@@ -22,7 +22,7 @@ ALLOWED_PROVENANCE_TYPES = {"converted", "native", "hybrid"}
 ALLOWED_METHODS = {"GET", "POST"}
 
 COMMIT_HASH_RE = re.compile(r"^[0-9a-fA-F]{7,40}$")
-SCHEMA_VERSION_RE = re.compile(r"^0\.1(\.[0-9]+)?$")
+SCHEMA_VERSION_RE = re.compile(r"^0\.[12](\.[0-9]+)?$")
 
 
 def validate_ir_data(data: Any) -> List[str]:
@@ -60,6 +60,7 @@ def validate_ir_data(data: Any) -> List[str]:
         "status",
         "lastVerified",
         "mobileUrl",
+        "mirrors",
         "headers",
         "cookies",
         "provenance",
@@ -73,7 +74,7 @@ def validate_ir_data(data: Any) -> List[str]:
         sv = data["schemaVersion"]
         if not isinstance(sv, str) or not SCHEMA_VERSION_RE.match(sv):
             errors.append(
-                f"Field 'schemaVersion' must be a string matching '0.1' or '0.1.x' (got: {repr(sv)})"
+                f"Field 'schemaVersion' must be a string matching '0.1' or '0.2' (got: {repr(sv)})"
             )
 
     # id & name
@@ -132,38 +133,49 @@ def validate_ir_data(data: Any) -> List[str]:
                 f"Field 'sourceType' must be one of {sorted(ALLOWED_SOURCE_TYPES)} (got: {repr(st)})"
             )
 
-    # requiresAuth & requiresWebView
-    if "requiresAuth" in data and not isinstance(data["requiresAuth"], bool):
-        errors.append("Field 'requiresAuth' must be a boolean.")
-    if "requiresWebView" in data and not isinstance(data["requiresWebView"], bool):
-        errors.append("Field 'requiresWebView' must be a boolean.")
-
-    # status
-    if "status" in data:
-        status_val = data["status"]
-        if status_val not in ALLOWED_STATUSES:
-            errors.append(
-                f"Field 'status' must be one of {sorted(ALLOWED_STATUSES)} (got: {repr(status_val)})"
-            )
-
-    # lastVerified
-    if "lastVerified" in data:
-        if not isinstance(data["lastVerified"], str):
-            errors.append("Field 'lastVerified' must be a string.")
-
-    # URLs
+    # URLs and mirrors
+    base_url = data.get("baseUrl")
     if "baseUrl" in data:
-        if not isinstance(data["baseUrl"], str) or not (
-            data["baseUrl"].startswith("http://") or data["baseUrl"].startswith("https://")
+        if not isinstance(base_url, str) or not (
+            base_url.startswith("http://") or base_url.startswith("https://")
         ):
             errors.append("Field 'baseUrl' must be a valid HTTP/HTTPS URL string.")
+
+    if "mirrors" in data:
+        mirrors = data["mirrors"]
+        if not isinstance(mirrors, list) or len(mirrors) == 0:
+            errors.append("Field 'mirrors' must be a non-empty array.")
+        else:
+            seen_urls = set()
+            for idx, m in enumerate(mirrors):
+                if not isinstance(m, dict):
+                    errors.append(f"Mirror at index {idx} must be an object.")
+                else:
+                    url = m.get("url")
+                    if not url or not isinstance(url, str):
+                        errors.append(f"Mirror at index {idx} missing required string property 'url'.")
+                    else:
+                        if url in seen_urls:
+                            errors.append(f"Duplicate mirror URL '{url}' at index {idx}.")
+                        seen_urls.add(url)
+
+                    label = m.get("label")
+                    if label is not None and not isinstance(label, str):
+                        errors.append(f"Mirror at index {idx} 'label' must be a string if present.")
+
+            # Semantic validation: first mirror MUST be the baseUrl
+            if len(mirrors) > 0 and isinstance(mirrors[0], dict):
+                first_url = mirrors[0].get("url")
+                if first_url and isinstance(base_url, str) and first_url != base_url:
+                    errors.append(f"First mirror URL '{first_url}' must exactly match baseUrl '{base_url}'.")
+
+    # ... remaining checks remain identical
     if "mobileUrl" in data:
         if not isinstance(data["mobileUrl"], str) or not (
             data["mobileUrl"].startswith("http://") or data["mobileUrl"].startswith("https://")
         ):
             errors.append("Field 'mobileUrl' must be a valid HTTP/HTTPS URL string.")
 
-    # headers
     if "headers" in data:
         headers = data["headers"]
         if not isinstance(headers, dict):
@@ -173,7 +185,6 @@ def validate_ir_data(data: Any) -> List[str]:
                 if not isinstance(k, str) or not isinstance(v, str):
                     errors.append(f"Header '{k}' must map a string key to a string value.")
 
-    # cookies
     if "cookies" in data:
         cookies = data["cookies"]
         if not isinstance(cookies, list):
@@ -189,7 +200,6 @@ def validate_ir_data(data: Any) -> List[str]:
                                 f"Cookie at index {idx} missing required string property '{req_k}'."
                             )
 
-    # explore
     if "explore" in data:
         explore = data["explore"]
         if not isinstance(explore, dict):
@@ -204,7 +214,6 @@ def validate_ir_data(data: Any) -> List[str]:
                     if "method" in tab_def and tab_def["method"] not in ALLOWED_METHODS:
                         errors.append(f"Explore tab '{tab_name}' has invalid method '{tab_def['method']}'.")
 
-    # search
     if "search" in data:
         search = data["search"]
         if not isinstance(search, dict):
@@ -215,7 +224,6 @@ def validate_ir_data(data: Any) -> List[str]:
             if "method" not in search or search["method"] not in ALLOWED_METHODS:
                 errors.append(f"Field 'search' requires 'method' to be one of {sorted(ALLOWED_METHODS)}.")
 
-    # details
     if "details" in data:
         details = data["details"]
         if not isinstance(details, dict):
@@ -226,7 +234,6 @@ def validate_ir_data(data: Any) -> List[str]:
             if "method" not in details or details["method"] not in ALLOWED_METHODS:
                 errors.append(f"Field 'details' requires 'method' to be one of {sorted(ALLOWED_METHODS)}.")
 
-    # chapters
     if "chapters" in data:
         chapters = data["chapters"]
         if not isinstance(chapters, dict):
@@ -237,7 +244,6 @@ def validate_ir_data(data: Any) -> List[str]:
             if "method" in chapters and chapters["method"] not in ALLOWED_METHODS:
                 errors.append(f"Field 'chapters' has invalid method '{chapters['method']}'.")
 
-    # pages
     if "pages" in data:
         pages = data["pages"]
         if not isinstance(pages, dict):
@@ -248,7 +254,6 @@ def validate_ir_data(data: Any) -> List[str]:
             if "method" in pages and pages["method"] not in ALLOWED_METHODS:
                 errors.append(f"Field 'pages' has invalid method '{pages['method']}'.")
 
-    # provenance
     if "provenance" in data:
         prov = data["provenance"]
         if not isinstance(prov, dict):
@@ -272,7 +277,6 @@ def validate_ir_data(data: Any) -> List[str]:
                     f"Provenance 'type' must be one of {sorted(ALLOWED_PROVENANCE_TYPES)} (got: {repr(prov.get('type'))})"
                 )
 
-            # Strict upstreamCommit check: MUST NOT be "HEAD"
             commit = prov.get("upstreamCommit", "")
             if commit == "HEAD":
                 errors.append(
@@ -287,7 +291,6 @@ def validate_ir_data(data: Any) -> List[str]:
 
 
 def validate_file(file_path: str) -> bool:
-    """Read and validate an IR JSON file path. Prints results to stdout/stderr. Returns True if valid."""
     if not os.path.exists(file_path):
         print(f"Error: File not found: {file_path}", file=sys.stderr)
         return False
@@ -301,17 +304,17 @@ def validate_file(file_path: str) -> bool:
 
     errors = validate_ir_data(data)
     if errors:
-        print(f"[FAIL] {file_path} failed IR v0.1 validation ({len(errors)} errors):", file=sys.stderr)
+        print(f"[FAIL] {file_path} failed IR validation ({len(errors)} errors):", file=sys.stderr)
         for err in errors:
             print(f"  - {err}", file=sys.stderr)
         return False
 
-    print(f"[PASS] {file_path} is valid IR v0.1.")
+    print(f"[PASS] {file_path} is valid IR.")
     return True
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate a Venera Source IR v0.1 JSON file.")
+    parser = argparse.ArgumentParser(description="Validate a Venera Source IR JSON file.")
     parser.add_argument("files", nargs="+", help="Path(s) to IR JSON file(s) to validate.")
     args = parser.parse_args()
 

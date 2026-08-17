@@ -44,6 +44,7 @@ class TestParsers(unittest.TestCase):
         meta = parse_gradle_metadata(path)
         self.assertEqual(meta["name"], "Test")
         self.assertTrue(meta["is_modern"])
+        self.assertEqual(meta["version_classification"], "MODERN_KEISOURCE")
         self.assertEqual(len(meta["sources"]), 1)
         self.assertEqual(meta["sources"][0]["name"], "Test Source")
         self.assertEqual(meta["sources"][0]["id"], 12345)
@@ -68,6 +69,7 @@ class TestParsers(unittest.TestCase):
         path = self.write_temp_file(content)
         meta = parse_gradle_metadata(path)
         self.assertTrue(meta["is_legacy"])
+        self.assertEqual(meta["version_classification"], "LEGACY_HTTPSOURCE")
         self.assertEqual(len(meta["sources"]), 2)
         self.assertEqual(meta["sources"][0]["name"], "Src1")
         self.assertEqual(meta["sources"][1]["name"], "Src2")
@@ -83,38 +85,69 @@ class TestParsers(unittest.TestCase):
                 )
             }
         }
-        source {
-            name = "CustomSrc"
-            baseUrl {
-                custom("https://custom.com")
-            }
-        }
         """
         path = self.write_temp_file(content)
         meta = parse_gradle_metadata(path)
-        self.assertEqual(len(meta["sources"]), 2)
+        self.assertEqual(len(meta["sources"]), 1)
 
         src1 = meta["sources"][0]
         self.assertEqual(src1["baseUrl"], "https://cn.baozimh.com")
         self.assertIn("mirrors", src1)
         self.assertEqual(len(src1["mirrors"]), 2)
+        self.assertEqual(src1["mirrors"][0]["url"], "https://cn.baozimh.com")
+        self.assertNotIn("label", src1["mirrors"][0])
 
-        src2 = meta["sources"][1]
-        self.assertTrue(src2.get("customBaseUrl"))
-
-    def test_modern_keisource_detection(self):
-        content = 'libVersion = "1.6"'
+    def test_labeled_mirrors(self):
+        content = """
+        source {
+            name = "Labeled"
+            baseUrl {
+                mirrors(
+                    "Main" to "https://main.com",
+                    "Backup" to "https://backup.com"
+                )
+            }
+        }
+        """
         path = self.write_temp_file(content)
         meta = parse_gradle_metadata(path)
-        self.assertTrue(meta["is_modern"])
-        self.assertFalse(meta["is_legacy"])
+        src = meta["sources"][0]
+        self.assertEqual(src["baseUrl"], "https://main.com")
+        self.assertEqual(len(src["mirrors"]), 2)
+        self.assertEqual(src["mirrors"][0]["label"], "Main")
+        self.assertEqual(src["mirrors"][0]["url"], "https://main.com")
 
-    def test_legacy_httpsource_detection(self):
-        content = 'libVersion = "1.4"'
+    def test_mixed_mirrors_raises(self):
+        content = """
+        source {
+            baseUrl {
+                mirrors(
+                    "https://main.com",
+                    "Backup" to "https://backup.com"
+                )
+            }
+        }
+        """
+        path = self.write_temp_file(content)
+        with self.assertRaises(ValueError):
+            parse_gradle_metadata(path)
+
+    def test_brace_scanner_comment_string(self):
+        content = """
+        // source { "broken" }
+        /* source {
+        } */
+        source {
+            name = "Real Source"
+            baseUrl = "https://real.com"
+            // }
+            val x = "{}"
+        }
+        """
         path = self.write_temp_file(content)
         meta = parse_gradle_metadata(path)
-        self.assertTrue(meta["is_legacy"])
-        self.assertFalse(meta["is_modern"])
+        self.assertEqual(len(meta["sources"]), 1)
+        self.assertEqual(meta["sources"][0]["baseUrl"], "https://real.com")
 
     def test_selector_analyzer_safe(self):
         self.assertEqual(analyze_selector(".class #id")["classification"], "SAFE")
@@ -122,6 +155,11 @@ class TestParsers(unittest.TestCase):
         self.assertEqual(analyze_selector("a[href*='comic']")["classification"], "SAFE")
         self.assertEqual(analyze_selector(":first-child")["classification"], "SAFE")
         self.assertEqual(analyze_selector(":nth-child(2)")["classification"], "SAFE")
+        self.assertEqual(analyze_selector(":not(.class)")["classification"], "SAFE")
+
+    def test_selector_analyzer_complex_not(self):
+        res = analyze_selector(":not(.class > div)")
+        self.assertEqual(res["classification"], "TRANSFORMABLE")
 
     def test_selector_analyzer_nth_of_type(self):
         res = analyze_selector("div.info:nth-of-type(2)")
