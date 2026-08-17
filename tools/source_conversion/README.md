@@ -72,3 +72,8 @@ python tools/source_conversion/validator/validate_ir.py sources_ir/webtoons.json
 ```bash
 python tools/source_conversion/generator/js_generator.py --input sources_ir/webtoons.json --output sources_generated/webtoons.base.js
 ```
+
+### 4. Compose Final Venera JavaScript Source
+```bash
+python tools/source_conversion/patcher/js_patcher.py --base sources_generated/webtoons.base.js --patch sources_patches/webtoons.patch.js --output webtoons.js
+```
