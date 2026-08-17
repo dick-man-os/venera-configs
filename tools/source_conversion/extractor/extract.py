@@ -21,7 +21,7 @@ def resolve_source_dir(extensions_root: str, source_path: str) -> str:
         raise FileNotFoundError(f"Source directory not found: {path}")
     return path
 
-def extract_generic(extensions_root: str, source_path: str, timestamp: str = None) -> Dict[str, Any]:
+def extract_generic(extensions_root: str, source_path: str, timestamp: str = None, language_override: str = None) -> Dict[str, Any]:
     """Perform generic extraction on a source."""
     source_dir = resolve_source_dir(extensions_root, source_path)
     build_gradle_path = os.path.join(source_dir, "build.gradle.kts")
@@ -56,7 +56,7 @@ def extract_generic(extensions_root: str, source_path: str, timestamp: str = Non
     import generic_html_extractor
 
     lang = source_path.split("/")[0] if "/" in source_path else "en"
-    ir_data = generic_html_extractor.extract(main_kt, gradle_meta, timestamp, lang)
+    ir_data = generic_html_extractor.extract(main_kt, gradle_meta, timestamp, lang, language_override)
 
     try:
         import subprocess
@@ -94,6 +94,11 @@ def main() -> int:
         default=None,
         help="Optional ISO timestamp override for deterministic testing."
     )
+    parser.add_argument(
+        "--language-override",
+        default=None,
+        help="Explicit semantic language override (e.g. zh-Hant)."
+    )
 
     args = parser.parse_args()
 
@@ -105,14 +110,17 @@ def main() -> int:
     print(f"[*] Target output: {output_path}")
 
     try:
-        # Dispatch to adapter if one exists
         if source_path == "all/webtoons":
             print("[*] Dispatching to Webtoons adapter...")
             from source_adapters import webtoons
             ir_data = webtoons.extract(extensions_root, timestamp=args.timestamp)
+        elif source_path == "zh/comicabc":
+            print("[*] Dispatching to Comicabc adapter...")
+            from source_adapters import comicabc
+            ir_data = comicabc.extract(extensions_root, timestamp=args.timestamp)
         else:
             print("[*] Using generic extraction pathway...")
-            ir_data = extract_generic(extensions_root, source_path, timestamp=args.timestamp)
+            ir_data = extract_generic(extensions_root, source_path, timestamp=args.timestamp, language_override=args.language_override)
 
     except Exception as e:
         print(f"[!] Extraction failed: {e}", file=sys.stderr)

@@ -10,6 +10,7 @@ sys.path.insert(0, extractor_dir)
 
 from common.gradle_parser import parse_gradle_metadata
 from common.selector_analyzer import analyze_selector
+from common.kotlin_parser import extract_method_body
 
 class TestParsers(unittest.TestCase):
 
@@ -173,6 +174,47 @@ class TestParsers(unittest.TestCase):
         res = analyze_selector("div.chapter:eq(1)")
         self.assertEqual(res["classification"], "TRANSFORMABLE")
         self.assertIn(".querySelectorAll()[n]", res["suggestion"])
+
+    def test_extract_method_body_same_line_expression(self):
+        content = """
+        fun popularMangaRequest(page: Int): Request = GET("url")
+        fun other() {}
+        """
+        body = extract_method_body(content, "popularMangaRequest")
+        self.assertEqual(body, 'GET("url")')
+
+    def test_extract_method_body_next_line_expression(self):
+        content = """
+        fun popularMangaRequest(page: Int): Request =
+            GET("url")
+        fun other() {}
+        """
+        body = extract_method_body(content, "popularMangaRequest")
+        self.assertEqual(body, 'GET("url")')
+
+    def test_extract_method_body_next_line_apply_block(self):
+        content = """
+        fun mangaDetailsParse(response: Response): SManga =
+            SManga.create().apply {
+                title = "test"
+            }
+        fun other() {}
+        """
+        body = extract_method_body(content, "mangaDetailsParse")
+        self.assertIn('title = "test"', body)
+        self.assertIn('apply {', body)
+        self.assertNotIn('fun other()', body)
+
+    def test_extract_method_body_adjacent_method_not_captured(self):
+        content = """
+        fun mangaDetailsParse(response: Response): SManga = SManga.create().apply { title = "test" }
+        fun other() = GET("other")
+        """
+        body = extract_method_body(content, "mangaDetailsParse")
+        self.assertNotIn('GET("other")', body)
+
+        body_other = extract_method_body(content, "other")
+        self.assertEqual(body_other, 'GET("other")')
 
 if __name__ == "__main__":
     unittest.main()

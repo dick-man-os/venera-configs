@@ -13,11 +13,11 @@ from generic_html_extractor import _extract_url_template, _extract_list_parser, 
 class TestExtractor(unittest.TestCase):
     def test_extract_url_template(self):
         body = 'client.get("$baseUrl/category/order/hits/page/$page")'
-        url = _extract_url_template(body, "getPopularManga")
+        url = _extract_url_template(body)
         self.assertEqual(url, "{{baseUrl}}/category/order/hits/page/{{page}}")
 
         body_query = 'client.get("$baseUrl/search/$query/$page")'
-        url_query = _extract_url_template(body_query, "getSearchMangaList")
+        url_query = _extract_url_template(body_query)
         self.assertEqual(url_query, "{{baseUrl}}/search/{{query}}/{{page}}")
 
 
@@ -37,7 +37,7 @@ fun parseManga(document: Document): MangasPage {
     return MangasPage(mangas, nextPage != currentPage)
 }
         """
-        res = _extract_list_parser(content, body)
+        res = _extract_list_parser(content, body, "MODERN")
         self.assertEqual(res["selector"], "div.comic-list > div.comic-item")
         self.assertEqual(res["fields"]["title"], "h3 a")
         self.assertEqual(res["fields"]["url"], "a@href")
@@ -59,7 +59,7 @@ fun fetchMangaUpdate(): String {
     }.asReversed()
 }
         """
-        res = _extract_chapters(content)
+        res = _extract_chapters(content, "fetchMangaUpdate")
         self.assertEqual(res["selector"], "div.chapter-list li a")
         self.assertEqual(res["fields"]["name"], "text")
         self.assertEqual(res["fields"]["url"], "@href")
@@ -77,7 +77,7 @@ fun fetchMangaUpdate(): String {
     }
 }
         """
-        res = _extract_chapters(content)
+        res = _extract_chapters(content, "fetchMangaUpdate")
         self.assertFalse(res.get("reverse", False))
 
     def test_extract_details_unsupported(self):
@@ -88,7 +88,7 @@ fun fetchMangaUpdate(): String {
     author = document.selectFirst("div.unsupported:contains(author)")
 }
         """
-        res = _extract_details(content)
+        res = _extract_details(content, "fetchMangaUpdate")
         self.assertTrue(res["manualPatchRequired"])
 
     def test_extract_details_safe(self):
@@ -99,7 +99,7 @@ fun fetchMangaUpdate(): String {
     author = document.selectFirst("div.author")
 }
         """
-        res = _extract_details(content)
+        res = _extract_details(content, "fetchMangaUpdate")
         self.assertFalse(res["manualPatchRequired"])
 
     def test_extract_pages(self):
@@ -111,7 +111,7 @@ fun getPageList(): String {
     }
 }
         """
-        res = _extract_pages(content)
+        res = _extract_pages(content, "getPageList")
         self.assertEqual(res["selector"], "div.comic-content > img")
         self.assertEqual(res["fields"]["imageUrl"], "@src")
         self.assertFalse(res["manualPatchRequired"])
