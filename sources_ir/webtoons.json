@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "en_webtoons",
+  "name": "Webtoons",
+  "languages": [
+    "en"
+  ],
+  "contentOrigins": [],
+  "contentWarning": "SAFE",
+  "sourceType": "hybrid",
+  "requiresAuth": false,
+  "requiresWebView": false,
+  "status": "ONGOING",
+  "baseUrl": "https://www.webtoons.com",
+  "mobileUrl": "https://m.webtoons.com",
+  "headers": {
+    "Referer": "https://www.webtoons.com/"
+  },
+  "cookies": [
+    {
+      "domain": "webtoons.com",
+      "name": "ageGatePass",
+      "value": "true"
+    },
+    {
+      "domain": "webtoons.com",
+      "name": "locale",
+      "value": "en"
+    },
+    {
+      "domain": "webtoons.com",
+      "name": "needGDPR",
+      "value": "false"
+    }
+  ],
+  "explore": {
+    "popular": {
+      "url": "{{baseUrl}}/{{langCode}}/ranking/trending",
+      "method": "GET",
+      "selector": ".webtoon_list li a",
+      "fields": {
+        "title": ".title",
+        "url": "@href",
+        "thumbnail": "img@src"
+      }
+    },
+    "latest": {
+      "url": "{{baseUrl}}/{{langCode}}/originals/{{day}}?sortOrder=UPDATE",
+      "method": "GET",
+      "selector": ".webtoon_list li a",
+      "fields": {
+        "title": ".title",
+        "url": "@href",
+        "thumbnail": "img@src"
+      }
+    }
+  },
+  "search": {
+    "url": "{{baseUrl}}/{{langCode}}/search?keyword={{query}}&page={{page}}",
+    "method": "GET",
+    "selector": ".webtoon_list li a",
+    "fields": {
+      "title": ".title",
+      "url": "@href",
+      "thumbnail": "img@src"
+    }
+  },
+  "details": {
+    "url": "{{comicUrl}}",
+    "method": "GET",
+    "selector": ".detail_header .info",
+    "fields": {
+      "title": "h1.subj, h3.subj",
+      "author": ".author:nth-of-type(1)",
+      "description": "#_asideDetail p.summary",
+      "thumbnail": ".detail_header .thmb img@src",
+      "status": "#_asideDetail p.day_info"
+    }
+  },
+  "chapters": {
+    "url": "{{mobileUrl}}/api/v1/webtoon/{{titleId}}/episodes?pageSize=99999",
+    "method": "GET",
+    "isJson": true,
+    "listPath": "result.episodeList",
+    "fields": {
+      "url": "viewerLink",
+      "name": "episodeTitle",
+      "date": "exposureDateMillis"
+    },
+    "manualPatchRequired": true
+  },
+  "pages": {
+    "url": "{{chapterUrl}}",
+    "method": "GET",
+    "selector": "div#_imageList > img",
+    "fields": {
+      "imageUrl": "@data-url"
+    },
+    "manualPatchRequired": true
+  },
+  "provenance": {
+    "type": "converted",
+    "upstreamProject": "keiyoushi",
+    "upstreamPackage": "eu.kanade.tachiyomi.extension.all.webtoons",
+    "upstreamCommit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+    "upstreamVersion": "1.4.57",
+    "upstreamLicense": "Apache-2.0",
+    "converterVersion": "0.1.0",
+    "generatedTimestamp": "2026-08-17T02:09:03Z"
+  }
+}

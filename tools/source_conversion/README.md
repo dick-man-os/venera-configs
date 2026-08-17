@@ -44,9 +44,26 @@ When the converter pipeline is stabilized beyond the Webtoons pilot, future bulk
 - **English NSFW (`en`, `contentWarning: NSFW`)**
 - Other languages
 
+## Extraction Field Grammar (IR v0.1)
+The `fields` mapping in IR v0.1 definitions unambiguously distinguishes between element text extraction and attribute extraction:
+- **Text Extraction:** Plain CSS selector string without `@` suffix.
+  - Example: `".title"` -> extracts `element.querySelector(".title").text`.
+  - Example: `"h1.subj, h3.subj"` -> extracts matched element's text.
+- **Attribute Extraction:** Prefixed by `@` or suffixed with `@<attribute_name>`.
+  - Example: `"@href"` -> extracts current element's `href` attribute.
+  - Example: `"img@src"` -> extracts child `img` element's `src` attribute.
+  - Example: `"@data-url"` -> extracts current element's `data-url` attribute.
+- **JSON Field Mapping:** Direct key lookup or dot-separated path in JSON payloads.
+  - Example: `"url": "viewerLink"` -> extracts `item["viewerLink"]`.
+
 ## Usage
 
-### Validate an IR File
+### 1. Extract Webtoons IR
 ```bash
-python tools/source_conversion/validator/validate_ir.py tools/source_conversion/tests/fixtures/valid_minimal.json
+python tools/source_conversion/extractor/webtoons_extractor.py --extensions-root ../extensions-source --output sources_ir/webtoons.json
+```
+
+### 2. Validate an IR File
+```bash
+python tools/source_conversion/validator/validate_ir.py sources_ir/webtoons.json
 ```
