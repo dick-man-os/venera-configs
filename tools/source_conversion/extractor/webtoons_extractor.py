@@ -194,7 +194,7 @@ def extract_webtoons_ir(
         "selector": ".detail_header .info",
         "fields": {
             "title": "h1.subj, h3.subj",
-            "author": ".author:nth-of-type(1)",
+            "author": ".author, .author_area",
             "description": "#_asideDetail p.summary",
             "thumbnail": ".detail_header .thmb img@src",
             "status": "#_asideDetail p.day_info",

@@ -115,7 +115,7 @@ class EnWebtoonsSource extends ComicSource {
             }
             let doc = new HtmlDocument(res.body);
             let titleEl = doc.querySelector("h1.subj, h3.subj");
-            let authorEl = doc.querySelector(".author:nth-of-type(1)") || doc.querySelector(".author_area");
+            let authorEl = doc.querySelector(".author, .author_area") || doc.querySelector(".author_area");
             let descEl = doc.querySelector("#_asideDetail p.summary");
 
             let title = titleEl ? titleEl.text : "";
@@ -132,6 +132,7 @@ class EnWebtoonsSource extends ComicSource {
                 subTitle: author,
                 cover: cover,
                 description: description,
+                tags: {},
                 chapters: chapters,
             });
         },

@@ -252,6 +252,7 @@ class {class_name} extends ComicSource {{
                 subTitle: author,
                 cover: cover,
                 description: description,
+                tags: {{}},
                 chapters: chapters,
             }});
         }},
