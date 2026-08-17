@@ -1,0 +1,17 @@
+{
+  "sourceType": "json",
+  "name": "Fixture Patch Required",
+  "id": "fixture_patch",
+  "lang": "en",
+  "baseUrl": "https://example.com",
+  "chapters": {
+    "manualPatchRequired": true
+  },
+  "provenance": {
+    "repository": "test",
+    "commit": "12345",
+    "file": "test.kt",
+    "libVersion": "1.6",
+    "generatedTimestamp": "2023-01-01T00:00:00Z"
+  }
+}

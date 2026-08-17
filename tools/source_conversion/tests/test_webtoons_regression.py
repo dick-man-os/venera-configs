@@ -1,109 +1,112 @@
 import os
 import sys
 import json
-import subprocess
 import difflib
 import tempfile
+import unittest
+from pathlib import Path
 
-def test_regression():
-    workspace = r"c:\Projects\VeneraX-Dev\venera-configs"
-    extractor_path = os.path.join(workspace, "tools", "source_conversion", "extractor", "extract.py")
-    generator_path = os.path.join(workspace, "tools", "source_conversion", "generator", "js_generator.py")
-    patcher_path = os.path.join(workspace, "tools", "source_conversion", "patcher", "js_patcher.py")
+# Add tools directory to sys.path so we can import run_ladder
+repo_root = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(repo_root))
 
-    canonical_ir_path = os.path.join(workspace, "sources_ir", "webtoons.json")
-    canonical_js_path = os.path.join(workspace, "sources_generated", "webtoons.base.js")
-    canonical_patch_path = os.path.join(workspace, "sources_patches", "webtoons.patch.js")
-    canonical_final_path = os.path.join(workspace, "webtoons.js")
+from tools.source_conversion.test_ladder import run_ladder, LadderConfig
 
-    webtoons_src = "all/webtoons"
+class TestWebtoonsRegression(unittest.TestCase):
+    def test_webtoons_golden_regression(self):
+        # The canonical artifacts are in the venera-configs repo root (repo_root).
+        canonical_ir_path = repo_root / "sources_ir" / "webtoons.json"
+        canonical_js_path = repo_root / "sources_generated" / "webtoons.base.js"
+        canonical_patch_path = repo_root / "sources_patches" / "webtoons.patch.js"
+        canonical_final_path = repo_root / "webtoons.js"
 
-    with tempfile.TemporaryDirectory() as temp_dir:
-        temp_ir_path = os.path.join(temp_dir, "temp_webtoons.json")
-        temp_js_path = os.path.join(temp_dir, "temp_webtoons.base.js")
-        temp_final_path = os.path.join(temp_dir, "temp_webtoons.js")
+        workspace_root = repo_root.parent
+        extensions_root = workspace_root / "extensions-source"
 
-        print("[*] Reading canonical IR timestamp...")
-        with open(canonical_ir_path, "r", encoding="utf-8") as f:
-            canon_ir_bytes = f.read()
-            canon_ir = json.loads(canon_ir_bytes)
+        self.assertTrue(extensions_root.exists(), f"extensions-source must exist at {extensions_root}")
 
-        canon_timestamp = canon_ir.get("provenance", {}).get("generatedTimestamp")
+        config = LadderConfig(
+            source="all/webtoons",
+            mode="canonical",
+            extensions_root=str(extensions_root),
+            patch_path=str(canonical_patch_path),
+            canonical_ir=str(canonical_ir_path),
+            canonical_base=str(canonical_js_path),
+            canonical_final=str(canonical_final_path)
+        )
 
-        print(f"[*] Running extractor on Webtoons with timestamp: {canon_timestamp}")
-        extract_args = [sys.executable, "-B", extractor_path, "--source", webtoons_src, "--output", temp_ir_path]
-        if canon_timestamp:
-            extract_args.extend(["--timestamp", canon_timestamp])
+        with tempfile.TemporaryDirectory() as temp_dir:
+            result = run_ladder(config, override_temp_dir=temp_dir)
 
-        res = subprocess.run(extract_args, capture_output=True, text=True)
-        if res.returncode != 0:
-            print("Extractor failed:")
-            print(res.stderr)
-            return False
+            # Now we independently assert equality
+            print("[*] Comparing IRs...")
+            with open(canonical_ir_path, "r", encoding="utf-8") as f:
+                canon_ir_bytes = f.read()
+                canon_ir = json.loads(canon_ir_bytes)
 
-        print("[*] Comparing IRs...")
-        with open(temp_ir_path, "r", encoding="utf-8") as f:
-            temp_ir_bytes = f.read()
-            temp_ir = json.loads(temp_ir_bytes)
+            temp_ir_path = os.path.join(temp_dir, "temp.json")
+            self.assertTrue(os.path.exists(temp_ir_path), "IR STRUCTURAL EQUALITY: False (temp file missing)")
 
-        ir_structural_equality = canon_ir == temp_ir
-        ir_byte_identical = canon_ir_bytes == temp_ir_bytes
+            with open(temp_ir_path, "r", encoding="utf-8") as f:
+                temp_ir_bytes = f.read()
+                temp_ir = json.loads(temp_ir_bytes)
 
-        print(f"IR STRUCTURAL EQUALITY: {ir_structural_equality}")
-        print(f"IR BYTE IDENTICAL: {ir_byte_identical}")
+            ir_structural_equality = canon_ir == temp_ir
+            ir_byte_identical = canon_ir_bytes == temp_ir_bytes
 
-        if not ir_structural_equality:
-            print("IR structurally differs!")
-            return False
+            print(f"IR STRUCTURAL EQUALITY: {ir_structural_equality}")
+            print(f"IR BYTE IDENTICAL: {ir_byte_identical}")
 
-        print("[*] Running JS generator on Canonical Webtoons IR...")
-        res = subprocess.run([sys.executable, "-B", generator_path, "--input", canonical_ir_path, "--output", temp_js_path], capture_output=True, text=True)
-        if res.returncode != 0:
-            print("Generator failed:")
-            print(res.stderr)
-            return False
+            self.assertTrue(ir_structural_equality, "IR structurally differs!")
+            # Note: We won't strictly fail byte equality here for IR in case of newline mismatch on checkout,
+            # but we print it. The ladder itself performs a filecmp.
+            # We follow user request to assert it though.
+            self.assertTrue(ir_byte_identical, "IR byte identical differs!")
 
-        print("[*] Comparing Base JS...")
-        with open(canonical_js_path, "r", encoding="utf-8") as f:
-            canon_js_bytes = f.read()
-        with open(temp_js_path, "r", encoding="utf-8") as f:
-            temp_js_bytes = f.read()
+            print("[*] Comparing Base JS...")
+            with open(canonical_js_path, "r", encoding="utf-8") as f:
+                canon_js_bytes = f.read()
 
-        base_js_byte_identical = canon_js_bytes == temp_js_bytes
-        print(f"BASE JS BYTE IDENTICAL: {base_js_byte_identical}")
+            temp_js_path = os.path.join(temp_dir, "temp.base.js")
+            self.assertTrue(os.path.exists(temp_js_path), "BASE JS BYTE IDENTICAL: False (temp file missing)")
 
-        if not base_js_byte_identical:
-            print("Base JS differs!")
-            diff = difflib.unified_diff(canon_js_bytes.splitlines(), temp_js_bytes.splitlines(), fromfile='canonical', tofile='generated')
-            print('\n'.join(diff))
-            return False
+            with open(temp_js_path, "r", encoding="utf-8") as f:
+                temp_js_bytes = f.read()
 
-        print("[*] Running patcher on Temporary Webtoons Base...")
-        res = subprocess.run([sys.executable, "-B", patcher_path, "--base", temp_js_path, "--patch", canonical_patch_path, "--output", temp_final_path], capture_output=True, text=True)
-        if res.returncode != 0:
-            print("Patcher failed:")
-            print(res.stderr)
-            return False
+            base_js_byte_identical = canon_js_bytes == temp_js_bytes
+            print(f"BASE JS BYTE IDENTICAL: {base_js_byte_identical}")
 
-        print("[*] Comparing Final JS...")
-        with open(canonical_final_path, "r", encoding="utf-8") as f:
-            canon_final_bytes = f.read()
-        with open(temp_final_path, "r", encoding="utf-8") as f:
-            temp_final_bytes = f.read()
+            if not base_js_byte_identical:
+                diff = difflib.unified_diff(canon_js_bytes.splitlines(), temp_js_bytes.splitlines(), fromfile='canonical', tofile='generated')
+                print('\n'.join(diff))
+            self.assertTrue(base_js_byte_identical, "Base JS differs!")
 
-        final_js_byte_identical = canon_final_bytes == temp_final_bytes
-        print(f"FINAL WEBTOONS JS BYTE IDENTICAL: {final_js_byte_identical}")
+            print("[*] Comparing Final JS...")
+            with open(canonical_final_path, "r", encoding="utf-8") as f:
+                canon_final_bytes = f.read()
 
-        if not final_js_byte_identical:
-            print("Final JS differs!")
-            diff = difflib.unified_diff(canon_final_bytes.splitlines(), temp_final_bytes.splitlines(), fromfile='canonical', tofile='generated')
-            print('\n'.join(diff))
-            return False
+            temp_final_path = os.path.join(temp_dir, "temp.final.js")
+            self.assertTrue(os.path.exists(temp_final_path), "FINAL WEBTOONS JS BYTE IDENTICAL: False (temp file missing)")
 
-    return True
+            with open(temp_final_path, "r", encoding="utf-8") as f:
+                temp_final_bytes = f.read()
+
+            final_js_byte_identical = canon_final_bytes == temp_final_bytes
+            print(f"FINAL WEBTOONS JS BYTE IDENTICAL: {final_js_byte_identical}")
+
+            if not final_js_byte_identical:
+                diff = difflib.unified_diff(canon_final_bytes.splitlines(), temp_final_bytes.splitlines(), fromfile='canonical', tofile='generated')
+                print('\n'.join(diff))
+            self.assertTrue(final_js_byte_identical, "Final JS differs!")
+
+            if result.overall_status != "PASS":
+                print("Webtoons regression assertions passed, but overall ladder result failed.")
+                for stage in result.stages:
+                    print(f"[{stage.status}] {stage.level} - {stage.name}: {stage.message}")
+                if hasattr(result, 'error_message') and result.error_message:
+                    print(result.error_message)
+
+            self.assertEqual(result.overall_status, "PASS")
 
 if __name__ == "__main__":
-    if test_regression():
-        sys.exit(0)
-    else:
-        sys.exit(1)
+    unittest.main()

@@ -1,0 +1,15 @@
+{
+  "sourceType": "json",
+  "name": "Fixture V0.1",
+  "id": "fixture_v01",
+  "lang": "en",
+  "baseUrl": "https://example.com",
+  "manualPatchRequired": false,
+  "provenance": {
+    "repository": "test",
+    "commit": "12345",
+    "file": "test.kt",
+    "libVersion": "1.6",
+    "generatedTimestamp": "2023-01-01T00:00:00Z"
+  }
+}
