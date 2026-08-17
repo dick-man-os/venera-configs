@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "0.1.0",
+  "name": "Invalid Source Missing Required Fields",
+  "contentOrigins": ["INVALID_ORIGIN"],
+  "contentWarning": "NOT_A_VALID_WARNING",
+  "sourceType": "unknown_type",
+  "baseUrl": "not-a-valid-url",
+  "explore": {},
+  "search": {
+    "url": "https://example.com/search"
+  },
+  "chapters": {},
+  "pages": {},
+  "provenance": {
+    "type": "converted",
+    "upstreamProject": "keiyoushi",
+    "upstreamCommit": "HEAD",
+    "upstreamVersion": "1.0.0",
+    "upstreamLicense": "Apache-2.0",
+    "converterVersion": "0.1.0",
+    "generatedTimestamp": "2026-08-17T00:00:00Z"
+  }
+}

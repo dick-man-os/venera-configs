@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://venerax.app/schemas/ir_v0_1.schema.json",
+  "title": "VeneraSourceIntermediateRepresentation_v0_1",
+  "description": "Minimal Intermediate Representation (IR) v0.1 schema for converted comic sources",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "id",
+    "name",
+    "languages",
+    "contentOrigins",
+    "contentWarning",
+    "sourceType",
+    "baseUrl",
+    "explore",
+    "search",
+    "details",
+    "chapters",
+    "pages"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^0\\.1(\\.[0-9]+)?$"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["zh-Hans", "zh-Hant", "ko", "en"]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "contentOrigins": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["KR", "CN", "JP"]
+      },
+      "uniqueItems": true
+    },
+    "contentWarning": {
+      "type": "string",
+      "enum": ["SAFE", "MIXED", "NSFW"]
+    },
+    "sourceType": {
+      "type": "string",
+      "enum": ["api", "html", "hybrid"]
+    },
+    "requiresAuth": {
+      "type": "boolean",
+      "default": false
+    },
+    "requiresWebView": {
+      "type": "boolean",
+      "default": false
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ONGOING", "COMPLETED", "UNKNOWN", "PAUSED", "DISCONTINUED"]
+    },
+    "lastVerified": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "baseUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "mobileUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "headers": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "cookies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["domain", "name", "value"],
+        "additionalProperties": false,
+        "properties": {
+          "domain": { "type": "string" },
+          "name": { "type": "string" },
+          "value": { "type": "string" }
+        }
+      }
+    },
+    "explore": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "url": { "type": "string" },
+          "method": { "type": "string", "enum": ["GET", "POST"] },
+          "selector": { "type": "string" },
+          "fields": { "type": "object" },
+          "manualPatchRequired": { "type": "boolean" }
+        }
+      }
+    },
+    "search": {
+      "type": "object",
+      "properties": {
+        "url": { "type": "string" },
+        "method": { "type": "string", "enum": ["GET", "POST"] },
+        "selector": { "type": "string" },
+        "fields": { "type": "object" },
+        "manualPatchRequired": { "type": "boolean" }
+      },
+      "if": {
+        "properties": {
+          "manualPatchRequired": { "const": true }
+        },
+        "required": ["manualPatchRequired"]
+      },
+      "then": {},
+      "else": {
+        "required": ["url", "method"]
+      }
+    },
+    "details": {
+      "type": "object",
+      "properties": {
+        "url": { "type": "string" },
+        "method": { "type": "string", "enum": ["GET", "POST"] },
+        "selector": { "type": "string" },
+        "fields": { "type": "object" },
+        "manualPatchRequired": { "type": "boolean" }
+      },
+      "if": {
+        "properties": {
+          "manualPatchRequired": { "const": true }
+        },
+        "required": ["manualPatchRequired"]
+      },
+      "then": {},
+      "else": {
+        "required": ["url", "method"]
+      }
+    },
+    "chapters": {
+      "type": "object",
+      "properties": {
+        "url": { "type": "string" },
+        "method": { "type": "string", "enum": ["GET", "POST"] },
+        "isJson": { "type": "boolean" },
+        "listPath": { "type": "string" },
+        "fields": { "type": "object" },
+        "manualPatchRequired": { "type": "boolean" }
+      }
+    },
+    "pages": {
+      "type": "object",
+      "properties": {
+        "url": { "type": "string" },
+        "method": { "type": "string", "enum": ["GET", "POST"] },
+        "selector": { "type": "string" },
+        "fields": { "type": "object" },
+        "manualPatchRequired": { "type": "boolean" }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "type",
+        "upstreamProject",
+        "upstreamCommit",
+        "upstreamVersion",
+        "upstreamLicense",
+        "converterVersion",
+        "generatedTimestamp"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "enum": ["converted", "native", "hybrid"] },
+        "upstreamProject": { "type": "string" },
+        "upstreamPackage": { "type": "string" },
+        "upstreamSourceId": { "type": "string" },
+        "upstreamCommit": {
+          "type": "string",
+          "pattern": "^(?!HEAD$)[0-9a-fA-F]{7,40}$"
+        },
+        "upstreamVersion": { "type": "string" },
+        "upstreamLicense": { "type": "string" },
+        "converterVersion": { "type": "string" },
+        "generatedTimestamp": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

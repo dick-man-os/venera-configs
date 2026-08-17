@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "valid_test_source",
+  "name": "Valid Test Source",
+  "languages": ["en"],
+  "contentOrigins": ["KR", "JP"],
+  "contentWarning": "SAFE",
+  "sourceType": "hybrid",
+  "requiresAuth": false,
+  "requiresWebView": false,
+  "status": "ONGOING",
+  "lastVerified": "2026-08-17T00:00:00Z",
+  "baseUrl": "https://example.com",
+  "mobileUrl": "https://m.example.com",
+  "headers": {
+    "Referer": "https://example.com/"
+  },
+  "cookies": [
+    {
+      "domain": "example.com",
+      "name": "ageGatePass",
+      "value": "true"
+    }
+  ],
+  "explore": {
+    "popular": {
+      "url": "https://example.com/popular",
+      "method": "GET",
+      "selector": ".comic-list item",
+      "fields": {
+        "title": ".title",
+        "url": "@href"
+      }
+    }
+  },
+  "search": {
+    "url": "https://example.com/search?q={{query}}",
+    "method": "GET",
+    "selector": ".search-results item",
+    "fields": {
+      "title": ".title",
+      "url": "@href"
+    }
+  },
+  "details": {
+    "url": "{{comicUrl}}",
+    "method": "GET",
+    "selector": ".comic-details",
+    "fields": {
+      "title": "h1.title",
+      "author": ".author"
+    }
+  },
+  "chapters": {
+    "url": "https://m.example.com/api/chapters/{{comicId}}",
+    "method": "GET",
+    "isJson": true,
+    "listPath": "data.chapters",
+    "manualPatchRequired": true
+  },
+  "pages": {
+    "url": "{{chapterUrl}}",
+    "method": "GET",
+    "selector": ".page-list img",
+    "fields": {
+      "imageUrl": "@data-src"
+    }
+  },
+  "provenance": {
+    "type": "converted",
+    "upstreamProject": "keiyoushi",
+    "upstreamPackage": "eu.kanade.tachiyomi.extension.all.testsource",
+    "upstreamCommit": "a1b2c3d4e5f67890123456789abcdef012345678",
+    "upstreamVersion": "1.0.0",
+    "upstreamLicense": "Apache-2.0",
+    "converterVersion": "0.1.0",
+    "generatedTimestamp": "2026-08-17T00:00:00Z"
+  }
+}
