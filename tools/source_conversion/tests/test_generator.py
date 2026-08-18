@@ -79,7 +79,8 @@ class TestGenerator(unittest.TestCase):
             }
         }
         js = generate_venera_js(ir)
-        self.assertIn('throw new Error("MANUAL PATCH REQUIRED: explore popular must be implemented in patch layer.");', js)
+        self.assertIn('return await this.loadPopularCustom(page);', js)
+        self.assertIn('throw new Error("MANUAL PATCH REQUIRED: loadPopularCustom must be implemented in patch layer.");', js)
 
     def test_fail_closed_search(self):
         ir = self.get_base_ir()

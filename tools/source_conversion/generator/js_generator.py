@@ -128,6 +128,7 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     # 4. Extract explore tabs
     explore_dict = ir_data.get("explore", {})
     explore_sections: List[str] = []
+    explore_custom_hooks: List[str] = []
 
     for tab_key, tab_def in explore_dict.items():
         tab_title = tab_key.capitalize()
@@ -136,7 +137,7 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
         tab_fields = tab_def.get("fields", {})
         manual_patch = tab_def.get("manualPatchRequired", False)
 
-        fail_closed = enforce_fail_closed(manual_patch, f"explore {tab_key}", False)
+        fail_closed = enforce_fail_closed(manual_patch, f"explore {tab_key}", True)
 
         base_url_ref = "this.baseUrl" if mirrors else f"{class_name}.baseUrl"
 
@@ -169,20 +170,22 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
         if "{{day}}" in tab_url:
             day_calc = '                let days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];\n                let day = days[new Date().getDay()];\n'
 
-        if fail_closed:
-            explore_section = f"""        {{
-            title: "{tab_title}",
-            type: "multiPageComicList",
-            load: async (page) => {{
-{fail_closed}
-            }}
-        }}"""
+        custom_hook_name = f"load{tab_key.capitalize()}Custom"
+
+        if manual_patch:
+            explore_body = f"                return await this.{custom_hook_name}(page);"
+            explore_custom_hook = f"""
+    /**
+     * Placeholder hook to be overridden by manual patch layer for Explore {tab_title}.
+     */
+    {custom_hook_name} = async (page) => {{
+        throw new Error("MANUAL PATCH REQUIRED: {custom_hook_name} must be implemented in patch layer.");
+    }}"""
+            explore_custom_hooks.append(explore_custom_hook)
+        elif fail_closed:
+            explore_body = f"                {fail_closed}"
         else:
-            explore_section = f"""        {{
-            title: "{tab_title}",
-            type: "multiPageComicList",
-            load: async (page) => {{
-{day_calc}                let res = await Network.get({js_url_expr}, {class_name}.headers);
+            explore_body = f"""{day_calc}                let res = await Network.get({js_url_expr}, {class_name}.headers);
                 if (res.status !== 200) {{
                     throw new Error(`Failed to load {tab_title.lower()} comics, status: ${{res.status}}`);
                 }}
@@ -197,12 +200,19 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
                 return {{
                     comics: comics,
                     maxPage: {max_page_expr},
-                }};
+                }};"""
+
+        explore_section = f"""        {{
+            title: "{tab_title}",
+            type: "multiPageComicList",
+            load: async (page) => {{
+{explore_body}
             }}
         }}"""
         explore_sections.append(explore_section)
 
     explore_code = ",\n".join(explore_sections)
+    explore_hooks_code = "".join(explore_custom_hooks)
 
     # 5. Extract search
     search_dict = ir_data.get("search", {})
@@ -559,7 +569,7 @@ class {class_name} extends ComicSource {{
         throw new Error('MANUAL PATCH REQUIRED: parseDetailsCustom must be implemented in patch layer.');
     }}
 ''' if details_manual else ""}
-{search_custom_hook}{parse_chapters_custom}{pages_custom_hook}{image_load_hook}
+{explore_hooks_code}{search_custom_hook}{parse_chapters_custom}{pages_custom_hook}{image_load_hook}
 
     /**
      * Placeholder hook for special page variants (e.g. MotionToon).
