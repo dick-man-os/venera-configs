@@ -10,11 +10,17 @@
         }
         let doc = new HtmlDocument(res.body);
         let elements = doc.querySelectorAll(".container a.comicpic_col6");
-        let comics = elements.map(el => new Comic({
-            id: (el.attributes['href'] || ''),
-            title: (el.querySelector('li.nowraphide') ? el.querySelector('li.nowraphide').text : ''),
-            cover: (el.querySelector('img') ? (el.querySelector('img').attributes['src'] || '') : ''),
-        }));
+        let comics = elements.map(el => {
+            let coverSrc = (el.querySelector('img') ? (el.querySelector('img').attributes['src'] || '') : '');
+            if (coverSrc.startsWith("/")) {
+                coverSrc = `${ZhhantComicabcSource.baseUrl}${coverSrc}`;
+            }
+            return new Comic({
+                id: (el.attributes['href'] || ''),
+                title: (el.querySelector('li.nowraphide') ? el.querySelector('li.nowraphide').text : ''),
+                cover: coverSrc,
+            });
+        });
         let hasNextPage = doc.querySelector("div.pager a span.mdi-skip-next") !== null;
         doc.dispose();
         return {
@@ -49,10 +55,17 @@
                 comicDetails.status = 0;
             }
         }
+        if (comicDetails.cover && comicDetails.cover.startsWith("/")) {
+            comicDetails.cover = `${ZhhantComicabcSource.baseUrl}${comicDetails.cover}`;
+        }
         return comicDetails;
     }
 
     loadChapters = async (comicUrl) => {
+        return this.parseChaptersCustom(comicUrl);
+    }
+
+    parseChaptersCustom = async (comicUrl) => {
         let url = comicUrl.startsWith("http") ? comicUrl : `${ZhhantComicabcSource.baseUrl}${comicUrl}`;
         let res = await Network.get(url, ZhhantComicabcSource.headers);
         if (res.status !== 200) {
@@ -65,6 +78,11 @@
 
         for (let el of elements) {
             let name = el.text || "";
+            name = name.replace(/<script[\s\S]*?<\/script>/gi, "")
+                       .replace(/document\.[^;]+;?/gi, "")
+                       .replace(/isnew\([^)]*\);?/gi, "")
+                       .replace(/getElementById\([^)]*\)/gi, "")
+                       .trim();
             let onclick = el.attributes["onclick"] || "";
             let chapterUrl = "";
 

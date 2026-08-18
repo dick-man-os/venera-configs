@@ -14,7 +14,7 @@
 class ZhhantComicabcSource extends ComicSource {
     name = "Comicabc"
     key = "zh_Hant_comicabc"
-    version = "1.0.0"
+    version = "1.0.1"
     minAppVersion = "1.6.0"
 
     static baseUrl = "https://www.8comic.com"
