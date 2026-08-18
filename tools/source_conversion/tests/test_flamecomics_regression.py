@@ -83,11 +83,18 @@ class TestFlamecomicsRegression(unittest.TestCase):
     def test_chapters(self):
         self.assertIn('series', self.patch_code)
         self.assertIn('chapter', self.patch_code)
+        # Ensure it returns an object mapping { epId: name } and not an array of Chapter objects
+        self.assertIn('chapters[epId] = name', self.patch_code)
+        self.assertNotIn('new Chapter({', self.patch_code)
 
     def test_pages(self):
         self.assertIn('images', self.patch_code)
         self.assertIn('cdn.flamecomics.xyz', self.patch_code)
         self.assertIn('release_date', self.patch_code)
+        # Ensure image normalization handles numeric-keyed dictionaries
+        self.assertIn('Array.isArray(chapter.images)', self.patch_code)
+        self.assertIn('Object.keys(chapter.images).sort', self.patch_code)
+        self.assertNotIn('let images = chapter.images.map', self.patch_code)
 
     def test_malformed_payloads(self):
         self.assertIn('if (res.status !== 200)', self.patch_code)

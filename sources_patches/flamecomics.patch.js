@@ -131,18 +131,16 @@
         // Cache the series data for Details
         this._seriesDataCache[seriesID] = json.pageProps.series;
 
-        let chapters = json.pageProps.chapters.map(ch => {
+        let chapters = {};
+        json.pageProps.chapters.forEach(ch => {
             let chNumStr = ch.chapter.toString();
             if (chNumStr.endsWith(".0")) chNumStr = chNumStr.slice(0, -2);
             let name = `Chapter ${chNumStr}`;
             if (ch.title && ch.title.trim() !== "") {
                 name += ` - ${ch.title}`;
             }
-            return new Chapter({
-                id: `/series/${ch.series_id}/${ch.token}`,
-                title: name,
-                url: `/series/${ch.series_id}/${ch.token}`
-            });
+            let epId = `/series/${ch.series_id}/${ch.token}`;
+            chapters[epId] = name;
         });
 
         return chapters;
@@ -200,7 +198,11 @@
         let json = await this.fetchNextApi(`series/${seriesID}/${token}.json?id=${seriesID}&token=${token}`);
         let chapter = json.pageProps.chapter;
 
-        let images = chapter.images.map(img => {
+        let imageArray = Array.isArray(chapter.images)
+            ? chapter.images
+            : Object.keys(chapter.images).sort((a, b) => parseInt(a) - parseInt(b)).map(k => chapter.images[k]);
+
+        let images = imageArray.map(img => {
             return `https://cdn.flamecomics.xyz/uploads/images/series/${chapter.series_id}/${chapter.token}/${img.name}?${chapter.release_date}`;
         });
 
