@@ -221,30 +221,33 @@ def _extract_chapters(content: str, method_name: str) -> Dict[str, Any]:
     }
 
 def _extract_pages(content: str, method_name: str) -> Dict[str, Any]:
+    has_image_request = "override fun imageRequest" in content
+
     body = kotlin_parser.extract_method_body(content, method_name)
     if not body:
-        return {"manualPatchRequired": True}
+        return {"manualPatchRequired": True, "imageLoadPatchRequired": has_image_request}
 
     if _has_unsupported_logic(body):
-        return {"manualPatchRequired": True}
+        return {"manualPatchRequired": True, "imageLoadPatchRequired": has_image_request}
 
     # return document.select("div.comic-content > img").mapIndexed { index, it -> Page(..., imageUrl = it.attr("src")) }
     sel_match = re.search(r'document\.select\("([^"]+)"\)', body)
     if not sel_match:
-        return {"manualPatchRequired": True}
+        return {"manualPatchRequired": True, "imageLoadPatchRequired": has_image_request}
 
     attr_match = re.search(r'imageUrl\s*=\s*(?:it|element)\.attr\("([^"]+)"\)', body)
     if not attr_match:
-        return {"manualPatchRequired": True}
+        return {"manualPatchRequired": True, "imageLoadPatchRequired": has_image_request}
 
     return {
         "url": "{{chapterUrl}}",
         "method": "GET",
         "selector": sel_match.group(1),
         "fields": {
-            "imageUrl": f"@{attr_match.group(1)}"
+            "imageUrl": "@" + attr_match.group(1)
         },
-        "manualPatchRequired": False
+        "manualPatchRequired": False,
+        "imageLoadPatchRequired": has_image_request
     }
 
 def extract(kt_path: str, gradle_meta: Dict[str, Any], timestamp: str, raw_lang: str, language_override: Optional[str] = None) -> Dict[str, Any]:
@@ -305,6 +308,8 @@ def extract(kt_path: str, gradle_meta: Dict[str, Any], timestamp: str, raw_lang:
                 search_data["url"] = search_url
                 search_data["method"] = "GET"
                 search = search_data
+            else:
+                search = {"manualPatchRequired": True}
 
         details = _extract_details(content, "fetchMangaUpdate")
         chapters = _extract_chapters(content, "fetchMangaUpdate")
@@ -338,6 +343,8 @@ def extract(kt_path: str, gradle_meta: Dict[str, Any], timestamp: str, raw_lang:
                 search_data["url"] = search_url
                 search_data["method"] = "GET"
                 search = search_data
+            else:
+                search = {"manualPatchRequired": True}
 
         details = _extract_details(content, "mangaDetailsParse")
         chapters = _extract_chapters(content, "chapterListParse")

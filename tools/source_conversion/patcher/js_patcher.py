@@ -28,8 +28,15 @@ def patch_js(base_content: str, patch_content: str) -> str:
 
     suffix = remainder[last_brace_idx:]
 
-    # Clean patch content
-    patch_clean = patch_content.rstrip() + "\n"
+    # Clean patch content: ensure blank lines have no trailing whitespace
+    cleaned_lines = []
+    for line in patch_content.split('\n'):
+        if not line.strip():
+            cleaned_lines.append("")
+        else:
+            cleaned_lines.append(line)
+
+    patch_clean = "\n".join(cleaned_lines).rstrip() + "\n"
 
     composed = prefix + patch_clean + suffix
     return composed

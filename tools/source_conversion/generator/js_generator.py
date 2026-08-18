@@ -240,9 +240,20 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
         search_pagination_js = ""
         search_max_page_expr = "100"
 
-    if search_fail_closed:
+    if search_manual:
+        search_body = "            return await this.loadSearchCustom(keyword, options, page);"
+        search_custom_hook = """
+    /**
+     * Placeholder hook to be overridden by manual patch layer for Search.
+     */
+    loadSearchCustom = async (keyword, options, page) => {
+        throw new Error("MANUAL PATCH REQUIRED: loadSearchCustom must be implemented in patch layer.");
+    }"""
+    elif search_fail_closed:
         search_body = f"            {search_fail_closed}"
+        search_custom_hook = ""
     else:
+        search_custom_hook = ""
         search_body = f"""            let url = {search_url_expr};
             let res = await Network.get(url, {class_name}.headers);
             if (res.status !== 200) {{
@@ -324,13 +335,57 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     pages_fields = pages_dict.get("fields", {})
     pages_img_attr = pages_fields.get("imageUrl", "@data-url").lstrip("@")
     pages_manual = pages_dict.get("manualPatchRequired", False)
+    pages_image_load_patch_required = pages_dict.get("imageLoadPatchRequired", False)
+
+    pages_manual_only = pages_manual and not pages_dict.get("selector") and not pages_dict.get("url")
+
+    if pages_image_load_patch_required:
+        image_load_body = f"""        onImageLoad: (url, comicId, epId) => {{
+            if (this.onImageLoadCustom) {{
+                return this.onImageLoadCustom(url, comicId, epId);
+            }}
+            return {{
+                url: url,
+                headers: {{
+                    ...{class_name}.headers,
+                    "Referer": `${{{base_url_ref}}}/`,
+                }},
+            }};
+        }},"""
+        image_load_hook = """
+    /**
+     * Placeholder hook to be overridden by manual patch layer for Image Load.
+     */
+    onImageLoadCustom = (url, comicId, epId) => {
+        throw new Error("MANUAL PATCH REQUIRED: onImageLoadCustom must be implemented in patch layer.");
+    }"""
+    else:
+        image_load_body = f"""        onImageLoad: (url, comicId, epId) => ({{
+            url: url,
+            headers: {{
+                ...{class_name}.headers,
+                "Referer": `${{{base_url_ref}}}/`,
+            }},
+        }}),"""
+        image_load_hook = ""
 
     # pages has a patch boundary: parsePagesCustom
     pages_fail_closed = enforce_fail_closed(pages_manual, "comic loadEp", True)
 
-    if pages_fail_closed:
+    if pages_manual_only:
+        pages_body = f"            return await this.loadEpCustom(comicId, epId);"
+        pages_custom_hook = """
+    /**
+     * Placeholder hook to be overridden by manual patch layer for Pages.
+     */
+    loadEpCustom = async (comicId, epId) => {
+        throw new Error("MANUAL PATCH REQUIRED: loadEpCustom must be implemented in patch layer.");
+    }"""
+    elif pages_fail_closed:
         pages_body = f"            {pages_fail_closed}"
+        pages_custom_hook = ""
     else:
+        pages_custom_hook = ""
         pages_body = f"""            let url = epId.startsWith("http") ? epId : `${{{base_url_ref}}}${{epId}}`;
             let res = await Network.get(url, {class_name}.headers);
             if (res.status !== 200) {{
@@ -401,7 +456,7 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
         else:
             chapters_body = f"""    /**
      * [MANUAL PATCH HOOK] Load and parse chapters
-     * Upstream Webtoons uses mobile JSON API: {chapters_url}
+     * Upstream Webtoons uses mobile JSON API:{' ' + chapters_url if chapters_url else ''}
      * Manual patch is required for episode title parsing, season numbering, and offsets.
      */
     loadChapters = async (comicUrl) => {{
@@ -480,13 +535,7 @@ class {class_name} extends ComicSource {{
 {pages_body}
         }},
 
-        onImageLoad: (url, comicId, epId) => ({{
-            url: url,
-            headers: {{
-                ...{class_name}.headers,
-                "Referer": `${{{base_url_ref}}}/`,
-            }},
-        }}),
+{image_load_body}
 
         onThumbnailLoad: (url) => ({{
             url: url,
@@ -510,7 +559,7 @@ class {class_name} extends ComicSource {{
         throw new Error('MANUAL PATCH REQUIRED: parseDetailsCustom must be implemented in patch layer.');
     }}
 ''' if details_manual else ""}
-{parse_chapters_custom}
+{search_custom_hook}{parse_chapters_custom}{pages_custom_hook}{image_load_hook}
 
     /**
      * Placeholder hook for special page variants (e.g. MotionToon).

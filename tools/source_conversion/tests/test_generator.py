@@ -85,7 +85,7 @@ class TestGenerator(unittest.TestCase):
         ir = self.get_base_ir()
         ir["search"]["manualPatchRequired"] = True
         js = generate_venera_js(ir)
-        self.assertIn('throw new Error("MANUAL PATCH REQUIRED: search load must be implemented in patch layer.");', js)
+        self.assertIn('throw new Error("MANUAL PATCH REQUIRED: loadSearchCustom must be implemented in patch layer.");', js)
 
     def test_fail_closed_details(self):
         ir = self.get_base_ir()
@@ -177,6 +177,22 @@ class TestGenerator(unittest.TestCase):
             ir["id"] = input_id
             js = generate_venera_js(ir)
             self.assertIn(f'key = "{expected_key}"', js)
+
+    def test_image_load_custom_false(self):
+        ir = self.get_base_ir()
+        ir["pages"]["imageLoadPatchRequired"] = False
+        js = generate_venera_js(ir)
+        self.assertIn("onImageLoad: (url, comicId, epId) => ({", js)
+        self.assertNotIn("onImageLoadCustom(url, comicId, epId)", js)
+
+    def test_image_load_custom_true(self):
+        ir = self.get_base_ir()
+        ir["pages"]["imageLoadPatchRequired"] = True
+        js = generate_venera_js(ir)
+        self.assertIn("return this.onImageLoadCustom(url, comicId, epId);", js)
+        self.assertIn('throw new Error("MANUAL PATCH REQUIRED: onImageLoadCustom must be implemented in patch layer.");', js)
+        # Should not have duplicate definitions
+        self.assertEqual(js.count("onImageLoad: (url, comicId, epId)"), 1)
 
 if __name__ == "__main__":
     unittest.main()

@@ -213,5 +213,11 @@
         "fileName": "manhuashe.js",
         "key": "zh_Hans_manhuashe",
         "version": "1.0.0"
+    },
+    {
+        "name": "無限動漫",
+        "fileName": "comicabc.js",
+        "key": "zh_Hant_comicabc",
+        "version": "1.0.0"
     }
 ]

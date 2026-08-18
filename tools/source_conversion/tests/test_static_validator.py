@@ -116,5 +116,64 @@ class TestStaticValidator(unittest.TestCase):
         # Verify APIs don't fail validation, they just warn
         self.assertTrue(validate_js_file(path))
 
+    # --- Lexical Scanner Recovery Tests ---
+
+    def test_lexical_executable_document_location_fails(self):
+        content = 'const x = document.location.href;'
+        path = self.write_temp_file(content)
+        self.assertFalse(validate_js_file(path))
+
+    def test_lexical_masked_document_location_passes(self):
+        content = '''
+        const a = "document.location";
+        const b = /document\.location/g;
+        // document.location
+        /* document.location */
+        '''
+        path = self.write_temp_file(content)
+        self.assertTrue(validate_js_file(path))
+
+    def test_lexical_template_raw_text_passes(self):
+        content = 'const a = `The value of document.location is hidden`;'
+        path = self.write_temp_file(content)
+        self.assertTrue(validate_js_file(path))
+
+    def test_lexical_template_interpolation_fails(self):
+        content = 'const a = `The value is ${document.location}`;'
+        path = self.write_temp_file(content)
+        self.assertFalse(validate_js_file(path))
+
+    def test_lexical_division_vs_regex(self):
+        content = '''
+        const a = 5 / 2;
+        const b = /document\.location/g;
+        '''
+        path = self.write_temp_file(content)
+        self.assertTrue(validate_js_file(path))
+
+    def test_lexical_structural_brace_balance_fails(self):
+        content_extra = 'class A { load() { } } }'
+        path1 = self.write_temp_file(content_extra)
+        self.assertFalse(validate_js_file(path1))
+
+        content_missing = 'class A { load() { '
+        path2 = self.write_temp_file(content_missing)
+        self.assertFalse(validate_js_file(path2))
+
+    def test_lexical_braces_inside_masked_regions(self):
+        content = '''
+        class A {
+            load() {
+                const a = "}";
+                const b = /{/;
+                // }
+                /* { */
+                const c = `${ { x: 1 }.x }`;
+            }
+        }
+        '''
+        path = self.write_temp_file(content)
+        self.assertTrue(validate_js_file(path))
+
 if __name__ == "__main__":
     unittest.main()
