@@ -64,6 +64,7 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     upstream_version = prov.get("upstreamVersion", "1.0.0")
     upstream_license = prov.get("upstreamLicense", "Apache-2.0")
     converter_ver = prov.get("converterVersion", "0.1.0")
+    source_version = ir_data.get("version", "1.0.0")
 
     # Mirror Support (v0.2)
     mirrors = ir_data.get("mirrors", [])
@@ -515,7 +516,7 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
 class {class_name} extends ComicSource {{
     name = "{name}"
     key = "{sanitized_key}"
-    version = "1.0.0"
+    version = "{source_version}"
     minAppVersion = "1.6.0"{base_url_getter}
     static mobileUrl = "{mobile_url}"
 

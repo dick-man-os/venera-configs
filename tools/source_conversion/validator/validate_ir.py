@@ -55,6 +55,7 @@ def validate_ir_data(data: Any) -> List[str]:
 
     # Check unknown top-level fields
     known_fields = set(required_fields) | {
+        "version",
         "requiresAuth",
         "requiresWebView",
         "status",
@@ -68,6 +69,14 @@ def validate_ir_data(data: Any) -> List[str]:
     for field in data:
         if field not in known_fields:
             errors.append(f"Unknown top-level property: '{field}'")
+
+    # version
+    if "version" in data:
+        v = data["version"]
+        if not isinstance(v, str) or not re.match(r"^[0-9]+\.[0-9]+\.[0-9]+$", v):
+            errors.append(
+                f"Field 'version' must be a semantic version string (e.g., '1.0.0') (got: {repr(v)})"
+            )
 
     # schemaVersion
     if "schemaVersion" in data:
