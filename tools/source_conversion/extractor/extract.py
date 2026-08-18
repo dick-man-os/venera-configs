@@ -118,6 +118,10 @@ def main() -> int:
             print("[*] Dispatching to Comicabc adapter...")
             from source_adapters import comicabc
             ir_data = comicabc.extract(extensions_root, timestamp=args.timestamp)
+        elif source_path == "en/flamecomics":
+            print("[*] Dispatching to Flame Comics adapter...")
+            from source_adapters import flamecomics
+            ir_data = flamecomics.extract(extensions_root, timestamp=args.timestamp)
         else:
             print("[*] Using generic extraction pathway...")
             ir_data = extract_generic(extensions_root, source_path, timestamp=args.timestamp, language_override=args.language_override)

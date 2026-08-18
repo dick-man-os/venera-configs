@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "0.2",
+  "id": "en_flamecomics",
+  "name": "Flame Comics",
+  "languages": [
+    "en"
+  ],
+  "contentOrigins": [
+    "KR",
+    "JP",
+    "CN"
+  ],
+  "contentWarning": "SAFE",
+  "sourceType": "api",
+  "baseUrl": "https://flamecomics.xyz",
+  "explore": {
+    "popular": {
+      "manualPatchRequired": true
+    },
+    "latest": {
+      "manualPatchRequired": true
+    }
+  },
+  "search": {
+    "manualPatchRequired": true
+  },
+  "details": {
+    "manualPatchRequired": true
+  },
+  "chapters": {
+    "manualPatchRequired": true
+  },
+  "pages": {
+    "manualPatchRequired": true
+  },
+  "provenance": {
+    "type": "converted",
+    "upstreamProject": "keiyoushi",
+    "upstreamPackage": "eu.kanade.tachiyomi.extension.en.flamecomics",
+    "upstreamSourceId": "8531542650987673943",
+    "upstreamCommit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+    "upstreamVersion": "1.4.50",
+    "upstreamLicense": "Apache-2.0",
+    "converterVersion": "0.1.0",
+    "generatedTimestamp": "2026-08-18T13:17:28Z"
+  }
+}
