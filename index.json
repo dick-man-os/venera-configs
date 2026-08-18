@@ -219,5 +219,11 @@
         "fileName": "comicabc.js",
         "key": "zh_Hant_comicabc",
         "version": "1.0.0"
+    },
+    {
+        "name": "Flame Comics",
+        "fileName": "flamecomics.js",
+        "key": "en_flamecomics",
+        "version": "1.0.0"
     }
 ]
