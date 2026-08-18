@@ -232,7 +232,7 @@ class EnFlamecomicsSource extends ComicSource {
 
     parseChaptersCustom = async (comicUrl) => {
         let parts = comicUrl.split('/').filter(p => p.length > 0);
-        let seriesID = parts[parts.length - 1]; 
+        let seriesID = parts[parts.length - 1];
 
         let json = await this.fetchNextApi(`series/${seriesID}.json?id=${seriesID}`);
 
@@ -271,7 +271,7 @@ class EnFlamecomicsSource extends ComicSource {
             comicDetails.cover = `https://cdn.flamecomics.xyz/uploads/images/series/${seriesData.series_id}/${seriesData.cover}?${seriesData.last_edit}#thumbnail`;
 
             let desc = seriesData.description || "";
-            desc = desc.replace(/<[^>]*>?/gm, ''); 
+            desc = desc.replace(/<[^>]*>?/gm, '');
 
             let altNames = (seriesData.altTitles || []).map(a => a.trim()).filter(a => a.length > 0);
             if (altNames.length > 0) {
