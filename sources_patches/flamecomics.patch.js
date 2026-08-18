@@ -122,6 +122,10 @@
 
     _seriesDataCache = {};
 
+    loadChapters = async (comicUrl) => {
+        return this.parseChaptersCustom(comicUrl);
+    }
+
     parseChaptersCustom = async (comicUrl) => {
         let parts = comicUrl.split('/').filter(p => p.length > 0);
         let seriesID = parts[parts.length - 1];

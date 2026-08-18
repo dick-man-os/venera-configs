@@ -14,7 +14,7 @@
 class EnFlamecomicsSource extends ComicSource {
     name = "Flame Comics"
     key = "en_flamecomics"
-    version = "1.0.0"
+    version = "1.0.1"
     minAppVersion = "1.6.0"
 
     static baseUrl = "https://flamecomics.xyz"
@@ -229,6 +229,10 @@ class EnFlamecomicsSource extends ComicSource {
     }
 
     _seriesDataCache = {};
+
+    loadChapters = async (comicUrl) => {
+        return this.parseChaptersCustom(comicUrl);
+    }
 
     parseChaptersCustom = async (comicUrl) => {
         let parts = comicUrl.split('/').filter(p => p.length > 0);

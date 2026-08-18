@@ -181,7 +181,7 @@
         "fileName": "hot_manga.js",
         "key": "hot_manga",
         "version": "1.0.0"
-	},
+    },
     {
         "name": "Kavita",
         "fileName": "kavita.js",
@@ -224,6 +224,6 @@
         "name": "Flame Comics",
         "fileName": "flamecomics.js",
         "key": "en_flamecomics",
-        "version": "1.0.0"
+        "version": "1.0.1"
     }
 ]
