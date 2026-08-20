@@ -1,5 +1,8 @@
+import json
 import os
 import re
+import shutil
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -8,6 +11,8 @@ repo_root = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(repo_root))
 
 from tools.source_conversion.test_ladder import run_ladder, LadderConfig
+from tools.source_conversion.generator.js_generator import generate_venera_js
+from tools.source_conversion.patcher.js_patcher import patch_js
 from tools.source_conversion.validator.static_js_validator import validate_js_file
 
 
@@ -16,6 +21,8 @@ class TestComicabcRegression(unittest.TestCase):
         self.patch_path = repo_root / "sources_patches" / "comicabc.patch.js"
         self.final_js_path = repo_root / "comicabc.js"
         self.base_js_path = repo_root / "sources_generated" / "comicabc.base.js"
+        self.ir_path = repo_root / "sources_ir" / "comicabc.json"
+        self.index_path = repo_root / "index.json"
         self.venerax_test_path = repo_root.parent / "VeneraX" / "test" / "comicabc_runtime_validation_test.dart"
 
         with open(self.patch_path, "r", encoding="utf-8") as f:
@@ -23,6 +30,9 @@ class TestComicabcRegression(unittest.TestCase):
 
         with open(self.final_js_path, "r", encoding="utf-8") as f:
             self.final_code = f.read()
+
+        with open(self.base_js_path, "r", encoding="utf-8") as f:
+            self.base_code = f.read()
 
     def test_comicabc_ladder_regression(self):
         """Test that Comicabc passes L0-L5 ladder stages."""
@@ -64,6 +74,89 @@ class TestComicabcRegression(unittest.TestCase):
         # Ensure parseChaptersCustom exists in patch and final JS
         self.assertIn("parseChaptersCustom", self.patch_code)
         self.assertIn("parseChaptersCustom", self.final_code)
+
+    def test_bounded_episode_parser_exact_urls(self):
+        """Execute the final bounded parser on a representative scrambled chapter record."""
+        self.assertIn("parseEpisodeImagesCustom", self.patch_code)
+        self.assertNotRegex(self.patch_code, r"\bnew\s+Function\b|\beval\s*\(")
+
+        alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+        def encode_record_value(value):
+            return alphabet[value // 52] + alphabet[value % 52]
+
+        def make_record(chapter, pages, tokens, server_and_path, part="0"):
+            self.assertEqual(len(tokens), 40)
+            return (
+                encode_record_value(chapter)
+                + encode_record_value(pages)
+                + tokens
+                + encode_record_value(server_and_path)
+                + part
+            )
+
+        table = "".join(
+            [
+                make_record(1, 1, "x" * 40, 61),
+                make_record(110, 4, "aaabbbcccddd" + "x" * 28, 93),
+                make_record(111, 1, "y" * 40, 82),
+            ]
+        )
+        html = f"""<script>
+var ch=request('ch');var part='';var ps=0;var ti=999;var table='{table}';
+for (var i=0;i<3;i++){{var chapter=lc(cut(table,i*(46+1)+0,2));var pages=lc(cut(table,i*(46+1)+2,2));var tokens=lc(cut(table,i*(46+1)+4));var host=lc(cut(table,i*(46+1)+44,2));var partCode=lc(cut(table,i*(46+1)+46,1));ps=pages;if(chapter==ch &&(part==''||part==partCode)){{break;}}}}
+ge('comic').src=unescape(slashes+cut(host,0,1)+cut(tokens,mm(pg),3));
+</script>"""
+        expected = [
+            "https://img9.8comic.com/3/999/110/001_aaa.jpg",
+            "https://img9.8comic.com/3/999/110/002_bbb.jpg",
+            "https://img9.8comic.com/3/999/110/003_ccc.jpg",
+            "https://img9.8comic.com/3/999/110/004_ddd.jpg",
+        ]
+
+        node = os.environ.get("COMICABC_NODE") or shutil.which("node")
+        if not node:
+            self.skipTest("Node.js is required for the Comicabc parser execution regression")
+        harness = r"""
+const fs = require("fs");
+const vm = require("vm");
+const input = JSON.parse(fs.readFileSync(0, "utf8"));
+globalThis.ComicSource = class ComicSource {};
+const sourcePath = process.argv[1];
+const code = fs.readFileSync(sourcePath, "utf8") +
+    "\n;globalThis.__ComicabcSource = ZhhantComicabcSource;";
+vm.runInThisContext(code, { filename: sourcePath });
+const source = new globalThis.__ComicabcSource();
+process.stdout.write(JSON.stringify(source.parseEpisodeImagesCustom(input.html, input.url)));
+"""
+        result = subprocess.run(
+            [node, "-e", harness, str(self.final_js_path)],
+            input=json.dumps(
+                {"html": html, "url": "https://www.8comic.com/view/999.html?ch=110"}
+            ),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout), expected)
+
+    def test_canonical_artifacts_and_version_consistency(self):
+        """Verify authoritative IR, generated base, final composition, and index agree."""
+        with open(self.ir_path, "r", encoding="utf-8") as f:
+            ir = json.load(f)
+        with open(self.index_path, "r", encoding="utf-8") as f:
+            index = json.load(f)
+
+        self.assertEqual(ir["version"], "1.0.3")
+        self.assertEqual(generate_venera_js(ir), self.base_code)
+        self.assertEqual(patch_js(self.base_code, self.patch_code), self.final_code)
+        self.assertIn('version = "1.0.3"', self.base_code)
+        self.assertIn('version = "1.0.3"', self.final_code)
+
+        entries = [entry for entry in index if entry.get("key") == "zh_Hant_comicabc"]
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0]["version"], "1.0.3")
 
     def test_absolute_cover_normalization(self):
         """Verify cover URLs are normalized to absolute URLs using baseUrl without double-prefixing."""

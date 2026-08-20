@@ -14,7 +14,7 @@
 class ZhhantComicabcSource extends ComicSource {
     name = "Comicabc"
     key = "zh_Hant_comicabc"
-    version = "1.0.2"
+    version = "1.0.3"
     minAppVersion = "1.6.0"
 
     static baseUrl = "https://www.8comic.com"
@@ -286,6 +286,153 @@ class ZhhantComicabcSource extends ComicSource {
         return chaptersObj;
     }
 
+    parseEpisodeImagesCustom = (html, url) => {
+        let scriptRegex = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
+        let scriptMatch;
+        let script = "";
+        while ((scriptMatch = scriptRegex.exec(html)) !== null) {
+            if (scriptMatch[1].includes("var ch=request")) {
+                script = scriptMatch[1];
+                break;
+            }
+        }
+        if (!script) {
+            throw new Error("Cannot find Comicabc image-data script (var ch=request)");
+        }
+
+        let comicMatch = script.match(/\bvar\s+ti\s*=\s*(\d+)\s*;/);
+        let loopMatch = script.match(/for\s*\(\s*var\s+i\s*=\s*0\s*;\s*i\s*<\s*(\d+)\s*;\s*i\+\+\s*\)\s*\{([\s\S]*?)\bps\s*=\s*([A-Za-z_$][\w$]*)\s*;\s*if\s*\(\s*([A-Za-z_$][\w$]*)\s*==\s*ch\s*&&\s*\(\s*part\s*==\s*(?:''|"")\s*\|\|\s*part\s*==\s*([A-Za-z_$][\w$]*)\s*\)\s*\)/);
+        if (!comicMatch || !loopMatch) {
+            throw new Error("Cannot find Comicabc chapter-table metadata");
+        }
+
+        let recordCount = parseInt(loopMatch[1], 10);
+        let loopPrefix = loopMatch[2];
+        let pageCountVariable = loopMatch[3];
+        let chapterVariable = loopMatch[4];
+        let partVariable = loopMatch[5];
+        let comicId = comicMatch[1];
+
+        let assignmentRegex = /\bvar\s+([A-Za-z_$][\w$]*)\s*=\s*lc\s*\(\s*([A-Za-z_$][\w$]*)\s*\(\s*([A-Za-z_$][\w$]*)\s*,\s*i\s*\*\s*\([^)]*\)\s*\+\s*(\d+)(?:\s*,\s*(\d+))?\s*\)\s*\)\s*;/g;
+        let assignments = [];
+        let assignmentMatch;
+        let substringFunction = "";
+        let tableVariable = "";
+        while ((assignmentMatch = assignmentRegex.exec(loopPrefix)) !== null) {
+            if ((substringFunction && substringFunction !== assignmentMatch[2]) ||
+                (tableVariable && tableVariable !== assignmentMatch[3])) {
+                throw new Error("Inconsistent Comicabc chapter-table access");
+            }
+            substringFunction = assignmentMatch[2];
+            tableVariable = assignmentMatch[3];
+            assignments.push({
+                name: assignmentMatch[1],
+                offset: parseInt(assignmentMatch[4], 10),
+            });
+        }
+
+        let srcMatch = script.match(/\.src\s*=\s*(unescape\([\s\S]*?\))\s*;/);
+        if (!srcMatch || assignments.length !== 5) {
+            throw new Error("Cannot determine Comicabc chapter-record layout");
+        }
+        let serverMatch = srcMatch[1].match(/\b([A-Za-z_$][\w$]*)\s*\(\s*([A-Za-z_$][\w$]*)\s*,\s*0\s*,\s*1\s*\)/);
+        let tokenMatch = srcMatch[1].match(/\b([A-Za-z_$][\w$]*)\s*\(\s*([A-Za-z_$][\w$]*)\s*,\s*mm\s*\(\s*pg\s*\)\s*,\s*3\s*\)/);
+        if (!serverMatch || !tokenMatch ||
+            serverMatch[1] !== substringFunction || tokenMatch[1] !== substringFunction) {
+            throw new Error("Cannot determine Comicabc image URL fields");
+        }
+        let serverVariable = serverMatch[2];
+        let tokenVariable = tokenMatch[2];
+
+        let fieldFor = (name) => {
+            for (let assignment of assignments) {
+                if (assignment.name === name) return assignment;
+            }
+            return null;
+        };
+        let roleNames = [serverVariable, tokenVariable, chapterVariable, pageCountVariable, partVariable];
+        for (let roleIndex = 0; roleIndex < roleNames.length; roleIndex++) {
+            if (!fieldFor(roleNames[roleIndex]) || roleNames.indexOf(roleNames[roleIndex]) !== roleIndex) {
+                throw new Error("Ambiguous Comicabc chapter-record layout");
+            }
+        }
+
+        let serverField = fieldFor(serverVariable);
+        let tokenField = fieldFor(tokenVariable);
+        let chapterField = fieldFor(chapterVariable);
+        let pageCountField = fieldFor(pageCountVariable);
+        let partField = fieldFor(partVariable);
+        let recordWidth = partField.offset + 1;
+
+        let tableAssignmentRegex = /\bvar\s+([A-Za-z_$][\w$]*)\s*=\s*(['"])([\s\S]*?)\2\s*;/g;
+        let tableAssignmentMatch;
+        let table = "";
+        while ((tableAssignmentMatch = tableAssignmentRegex.exec(script)) !== null) {
+            if (tableAssignmentMatch[1] === tableVariable) {
+                table = tableAssignmentMatch[3];
+                break;
+            }
+        }
+        if (!table || table.length < recordCount * recordWidth) {
+            throw new Error("Cannot find complete Comicabc chapter table");
+        }
+
+        let chapterParamMatch = url.match(/[?&]ch=([^&#]*)/);
+        let chapterAndPage = chapterParamMatch ? chapterParamMatch[1].split("-")[0] : "1";
+        chapterAndPage = chapterAndPage || "1";
+        let partMatch = chapterAndPage.match(/[a-z]$/);
+        let requestedPart = partMatch ? partMatch[0] : "";
+        let targetChapter = parseInt(requestedPart ? chapterAndPage.slice(0, -1) : chapterAndPage, 10);
+        if (isNaN(targetChapter)) {
+            throw new Error(`Invalid Comicabc chapter id: ${chapterAndPage}`);
+        }
+
+        let alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let decodeRecordValue = (value) => {
+            if (value.length !== 2) return value;
+            if (value[0] === "Z") return 8000 + alphabet.indexOf(value[1]);
+            return alphabet.indexOf(value[0]) * 52 + alphabet.indexOf(value[1]);
+        };
+
+        let targetRecord = "";
+        for (let recordIndex = 0; recordIndex < recordCount; recordIndex++) {
+            let recordOffset = recordIndex * recordWidth;
+            let recordChapter = decodeRecordValue(table.substring(recordOffset + chapterField.offset, recordOffset + chapterField.offset + 2));
+            let recordPart = table.substring(recordOffset + partField.offset, recordOffset + partField.offset + 1);
+            if (recordChapter === targetChapter && (!requestedPart || recordPart === requestedPart)) {
+                targetRecord = table.substring(recordOffset, recordOffset + recordWidth);
+                break;
+            }
+        }
+        if (!targetRecord) {
+            throw new Error(`Comicabc chapter record not found: ${chapterAndPage}`);
+        }
+
+        let nextTokenOffset = recordWidth;
+        for (let assignment of assignments) {
+            if (assignment.offset > tokenField.offset && assignment.offset < nextTokenOffset) {
+                nextTokenOffset = assignment.offset;
+            }
+        }
+        let serverAndPath = String(decodeRecordValue(targetRecord.substring(serverField.offset, serverField.offset + 2)));
+        let pageTokens = targetRecord.substring(tokenField.offset, nextTokenOffset);
+        let recordChapter = decodeRecordValue(targetRecord.substring(chapterField.offset, chapterField.offset + 2));
+        let pageCount = decodeRecordValue(targetRecord.substring(pageCountField.offset, pageCountField.offset + 2));
+        let recordPart = targetRecord.substring(partField.offset, partField.offset + 1);
+        if (serverAndPath.length !== 2 || typeof pageCount !== "number" || pageTokens.length !== 40) {
+            throw new Error("Malformed Comicabc target chapter record");
+        }
+
+        let chapterPath = `${recordChapter}${recordPart === "0" ? "" : recordPart}`;
+        let images = [];
+        for (let page = 1; page <= pageCount; page++) {
+            let tokenOffset = (parseInt((page - 1) / 10) % 10) + (((page - 1) % 10) * 3);
+            let pageNumber = page < 10 ? `00${page}` : page < 100 ? `0${page}` : String(page);
+            images.push(`https://img${serverAndPath[0]}.8comic.com/${serverAndPath[1]}/${comicId}/${chapterPath}/${pageNumber}_${pageTokens.substring(tokenOffset, tokenOffset + 3)}.jpg`);
+        }
+        return images;
+    }
+
     loadEpCustom = async (comicId, epId) => {
         let url = epId.startsWith("http") ? epId : `${ZhhantComicabcSource.baseUrl}${epId}`;
         let pageListHeaders = {
@@ -296,67 +443,7 @@ class ZhhantComicabcSource extends ComicSource {
         if (res.status !== 200) {
             throw new Error(`Failed to load episode, status: ${res.status}`);
         }
-
-        let html = res.body;
-
-        let scriptRegex = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
-        let match;
-        let targetScriptContent = "";
-        while ((match = scriptRegex.exec(html)) !== null) {
-            if (match[1].includes("var ch=request")) {
-                targetScriptContent = match[1];
-                break;
-            }
-        }
-
-        if (!targetScriptContent) {
-            throw new Error("无法找到包含图片数据的脚本 (var ch=request)");
-        }
-
-        let scriptContent = targetScriptContent
-            .replace(/document\.location/g, `'${url}'`);
-
-        let srcMatch = scriptContent.match(/\.src\s*=\s*(unescape\(.*?\));/);
-        let urlCreationLogic = "";
-
-        scriptContent = scriptContent.split('spp();')[0];
-
-        if (srcMatch) {
-            urlCreationLogic = srcMatch[1].replace(/\bpg\b/g, 'p');
-            // Remove the actual .src assignment to prevent it from failing if ge is weird
-            scriptContent = scriptContent.replace(/\w+\([^)]+\)\.src\s*=\s*unescape\(.*?\);+/, "");
-        } else {
-            // Fallback for old spp() logic if they revert
-            let matchVar = scriptContent.match(/var\s+([a-zA-Z0-9_]+)\s*=\s*['"].*?\.jpg['"]\s*;/);
-            if (!matchVar) {
-                throw new Error("Cannot find dynamic url variable");
-            }
-            urlCreationLogic = "eval(" + matchVar[1] + ")";
-        }
-
-        let J_JS_FUNCTIONS = `
-function lc(l){if(l.length!=2)return l;var az="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";var a=l.substring(0,1);var b=l.substring(1,2);if(a=="Z")return 8000+az.indexOf(b);else return az.indexOf(a)*52+az.indexOf(b)}
-function su(a,b,c){var e=(a+'').substring(b,b+c);return(e);}
-function nn(n){return n<10?'00'+n:n<100?'0'+n:n;}
-function mm(p){return(parseInt((p-1)/10)%10)+(((p-1)%10)*3)}
-`;
-
-        let scriptToExecute = `
-var document = { getElementById: function() { return { style: {}, innerHTML: "", src: "" }; } };
-${J_JS_FUNCTIONS}
-${scriptContent}
-
-var urls = [];
-for (var p = 1; p <= ps; p++) {
-    var imgUrl = ${urlCreationLogic};
-    urls.push('https:' + imgUrl);
-}
-return urls;
-`;
-        let getUrls = new Function(scriptToExecute);
-        let images = getUrls();
-
-        return { images: images };
+        return { images: this.parseEpisodeImagesCustom(res.body, url) };
     }
 
     onImageLoadCustom = (url, comicId, epId) => {
