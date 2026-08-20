@@ -1,7 +1,7 @@
 {
   "schemaVersion": "0.2",
   "id": "zh-Hant_comicabc",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "name": "Comicabc",
   "languages": [
     "zh-Hant"
@@ -20,7 +20,7 @@
         "url": "@href",
         "thumbnail": "img@src"
       },
-      "manualPatchRequired": false,
+      "manualPatchRequired": true,
       "pagination": {
         "hasNextStrategy": "elementExists",
         "nextSelector": "div.pager a span.mdi-skip-next"
@@ -35,7 +35,7 @@
         "url": "@href",
         "thumbnail": "img@src"
       },
-      "manualPatchRequired": false,
+      "manualPatchRequired": true,
       "pagination": {
         "hasNextStrategy": "elementExists",
         "nextSelector": "div.pager a span.mdi-skip-next"

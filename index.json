@@ -206,7 +206,7 @@
         "name": "Webtoons",
         "fileName": "webtoons.js",
         "key": "en_webtoons",
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     {
         "name": "Manhuashe",
@@ -218,12 +218,12 @@
         "name": "無限動漫",
         "fileName": "comicabc.js",
         "key": "zh_Hant_comicabc",
-        "version": "1.0.1"
+        "version": "1.0.2"
     },
     {
         "name": "Flame Comics",
         "fileName": "flamecomics.js",
         "key": "en_flamecomics",
-        "version": "1.0.1"
+        "version": "1.0.2"
     }
 ]

@@ -14,7 +14,7 @@
 class EnFlamecomicsSource extends ComicSource {
     name = "Flame Comics"
     key = "en_flamecomics"
-    version = "1.0.1"
+    version = "1.0.2"
     minAppVersion = "1.6.0"
 
     static baseUrl = "https://flamecomics.xyz"
@@ -195,7 +195,13 @@ class EnFlamecomicsSource extends ComicSource {
         let json = await this.fetchNextApi(`browse.json`);
         let series = json.pageProps.series.filter(s => s.series_id != null);
 
-        let query = keyword.toLowerCase().replace(/[^a-z0-9 ]/g, "");
+        let query = keyword.toLowerCase().replace(/[^a-z0-9 ]/g, "").trim();
+        if (query === "") {
+            return {
+                comics: [],
+                maxPage: page
+            };
+        }
 
         let filtered = series.filter(s => {
             let titles = [s.title];

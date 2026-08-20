@@ -199,6 +199,7 @@ def extract_webtoons_ir(
             "thumbnail": ".detail_header .thmb img@src",
             "status": "#_asideDetail p.day_info",
         },
+        "manualPatchRequired": True,
     }
 
     # Chapters extraction (JSON endpoint)

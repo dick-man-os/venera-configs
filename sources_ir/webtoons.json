@@ -1,6 +1,7 @@
 {
   "schemaVersion": "0.1.0",
   "id": "en_webtoons",
+  "version": "1.0.1",
   "name": "Webtoons",
   "languages": [
     "en"
@@ -75,7 +76,8 @@
       "description": "#_asideDetail p.summary",
       "thumbnail": ".detail_header .thmb img@src",
       "status": "#_asideDetail p.day_info"
-    }
+    },
+    "manualPatchRequired": true
   },
   "chapters": {
     "url": "{{mobileUrl}}/api/v1/webtoon/{{titleId}}/episodes?pageSize=99999",
@@ -106,6 +108,6 @@
     "upstreamVersion": "1.4.57",
     "upstreamLicense": "Apache-2.0",
     "converterVersion": "0.1.0",
-    "generatedTimestamp": "2026-08-17T03:30:46Z"
+    "generatedTimestamp": "2026-08-19T08:02:43Z"
   }
 }

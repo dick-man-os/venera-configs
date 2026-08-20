@@ -145,6 +145,7 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
         js_url_expr = f"`{tab_url}`"
         js_url_expr = js_url_expr.replace("{{baseUrl}}", f"${{{base_url_ref}}}")
         js_url_expr = js_url_expr.replace("{{langCode}}", "en")
+        js_url_expr = js_url_expr.replace("{{page}}", "${page}")
         js_url_expr = js_url_expr.replace("{{day}}", "${day}")
 
         id_expr = parse_field_extractor("id", tab_fields.get("url", "@href"), "el")

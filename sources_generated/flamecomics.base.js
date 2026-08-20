@@ -14,7 +14,7 @@
 class EnFlamecomicsSource extends ComicSource {
     name = "Flame Comics"
     key = "en_flamecomics"
-    version = "1.0.1"
+    version = "1.0.2"
     minAppVersion = "1.6.0"
 
     static baseUrl = "https://flamecomics.xyz"

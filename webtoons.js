@@ -14,7 +14,7 @@
 class EnWebtoonsSource extends ComicSource {
     name = "Webtoons"
     key = "en_webtoons"
-    version = "1.0.0"
+    version = "1.0.1"
     minAppVersion = "1.6.0"
 
     static baseUrl = "https://www.webtoons.com"
@@ -122,11 +122,11 @@ class EnWebtoonsSource extends ComicSource {
             let author = authorEl ? authorEl.text : "";
             let description = descEl ? descEl.text : "";
             let cover = (doc.querySelector('.detail_header .thmb img') ? (doc.querySelector('.detail_header .thmb img').attributes['src'] || '') : '');
-            doc.dispose();
+
 
             let chapters = await this.loadChapters(id);
 
-            return new ComicDetails({
+            let comicDetails = new ComicDetails({
                 title: title,
                 subtitle: author,
                 subTitle: author,
@@ -135,6 +135,10 @@ class EnWebtoonsSource extends ComicSource {
                 tags: {},
                 chapters: chapters,
             });
+
+            comicDetails = this.parseDetailsCustom(comicDetails, doc);
+            doc.dispose();
+            return comicDetails;
         },
 
         loadEp: async (comicId, epId) => {
@@ -284,6 +288,23 @@ class EnWebtoonsSource extends ComicSource {
         }
 
         return chaptersMap;
+    }
+
+    /**
+     * Clean up contaminated author info
+     */
+    parseDetailsCustom = (comicDetails, htmlDoc) => {
+        if (comicDetails.subtitle) {
+            let clean = comicDetails.subtitle
+                .replace(/author info/gi, "")
+                .replace(/\.\.\./g, "")
+                .trim();
+            // preserve multiple genuine creators if they are separated by newlines or tabs
+            clean = clean.split(/[\n\t]+/).map(s => s.trim()).filter(s => s !== "").join(", ");
+            comicDetails.subtitle = clean;
+            comicDetails.subTitle = clean;
+        }
+        return comicDetails;
     }
 
     /**

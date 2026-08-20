@@ -14,7 +14,7 @@
 class EnWebtoonsSource extends ComicSource {
     name = "Webtoons"
     key = "en_webtoons"
-    version = "1.0.0"
+    version = "1.0.1"
     minAppVersion = "1.6.0"
 
     static baseUrl = "https://www.webtoons.com"
@@ -122,11 +122,11 @@ class EnWebtoonsSource extends ComicSource {
             let author = authorEl ? authorEl.text : "";
             let description = descEl ? descEl.text : "";
             let cover = (doc.querySelector('.detail_header .thmb img') ? (doc.querySelector('.detail_header .thmb img').attributes['src'] || '') : '');
-            doc.dispose();
+
 
             let chapters = await this.loadChapters(id);
 
-            return new ComicDetails({
+            let comicDetails = new ComicDetails({
                 title: title,
                 subtitle: author,
                 subTitle: author,
@@ -135,6 +135,10 @@ class EnWebtoonsSource extends ComicSource {
                 tags: {},
                 chapters: chapters,
             });
+
+            comicDetails = this.parseDetailsCustom(comicDetails, doc);
+            doc.dispose();
+            return comicDetails;
         },
 
         loadEp: async (comicId, epId) => {
@@ -184,6 +188,13 @@ class EnWebtoonsSource extends ComicSource {
      */
     loadChapters = async (comicUrl) => {
         return this.parseChaptersCustom(comicUrl);
+    }
+
+    /**
+     * Placeholder hook to be overridden by manual patch layer for Details.
+     */
+    parseDetailsCustom = (comicDetails, htmlDoc) => {
+        throw new Error('MANUAL PATCH REQUIRED: parseDetailsCustom must be implemented in patch layer.');
     }
 
     /**

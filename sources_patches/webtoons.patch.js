@@ -112,6 +112,23 @@
     }
 
     /**
+     * Clean up contaminated author info
+     */
+    parseDetailsCustom = (comicDetails, htmlDoc) => {
+        if (comicDetails.subtitle) {
+            let clean = comicDetails.subtitle
+                .replace(/author info/gi, "")
+                .replace(/\.\.\./g, "")
+                .trim();
+            // preserve multiple genuine creators if they are separated by newlines or tabs
+            clean = clean.split(/[\n\t]+/).map(s => s.trim()).filter(s => s !== "").join(", ");
+            comicDetails.subtitle = clean;
+            comicDetails.subTitle = clean;
+        }
+        return comicDetails;
+    }
+
+    /**
      * Custom page processing hook (preserves standard images by default)
      */
     parsePagesCustom = (images, htmlBody) => {

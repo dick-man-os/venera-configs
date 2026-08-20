@@ -14,7 +14,7 @@
 class ZhhantComicabcSource extends ComicSource {
     name = "Comicabc"
     key = "zh_Hant_comicabc"
-    version = "1.0.1"
+    version = "1.0.2"
     minAppVersion = "1.6.0"
 
     static baseUrl = "https://www.8comic.com"
@@ -30,44 +30,14 @@ class ZhhantComicabcSource extends ComicSource {
             title: "Popular",
             type: "multiPageComicList",
             load: async (page) => {
-                let res = await Network.get(`${ZhhantComicabcSource.baseUrl}/comic/h-{{page}}.html`, ZhhantComicabcSource.headers);
-                if (res.status !== 200) {
-                    throw new Error(`Failed to load popular comics, status: ${res.status}`);
-                }
-                let doc = new HtmlDocument(res.body);
-                let elements = doc.querySelectorAll(".container .row a.comicpic_col6");
-                let comics = elements.map(el => new Comic({
-                    id: (el.attributes['href'] || ''),
-                    title: (el.querySelector('li.nowraphide') ? el.querySelector('li.nowraphide').text : ''),
-                    cover: (el.querySelector('img') ? (el.querySelector('img').attributes['src'] || '') : ''),
-                }));
-                doc.dispose();
-                return {
-                    comics: comics,
-                    maxPage: 1,
-                };
+                return await this.loadPopularCustom(page);
             }
         },
         {
             title: "Latest",
             type: "multiPageComicList",
             load: async (page) => {
-                let res = await Network.get(`${ZhhantComicabcSource.baseUrl}/comic/u-{{page}}.html`, ZhhantComicabcSource.headers);
-                if (res.status !== 200) {
-                    throw new Error(`Failed to load latest comics, status: ${res.status}`);
-                }
-                let doc = new HtmlDocument(res.body);
-                let elements = doc.querySelectorAll(".container .row .cat2_list a");
-                let comics = elements.map(el => new Comic({
-                    id: (el.attributes['href'] || ''),
-                    title: (el.querySelector('li.nowraphide') ? el.querySelector('li.nowraphide').text : ''),
-                    cover: (el.querySelector('img') ? (el.querySelector('img').attributes['src'] || '') : ''),
-                }));
-                doc.dispose();
-                return {
-                    comics: comics,
-                    maxPage: 1,
-                };
+                return await this.loadLatestCustom(page);
             }
         }
     ]
@@ -162,6 +132,18 @@ class ZhhantComicabcSource extends ComicSource {
     }
 
 
+    /**
+     * Placeholder hook to be overridden by manual patch layer for Explore Popular.
+     */
+    loadPopularCustom = async (page) => {
+        throw new Error("MANUAL PATCH REQUIRED: loadPopularCustom must be implemented in patch layer.");
+    }
+    /**
+     * Placeholder hook to be overridden by manual patch layer for Explore Latest.
+     */
+    loadLatestCustom = async (page) => {
+        throw new Error("MANUAL PATCH REQUIRED: loadLatestCustom must be implemented in patch layer.");
+    }
     /**
      * Placeholder hook to be overridden by manual patch layer for Search.
      */
