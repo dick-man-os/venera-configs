@@ -14,7 +14,7 @@
 class ZhhansManhuasheSource extends ComicSource {
     name = "Manhuashe"
     key = "zh_Hans_manhuashe"
-    version = "1.0.0"
+    version = "1.0.1"
     minAppVersion = "1.6.0"
     get baseUrl() {
         let m = this.loadSetting('baseUrlSelection');
@@ -45,7 +45,7 @@ class ZhhansManhuasheSource extends ComicSource {
             title: "Popular",
             type: "multiPageComicList",
             load: async (page) => {
-                let res = await Network.get(`${this.baseUrl}/category/order/hits/page/{{page}}`, ZhhansManhuasheSource.headers);
+                let res = await Network.get(`${this.baseUrl}/category/order/hits/page/${page}`, ZhhansManhuasheSource.headers);
                 if (res.status !== 200) {
                     throw new Error(`Failed to load popular comics, status: ${res.status}`);
                 }
@@ -71,7 +71,7 @@ class ZhhansManhuasheSource extends ComicSource {
             title: "Latest",
             type: "multiPageComicList",
             load: async (page) => {
-                let res = await Network.get(`${this.baseUrl}/category/order/addtime/page/{{page}}`, ZhhansManhuasheSource.headers);
+                let res = await Network.get(`${this.baseUrl}/category/order/addtime/page/${page}`, ZhhansManhuasheSource.headers);
                 if (res.status !== 200) {
                     throw new Error(`Failed to load latest comics, status: ${res.status}`);
                 }

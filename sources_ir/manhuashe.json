@@ -2,6 +2,7 @@
   "schemaVersion": "0.2",
   "id": "zh-Hans_manhuashe",
   "name": "Manhuashe",
+  "version": "1.0.1",
   "languages": [
     "zh-Hans"
   ],
