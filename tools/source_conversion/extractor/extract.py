@@ -21,7 +21,13 @@ def resolve_source_dir(extensions_root: str, source_path: str) -> str:
         raise FileNotFoundError(f"Source directory not found: {path}")
     return path
 
-def extract_generic(extensions_root: str, source_path: str, timestamp: str = None, language_override: str = None) -> Dict[str, Any]:
+def extract_generic(
+    extensions_root: str,
+    source_path: str,
+    timestamp: str = None,
+    language_override: str = None,
+    source_id: str = None,
+) -> Dict[str, Any]:
     """Perform generic extraction on a source."""
     source_dir = resolve_source_dir(extensions_root, source_path)
     build_gradle_path = os.path.join(source_dir, "build.gradle.kts")
@@ -29,7 +35,9 @@ def extract_generic(extensions_root: str, source_path: str, timestamp: str = Non
     if not os.path.exists(build_gradle_path):
         raise FileNotFoundError(f"build.gradle.kts not found in {source_dir}")
 
-    gradle_meta = gradle_parser.parse_gradle_metadata(build_gradle_path)
+    gradle_meta = gradle_parser.parse_gradle_metadata(
+        build_gradle_path, extensions_root=extensions_root
+    )
 
     # Try to find the main Kotlin file. This is heuristic for the generic path
     # since we don't know the exact package. Usually it's in src/eu/kanade/tachiyomi/extension/...
@@ -56,7 +64,14 @@ def extract_generic(extensions_root: str, source_path: str, timestamp: str = Non
     import generic_html_extractor
 
     lang = source_path.split("/")[0] if "/" in source_path else "en"
-    ir_data = generic_html_extractor.extract(main_kt, gradle_meta, timestamp, lang, language_override)
+    ir_data = generic_html_extractor.extract(
+        main_kt,
+        gradle_meta,
+        timestamp,
+        lang,
+        language_override,
+        source_id=source_id,
+    )
 
     try:
         import subprocess
@@ -99,6 +114,11 @@ def main() -> int:
         default=None,
         help="Explicit semantic language override (e.g. zh-Hant)."
     )
+    parser.add_argument(
+        "--source-id",
+        default=None,
+        help="Explicit upstream source ID for selecting one of multiple source blocks.",
+    )
 
     args = parser.parse_args()
 
@@ -124,7 +144,13 @@ def main() -> int:
             ir_data = flamecomics.extract(extensions_root, timestamp=args.timestamp)
         else:
             print("[*] Using generic extraction pathway...")
-            ir_data = extract_generic(extensions_root, source_path, timestamp=args.timestamp, language_override=args.language_override)
+            ir_data = extract_generic(
+                extensions_root,
+                source_path,
+                timestamp=args.timestamp,
+                language_override=args.language_override,
+                source_id=args.source_id,
+            )
 
     except Exception as e:
         print(f"[!] Extraction failed: {e}", file=sys.stderr)

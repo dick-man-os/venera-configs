@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import sys
+import tempfile
 import unittest
 
 # Add extractor to path
@@ -8,7 +9,12 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 extractor_dir = os.path.join(os.path.dirname(current_dir), "extractor")
 sys.path.insert(0, extractor_dir)
 
-from generic_html_extractor import _extract_url_template, _extract_list_parser, _extract_chapters
+from generic_html_extractor import (
+    _extract_chapters,
+    _extract_list_parser,
+    _extract_url_template,
+    _select_gradle_source,
+)
 
 class TestExtractor(unittest.TestCase):
     def test_extract_url_template(self):
@@ -120,6 +126,75 @@ fun getPageList(): String {
         from generic_html_extractor import _map_language
         self.assertEqual(_map_language("zh"), ["zh-Hans"])
         self.assertEqual(_map_language("en"), ["en"])
+
+    def test_multiple_sources_use_unique_language_rule(self):
+        metadata = {
+            "sources": [
+                {"name": "English", "lang": "en", "sourceId": "1"},
+                {"name": "French", "lang": "fr", "sourceId": "2"},
+            ]
+        }
+        selected = _select_gradle_source(metadata, "fr")
+        self.assertEqual(selected["sourceId"], "2")
+
+    def test_multiple_sources_can_be_selected_explicitly_by_source_id(self):
+        metadata = {
+            "sources": [
+                {"name": "First", "lang": "en", "sourceId": "111"},
+                {"name": "Second", "lang": "en", "sourceId": "222"},
+            ]
+        }
+        selected = _select_gradle_source(metadata, "en", source_id="222")
+        self.assertEqual(selected["name"], "Second")
+
+    def test_ambiguous_multiple_sources_fail_closed(self):
+        metadata = {
+            "sources": [
+                {"name": "First", "lang": "en", "sourceId": "111"},
+                {"name": "Second", "lang": "en", "sourceId": "222"},
+            ]
+        }
+        with self.assertRaisesRegex(ValueError, "ambiguous"):
+            _select_gradle_source(metadata, "en")
+
+    def test_structured_metadata_drives_generic_identity_and_provenance(self):
+        from generic_html_extractor import extract
+
+        metadata = {
+            "name": "Extension Name",
+            "libVersion": "1.6",
+            "version": "1.6.9",
+            "contentWarning": "SAFE",
+            "sources": [
+                {
+                    "name": "Per Source Name",
+                    "lang": "en",
+                    "sourceId": "9223372036854775806",
+                    "baseUrlMode": "custom",
+                    "defaultBaseUrl": "https://source.example",
+                    "baseUrlResolved": True,
+                    "mirrors": [],
+                }
+            ],
+        }
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".kt", encoding="utf-8", delete=False
+        ) as fixture:
+            fixture.write(
+                "package example.selected\nclass SelectedSource : KeiSource() {}\n"
+            )
+            path = fixture.name
+        try:
+            ir = extract(path, metadata, "2026-08-21T00:00:00Z", "en")
+        finally:
+            os.unlink(path)
+
+        self.assertEqual(ir["name"], "Per Source Name")
+        self.assertEqual(ir["baseUrl"], "https://source.example")
+        self.assertEqual(ir["provenance"]["upstreamVersion"], "1.6.9")
+        self.assertEqual(
+            ir["provenance"]["upstreamSourceId"], "9223372036854775806"
+        )
 
 if __name__ == '__main__':
     unittest.main()

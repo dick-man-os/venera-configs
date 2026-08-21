@@ -25,11 +25,17 @@ class TestEndToEndGeneric(unittest.TestCase):
         os.makedirs(src_main_dir, exist_ok=True)
 
         gradle_kts = """
-source {
-    name = "GenericSafe"
-    lang = "en"
-    id = 123456789
-    baseUrl { mirrors("https://genericsafe.com") }
+keiyoushi {
+    name = "Generic Extension"
+    versionCode = 4
+    libVersion = "1.6"
+    contentWarning = ContentWarning.SAFE
+    source {
+        name = "GenericSafe"
+        lang = "en"
+        id = 123456789L
+        baseUrl { mirrors("https://genericsafe.com") }
+    }
 }
 """
 

@@ -67,6 +67,14 @@ CONVERTED_ARTIFACTS = {
     "webtoons_zh_hant",
 }
 
+EXPECTED_CONVERTED_UPSTREAM = {
+    "webtoons": ("2522335540328470744", "1.4.57", "1.4"),
+    "webtoons_zh_hant": ("2959982438613576472", "1.4.57", "1.4"),
+    "manhuashe": ("6230622879116184108", "1.6.1", "1.6"),
+    "comicabc": ("8110122805257580230", "1.4.3", "1.4"),
+    "flamecomics": ("8531542650987673943", "1.4.50", "1.4"),
+}
+
 
 class TestSourceRegistry(unittest.TestCase):
     @classmethod
@@ -227,6 +235,17 @@ class TestSourceRegistry(unittest.TestCase):
         invalid["artifacts"][-1]["upstream"]["sourceId"] = 8531542650987673943
         errors = validate_registry_data(invalid).with_code("SCHEMA_FIELD_VALUE")
         self.assertTrue(any("upstream.sourceId" in error.message for error in errors))
+
+    def test_current_converted_upstream_metadata_anchors(self):
+        actual = {
+            artifact_id: (
+                self.by_id[artifact_id]["upstream"]["sourceId"],
+                self.by_id[artifact_id]["upstream"]["version"],
+                self.by_id[artifact_id]["upstream"]["extensionLib"],
+            )
+            for artifact_id in CONVERTED_ARTIFACTS
+        }
+        self.assertEqual(actual, EXPECTED_CONVERTED_UPSTREAM)
 
     def test_bcp47_locale_acceptance_and_rejection(self):
         for locale in ("en", "zh-Hans", "zh-Hant"):

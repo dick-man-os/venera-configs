@@ -44,12 +44,139 @@ class TestParsers(unittest.TestCase):
         path = self.write_temp_file(content)
         meta = parse_gradle_metadata(path)
         self.assertEqual(meta["name"], "Test")
+        self.assertEqual(meta["versionCode"], 1)
+        self.assertEqual(meta["libVersion"], "1.6")
+        self.assertEqual(meta["contentWarning"], "SAFE")
+        self.assertEqual(meta["version"], "1.6.1")
         self.assertTrue(meta["is_modern"])
         self.assertEqual(meta["version_classification"], "MODERN_KEISOURCE")
         self.assertEqual(len(meta["sources"]), 1)
         self.assertEqual(meta["sources"][0]["name"], "Test Source")
-        self.assertEqual(meta["sources"][0]["id"], 12345)
+        self.assertEqual(meta["sources"][0]["id"], "12345")
+        self.assertEqual(meta["sources"][0]["sourceId"], "12345")
+        self.assertEqual(meta["sources"][0]["sourceIdKind"], "explicit")
+        self.assertEqual(meta["sources"][0]["baseUrlMode"], "static")
+        self.assertTrue(meta["sources"][0]["baseUrlResolved"])
         self.assertEqual(meta["sources"][0]["baseUrl"], "https://example.com")
+
+    def test_default_source_name_and_generated_id(self):
+        content = """
+        keiyoushi {
+            name = "Webtoons.com"
+            versionCode = 57
+            libVersion = "1.4"
+            contentWarning = ContentWarning.SAFE
+            source {
+                lang = "en"
+                baseUrl = "https://www.webtoons.com"
+            }
+        }
+        """
+        meta = parse_gradle_metadata(self.write_temp_file(content))
+        source = meta["sources"][0]
+        self.assertEqual(source["name"], "Webtoons.com")
+        self.assertTrue(source["nameIsDefault"])
+        self.assertEqual(source["sourceId"], "2522335540328470744")
+        self.assertEqual(source["sourceIdKind"], "generated")
+
+    def test_explicit_large_source_id_is_decimal_string_and_version_id_is_captured(self):
+        content = """
+        keiyoushi {
+            name = "Large ID"
+            versionCode = 9
+            libVersion = "1.6"
+            contentWarning = ContentWarning.MIXED
+            source {
+                lang = "en"
+                id = 9223372036854775806L
+                versionId = 7
+                baseUrl = "https://large.example"
+            }
+        }
+        """
+        source = parse_gradle_metadata(self.write_temp_file(content))["sources"][0]
+        self.assertEqual(source["id"], "9223372036854775806")
+        self.assertEqual(source["sourceId"], "9223372036854775806")
+        self.assertEqual(source["versionId"], 7)
+        self.assertEqual(source["effectiveVersionId"], 7)
+
+    def test_theme_metadata_and_version_composition(self):
+        root = self.temp_dir.name
+        extension_dir = os.path.join(root, "src", "en", "themed")
+        theme_dir = os.path.join(root, "lib-multisrc", "madara")
+        os.makedirs(extension_dir)
+        os.makedirs(theme_dir)
+        extension_path = os.path.join(extension_dir, "build.gradle.kts")
+        theme_path = os.path.join(theme_dir, "build.gradle.kts")
+        with open(extension_path, "w", encoding="utf-8") as f:
+            f.write("""
+            keiyoushi {
+                name = "Themed"
+                versionCode = 3
+                libVersion = "1.4"
+                contentWarning = ContentWarning.SAFE
+                theme = "madara"
+                source {
+                    lang = "en"
+                    baseUrl = "https://themed.example"
+                }
+            }
+            """)
+        with open(theme_path, "w", encoding="utf-8") as f:
+            f.write("""
+            keiyoushi {
+                baseVersionCode = 52
+                libVersion = "1.4"
+            }
+            """)
+
+        meta = parse_gradle_metadata(extension_path, extensions_root=root)
+        self.assertEqual(meta["theme"], "madara")
+        self.assertTrue(meta["is_multisrc"])
+        self.assertTrue(meta["themeMetadata"]["resolved"])
+        self.assertEqual(meta["themeMetadata"]["baseVersionCode"], 52)
+        self.assertEqual(meta["derivedVersionCode"], 55)
+        self.assertEqual(meta["version"], "1.4.55")
+
+    def test_unresolved_theme_version_is_not_guessed(self):
+        content = """
+        keiyoushi {
+            name = "Missing Theme"
+            versionCode = 2
+            libVersion = "1.6"
+            contentWarning = ContentWarning.SAFE
+            theme = "not-checked-out"
+            source {
+                lang = "en"
+                baseUrl = "https://missing.example"
+            }
+        }
+        """
+        meta = parse_gradle_metadata(self.write_temp_file(content))
+        self.assertEqual(meta["theme"], "not-checked-out")
+        self.assertEqual(meta["versionResolution"], "unresolved")
+        self.assertIsNone(meta["version"])
+        self.assertIn("version", meta["unresolved"])
+
+    def test_dynamic_theme_is_multisrc_and_version_is_unresolved(self):
+        content = """
+        keiyoushi {
+            name = "Dynamic Theme"
+            versionCode = 2
+            libVersion = "1.6"
+            contentWarning = ContentWarning.SAFE
+            theme = providers.gradleProperty("themeName").get()
+            source {
+                lang = "en"
+                baseUrl = "https://dynamic-theme.example"
+            }
+        }
+        """
+        meta = parse_gradle_metadata(self.write_temp_file(content))
+        self.assertTrue(meta["is_multisrc"])
+        self.assertIsNone(meta["theme"])
+        self.assertEqual(meta["versionResolution"], "unresolved")
+        self.assertIn("theme", meta["unresolved"])
 
     def test_multiple_source_blocks(self):
         content = """
@@ -59,10 +186,13 @@ class TestParsers(unittest.TestCase):
             libVersion = "1.4"
             source {
                 name = "Src1"
+                lang = "en"
                 baseUrl = "https://a.com"
             }
             source {
                 name = "Src2"
+                lang = "fr"
+                versionId = 2
                 baseUrl = "https://b.com"
             }
         }
@@ -74,6 +204,53 @@ class TestParsers(unittest.TestCase):
         self.assertEqual(len(meta["sources"]), 2)
         self.assertEqual(meta["sources"][0]["name"], "Src1")
         self.assertEqual(meta["sources"][1]["name"], "Src2")
+        self.assertEqual(meta["sources"][0]["lang"], "en")
+        self.assertEqual(meta["sources"][1]["lang"], "fr")
+        self.assertEqual(meta["sources"][1]["versionId"], 2)
+        self.assertEqual(meta["sources"][0]["baseUrl"], "https://a.com")
+        self.assertEqual(meta["sources"][1]["baseUrl"], "https://b.com")
+
+    def test_source_blocks_are_scoped_to_authoritative_keiyoushi_block(self):
+        content = r'''
+        // source { name = "Commented Outside" }
+        /* source { name = "Block Commented Outside" } */
+        val outsideText = "source { name = \"String Outside\" }"
+        val outsideTriple = """source { name = "Triple String Outside" }"""
+        unrelated {
+            source {
+                name = "Nested Outside"
+                lang = "xx"
+                baseUrl = "https://nested-outside.example"
+            }
+        }
+        source {
+            name = "Direct Outside"
+            lang = "yy"
+            baseUrl = "https://direct-outside.example"
+        }
+        keiyoushi {
+            name = "Scoped"
+            versionCode = 1
+            libVersion = "1.6"
+            contentWarning = ContentWarning.SAFE
+            // source { name = "Commented Inside" }
+            /* source { name = "Block Commented Inside" } */
+            val insideText = "source { name = \"String Inside\" }"
+            val insideTriple = """source { name = "Triple String Inside" }"""
+            source {
+                name = "Authoritative"
+                lang = "en"
+                baseUrl = "https://authoritative.example"
+            }
+        }
+        '''
+        meta = parse_gradle_metadata(self.write_temp_file(content))
+        self.assertEqual(len(meta["sources"]), 1)
+        self.assertEqual(meta["sources"][0]["name"], "Authoritative")
+        self.assertEqual(meta["sources"][0]["lang"], "en")
+        self.assertEqual(
+            meta["sources"][0]["baseUrl"], "https://authoritative.example"
+        )
 
     def test_mirrors_custom_detection(self):
         content = """
@@ -93,6 +270,9 @@ class TestParsers(unittest.TestCase):
 
         src1 = meta["sources"][0]
         self.assertEqual(src1["baseUrl"], "https://cn.baozimh.com")
+        self.assertEqual(src1["baseUrlMode"], "mirrors")
+        self.assertEqual(src1["defaultBaseUrl"], "https://cn.baozimh.com")
+        self.assertTrue(src1["baseUrlResolved"])
         self.assertIn("mirrors", src1)
         self.assertEqual(len(src1["mirrors"]), 2)
         self.assertEqual(src1["mirrors"][0]["url"], "https://cn.baozimh.com")
@@ -117,6 +297,82 @@ class TestParsers(unittest.TestCase):
         self.assertEqual(len(src["mirrors"]), 2)
         self.assertEqual(src["mirrors"][0]["label"], "Main")
         self.assertEqual(src["mirrors"][0]["url"], "https://main.com")
+
+    def test_custom_base_url(self):
+        content = """
+        source {
+            name = "Custom"
+            lang = "en"
+            baseUrl {
+                custom("https://custom.example")
+            }
+        }
+        """
+        source = parse_gradle_metadata(self.write_temp_file(content))["sources"][0]
+        self.assertEqual(source["baseUrlMode"], "custom")
+        self.assertEqual(source["defaultBaseUrl"], "https://custom.example")
+        self.assertTrue(source["baseUrlResolved"])
+        self.assertTrue(source["customBaseUrl"])
+
+    def test_dynamic_base_url_is_reported_unresolved(self):
+        content = """
+        keiyoushi {
+            name = "Dynamic"
+            versionCode = 1
+            libVersion = "1.6"
+            contentWarning = ContentWarning.SAFE
+            source {
+                lang = "en"
+                baseUrl = "https://$host"
+            }
+        }
+        """
+        source = parse_gradle_metadata(self.write_temp_file(content))["sources"][0]
+        self.assertEqual(source["baseUrlMode"], "static")
+        self.assertFalse(source["baseUrlResolved"])
+        self.assertIsNone(source["defaultBaseUrl"])
+        self.assertIn("baseUrl", source["unresolved"])
+
+    def test_generated_source_id_matches_authoritative_unicode_fixture(self):
+        content = """
+        keiyoushi {
+            name = "Manhuashe"
+            versionCode = 1
+            libVersion = "1.6"
+            contentWarning = ContentWarning.MIXED
+            source {
+                name = "漫画社"
+                lang = "zh"
+                baseUrl = "https://www.311s.com"
+            }
+        }
+        """
+        source = parse_gradle_metadata(self.write_temp_file(content))["sources"][0]
+        self.assertEqual(source["sourceId"], "6230622879116184108")
+
+    def test_dynamic_source_template_does_not_claim_conditional_id(self):
+        content = """
+        keiyoushi {
+            name = "Template"
+            versionCode = 1
+            libVersion = "1.4"
+            contentWarning = ContentWarning.SAFE
+            listOf("en", "fr").forEach { langCode ->
+                source {
+                    lang = langCode
+                    baseUrl = "https://template.example"
+                    when (langCode) {
+                        "fr" -> id = 9000000000000000000L
+                    }
+                }
+            }
+        }
+        """
+        source = parse_gradle_metadata(self.write_temp_file(content))["sources"][0]
+        self.assertIsNone(source["lang"])
+        self.assertNotIn("id", source)
+        self.assertIsNone(source["sourceId"])
+        self.assertEqual(source["sourceIdKind"], "unresolved")
 
     def test_mixed_mirrors_raises(self):
         content = """

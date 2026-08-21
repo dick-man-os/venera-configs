@@ -130,7 +130,11 @@ class TestLegacyHttpSourceExtractor(unittest.TestCase):
         class HantSource : HttpSource() {}
         """
         path = self._write_kt("HantSource.kt", kt)
-        gradle_meta = {"name": "Hant", "version": "1.4"}
+        gradle_meta = {
+            "name": "Hant",
+            "version": "1.4",
+            "baseUrl": "https://hant.example",
+        }
 
         ir = generic_html_extractor.extract(path, gradle_meta, "timestamp", "zh", language_override="zh-Hant")
         self.assertEqual(ir["languages"], ["zh-Hant"])
@@ -141,7 +145,11 @@ class TestLegacyHttpSourceExtractor(unittest.TestCase):
         class HansSource : HttpSource() {}
         """
         path = self._write_kt("HansSource.kt", kt)
-        gradle_meta = {"name": "Hans", "version": "1.4"}
+        gradle_meta = {
+            "name": "Hans",
+            "version": "1.4",
+            "baseUrl": "https://hans.example",
+        }
 
         ir = generic_html_extractor.extract(path, gradle_meta, "timestamp", "zh")
         self.assertEqual(ir["languages"], ["zh-Hans"])
@@ -164,7 +172,11 @@ class TestLegacyHttpSourceExtractor(unittest.TestCase):
         }
         """
         path = self._write_kt("LegacySource.kt", kt)
-        gradle_meta = {"name": "Legacy", "version": "1.4"}
+        gradle_meta = {
+            "name": "Legacy",
+            "version": "1.4",
+            "baseUrl": "https://legacy.example",
+        }
 
         ir = generic_html_extractor.extract(path, gradle_meta, "timestamp", "zh")
         self.assertTrue(ir["chapters"].get("manualPatchRequired", False))
@@ -181,7 +193,11 @@ class TestLegacyHttpSourceExtractor(unittest.TestCase):
         }
         """
         path = self._write_kt("LegacySource.kt", kt)
-        gradle_meta = {"name": "Legacy", "version": "1.4"}
+        gradle_meta = {
+            "name": "Legacy",
+            "version": "1.4",
+            "baseUrl": "https://legacy.example",
+        }
 
         ir = generic_html_extractor.extract(path, gradle_meta, "timestamp", "zh")
         self.assertTrue(ir["pages"].get("manualPatchRequired", False))
