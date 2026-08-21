@@ -1,5 +1,6 @@
 {
   "schemaVersion": "0.2",
+  "artifactId": "comicabc",
   "id": "zh-Hant_comicabc",
   "version": "1.0.3",
   "name": "Comicabc",

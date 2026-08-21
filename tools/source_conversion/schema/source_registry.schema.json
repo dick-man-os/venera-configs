@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://venerax.app/schemas/source_registry.schema.json",
+  "title": "Venera source taxonomy registry",
+  "description": "Development-time source artifact taxonomy. Runtime keys remain opaque compatibility identities.",
+  "type": "object",
+  "required": ["schemaVersion", "artifacts"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "required": ["artifactId", "runtimeKey", "providerId", "implementation"],
+      "additionalProperties": false,
+      "properties": {
+        "artifactId": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$"
+        },
+        "runtimeKey": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_]+$"
+        },
+        "locales": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z]{2,3}(?:-[A-Z][a-z]{3})?(?:-(?:[A-Z]{2}|[0-9]{3}))?$"
+          }
+        },
+        "providerId": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$"
+        },
+        "siteUrl": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https?://"
+        },
+        "contentWarning": {
+          "enum": ["SAFE", "MIXED", "NSFW"]
+        },
+        "implementation": {
+          "$ref": "#/$defs/implementation"
+        },
+        "upstream": {
+          "$ref": "#/$defs/upstream"
+        },
+        "supportStatus": {
+          "enum": ["active", "needs-rescue", "retired"]
+        },
+        "compatibility": {
+          "$ref": "#/$defs/compatibility"
+        }
+      }
+    },
+    "implementation": {
+      "type": "object",
+      "required": ["producer"],
+      "additionalProperties": false,
+      "properties": {
+        "producer": {
+          "enum": ["manual", "generated", "generated-with-patch"]
+        },
+        "transport": {
+          "enum": ["api", "html", "hybrid"]
+        }
+      }
+    },
+    "upstream": {
+      "type": "object",
+      "required": ["project", "module", "sourceId", "version", "extensionLib", "commit"],
+      "additionalProperties": false,
+      "properties": {
+        "project": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+        },
+        "module": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:\\.[a-z0-9]+)*$"
+        },
+        "sourceId": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "extensionLib": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+$"
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{7,40}$"
+        },
+        "theme": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "required": ["sharedRuntimeKeyGroup"],
+      "additionalProperties": false,
+      "properties": {
+        "sharedRuntimeKeyGroup": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_]+$"
+        }
+      }
+    }
+  }
+}

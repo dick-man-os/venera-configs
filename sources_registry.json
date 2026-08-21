@@ -1,0 +1,397 @@
+{
+  "schemaVersion": "1.0",
+  "artifacts": [
+    {
+      "artifactId": "copy_manga",
+      "runtimeKey": "copy_manga",
+      "providerId": "copy_manga",
+      "siteUrl": "https://www.copy20.com",
+      "implementation": {
+        "producer": "manual"
+      },
+      "compatibility": {
+        "sharedRuntimeKeyGroup": "copy_manga"
+      }
+    },
+    {
+      "artifactId": "copy_manga_multi_accounts",
+      "runtimeKey": "copy_manga",
+      "providerId": "copy_manga",
+      "siteUrl": "https://www.copy20.com",
+      "implementation": {
+        "producer": "manual"
+      },
+      "compatibility": {
+        "sharedRuntimeKeyGroup": "copy_manga"
+      }
+    },
+    {
+      "artifactId": "komiic",
+      "runtimeKey": "Komiic",
+      "providerId": "komiic",
+      "siteUrl": "https://komiic.com",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "baozi",
+      "runtimeKey": "baozi",
+      "providerId": "baozi",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "picacg",
+      "runtimeKey": "picacg",
+      "providerId": "picacg",
+      "siteUrl": "https://manhuabika.com",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "nhentai",
+      "runtimeKey": "nhentai",
+      "providerId": "nhentai",
+      "siteUrl": "https://nhentai.net",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "wnacg",
+      "runtimeKey": "wnacg",
+      "providerId": "wnacg",
+      "siteUrl": "https://wn01.link",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "ehentai",
+      "runtimeKey": "ehentai",
+      "providerId": "ehentai",
+      "siteUrl": "https://e-hentai.org",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "jm",
+      "runtimeKey": "jm",
+      "providerId": "jm",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "manga_dex",
+      "runtimeKey": "manga_dex",
+      "providerId": "manga_dex",
+      "siteUrl": "https://mangadex.org",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "ikmmh",
+      "runtimeKey": "ikmmh",
+      "providerId": "ikmmh",
+      "siteUrl": "https://www.ikmmh.com",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "shonen_jump_plus",
+      "runtimeKey": "shonen_jump_plus",
+      "providerId": "shonen_jump_plus",
+      "siteUrl": "https://shonenjumpplus.com",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "hitomi",
+      "runtimeKey": "hitomi",
+      "providerId": "hitomi",
+      "siteUrl": "https://hitomi.la",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "comick",
+      "runtimeKey": "comick",
+      "providerId": "comick",
+      "siteUrl": "https://comick.art",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "ykmh",
+      "runtimeKey": "ykmh",
+      "providerId": "ykmh",
+      "siteUrl": "https://www.ykmh.net",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "zaimanhua",
+      "runtimeKey": "zaimanhua",
+      "providerId": "zaimanhua",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "manhuagui",
+      "runtimeKey": "ManHuaGui",
+      "providerId": "manhuagui",
+      "siteUrl": "https://www.manhuagui.com",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "manwaba",
+      "runtimeKey": "manwaba",
+      "providerId": "manwaba",
+      "siteUrl": "https://mwuu.cc",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "lanraragi",
+      "runtimeKey": "lanraragi",
+      "providerId": "lanraragi",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "komga",
+      "runtimeKey": "komga",
+      "providerId": "komga",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "comic_walker",
+      "runtimeKey": "comic_walker",
+      "providerId": "comic_walker",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "mh1234",
+      "runtimeKey": "mh1234",
+      "providerId": "mh1234",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "ccc",
+      "runtimeKey": "ccc",
+      "providerId": "ccc",
+      "siteUrl": "https://www.creative-comic.tw",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "goda",
+      "runtimeKey": "goda",
+      "providerId": "goda",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "mh18",
+      "runtimeKey": "mh18",
+      "providerId": "mh18",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "mxs",
+      "runtimeKey": "mxs",
+      "providerId": "mxs",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "manhuaren",
+      "runtimeKey": "manhuaren",
+      "providerId": "manhuaren",
+      "siteUrl": "https://www.manhuaren.com",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "hcomic",
+      "runtimeKey": "hcomic",
+      "providerId": "hcomic",
+      "siteUrl": "https://h-comic.com",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "jcomic",
+      "runtimeKey": "jcomic",
+      "providerId": "jcomic",
+      "siteUrl": "https://jcomic.net",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "hot_manga",
+      "runtimeKey": "hot_manga",
+      "providerId": "hot_manga",
+      "siteUrl": "https://www.manga2026.com",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "kavita",
+      "runtimeKey": "kavita",
+      "providerId": "kavita",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "happy",
+      "runtimeKey": "happy",
+      "providerId": "happy",
+      "siteUrl": "https://m.happymh.com",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "mycomic",
+      "runtimeKey": "mycomic",
+      "providerId": "mycomic",
+      "siteUrl": "https://mycomic.com",
+      "implementation": {
+        "producer": "manual"
+      }
+    },
+    {
+      "artifactId": "webtoons",
+      "runtimeKey": "en_webtoons",
+      "locales": ["en"],
+      "providerId": "webtoons",
+      "siteUrl": "https://www.webtoons.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated-with-patch",
+        "transport": "hybrid"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "all.webtoons",
+        "sourceId": "2522335540328470744",
+        "version": "1.4.57",
+        "extensionLib": "1.4",
+        "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29"
+      }
+    },
+    {
+      "artifactId": "webtoons_zh_hant",
+      "runtimeKey": "zh_Hant_webtoons",
+      "locales": ["zh-Hant"],
+      "providerId": "webtoons",
+      "siteUrl": "https://www.webtoons.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated-with-patch",
+        "transport": "hybrid"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "all.webtoons",
+        "sourceId": "2959982438613576472",
+        "version": "1.4.57",
+        "extensionLib": "1.4",
+        "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29"
+      }
+    },
+    {
+      "artifactId": "manhuashe",
+      "runtimeKey": "zh_Hans_manhuashe",
+      "locales": ["zh-Hans"],
+      "providerId": "manhuashe",
+      "siteUrl": "https://www.311s.com",
+      "contentWarning": "MIXED",
+      "implementation": {
+        "producer": "generated-with-patch",
+        "transport": "html"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "zh.manhuashe",
+        "sourceId": "6230622879116184108",
+        "version": "1.6.1",
+        "extensionLib": "1.6",
+        "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29"
+      }
+    },
+    {
+      "artifactId": "comicabc",
+      "runtimeKey": "zh_Hant_comicabc",
+      "locales": ["zh-Hant"],
+      "providerId": "comicabc",
+      "siteUrl": "https://www.8comic.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated-with-patch",
+        "transport": "html"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "zh.comicabc",
+        "sourceId": "8110122805257580230",
+        "version": "1.4.3",
+        "extensionLib": "1.4",
+        "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29"
+      }
+    },
+    {
+      "artifactId": "flamecomics",
+      "runtimeKey": "en_flamecomics",
+      "locales": ["en"],
+      "providerId": "flamecomics",
+      "siteUrl": "https://flamecomics.xyz",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated-with-patch",
+        "transport": "api"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "en.flamecomics",
+        "sourceId": "8531542650987673943",
+        "version": "1.4.50",
+        "extensionLib": "1.4",
+        "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29"
+      }
+    }
+  ]
+}

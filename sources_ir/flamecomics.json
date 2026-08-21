@@ -1,5 +1,6 @@
 {
   "schemaVersion": "0.2",
+  "artifactId": "flamecomics",
   "id": "en_flamecomics",
   "version": "1.0.2",
   "name": "Flame Comics",

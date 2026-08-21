@@ -75,9 +75,11 @@ class TestWebtoonsRegression(unittest.TestCase):
                 temp_ir_bytes = f.read()
                 temp_ir = json.loads(temp_ir_bytes)
 
-            # Upstream extractor does not derive local source-release metadata ('version')
+            # Upstream extraction does not own local registry linkage or release metadata.
             canonical_structural = copy.deepcopy(canon_ir)
             extracted_structural = copy.deepcopy(temp_ir)
+            canonical_structural.pop("artifactId", None)
+            extracted_structural.pop("artifactId", None)
             canonical_structural.pop("version", None)
             extracted_structural.pop("version", None)
 

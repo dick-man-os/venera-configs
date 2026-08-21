@@ -55,6 +55,7 @@ def validate_ir_data(data: Any) -> List[str]:
 
     # Check unknown top-level fields
     known_fields = set(required_fields) | {
+        "artifactId",
         "version",
         "requiresAuth",
         "requiresWebView",
@@ -69,6 +70,16 @@ def validate_ir_data(data: Any) -> List[str]:
     for field in data:
         if field not in known_fields:
             errors.append(f"Unknown top-level property: '{field}'")
+
+    # artifact linkage
+    if "artifactId" in data:
+        artifact_id = data["artifactId"]
+        if not isinstance(artifact_id, str) or not re.match(
+            r"^[a-z0-9]+(?:_[a-z0-9]+)*$", artifact_id
+        ):
+            errors.append(
+                "Field 'artifactId' must be a normalized lowercase filename stem."
+            )
 
     # version
     if "version" in data:

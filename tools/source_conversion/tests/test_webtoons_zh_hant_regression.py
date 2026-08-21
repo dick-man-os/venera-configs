@@ -39,7 +39,9 @@ class TestWebtoonsZhHantRegression(unittest.TestCase):
             source_version="1.0.0",
         )
 
-        self.assertEqual(extracted, self.canonical_ir)
+        expected = copy.deepcopy(self.canonical_ir)
+        expected.pop("artifactId", None)
+        self.assertEqual(extracted, expected)
 
     def test_zh_hant_base_and_final_are_canonical_producer_outputs(self):
         generated = generate_venera_js(self.canonical_ir)
@@ -78,6 +80,7 @@ class TestWebtoonsZhHantRegression(unittest.TestCase):
         )
 
         expected_without_release = copy.deepcopy(expected)
+        expected_without_release.pop("artifactId", None)
         expected_without_release.pop("version", None)
         self.assertEqual(extracted, expected_without_release)
 

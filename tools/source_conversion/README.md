@@ -28,6 +28,25 @@ Subsequent milestones will introduce:
 - **`venera-configs`**: Primary development repository for converter tooling, IR definitions, manual patches, and generated source files (`.js`).
 - **`VeneraX`**: Flutter application runtime consumer.
 
+## Source Registry
+
+`sources_registry.json` is the canonical development-time taxonomy for catalog
+artifacts. Its unique `artifactId` is the final JavaScript filename stem;
+`runtimeKey` is a separate, opaque installation identity and must remain
+compatible with shipped sources. Optional metadata is omitted when it cannot be
+backed by reliable evidence.
+
+Validate registry structure, final-JS identities, converted-IR links, and
+catalog drift without modifying `index.json`:
+
+```bash
+python tools/source_conversion/validator/validate_registry.py
+```
+
+Structural or identity violations are emitted as `ERROR`. Stale catalog
+name/version/key metadata is emitted as `WARNING`, while explicitly modeled
+shared installation slots are emitted as `REPORT`.
+
 ## Planned First Bulk-Conversion Policy
 When the converter pipeline is stabilized beyond the Webtoons pilot, future bulk conversion will follow this tiered policy:
 
