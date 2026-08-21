@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-webtoons_extractor.py - Deterministic Kotlin-to-IR Extractor for Webtoons (English Pilot)
+webtoons_extractor.py - Deterministic Kotlin-to-IR Extractor for Webtoons
 
-Extracts Intermediate Representation (IR) v0.1 JSON from the local Keiyoushi
-Webtoons extension source without modifying upstream files.
+Extracts locale-specific Intermediate Representation (IR) v0.1 JSON from the
+local Keiyoushi Webtoons extension source without modifying upstream files.
 """
 
 import argparse
@@ -16,6 +16,19 @@ import sys
 from typing import Any, Dict, List, Optional
 
 COMMIT_HASH_RE = re.compile(r"^[0-9a-fA-F]{7,40}$")
+
+WEBTOONS_PROFILES = {
+    "en": {
+        "id": "en_webtoons",
+        "name": None,
+        "cookieLocale": "en",
+    },
+    "zh-Hant": {
+        "id": "zh-Hant_webtoons",
+        "name": "Webtoons 繁體中文",
+        "cookieLocale": "zh_TW",
+    },
+}
 
 
 def get_git_commit(repo_path: str) -> str:
@@ -49,8 +62,15 @@ def get_upstream_license(repo_path: str) -> str:
 def extract_webtoons_ir(
     extensions_root: str,
     timestamp: Optional[str] = None,
+    language: str = "en",
+    source_version: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Extract IR v0.1 dictionary from the local Webtoons extension files."""
+    if language not in WEBTOONS_PROFILES:
+        supported = ", ".join(WEBTOONS_PROFILES)
+        raise ValueError(f"Unsupported Webtoons language '{language}'. Expected one of: {supported}")
+    profile = WEBTOONS_PROFILES[language]
+
     webtoons_dir = os.path.join(extensions_root, "src", "all", "webtoons")
     build_gradle_path = os.path.join(webtoons_dir, "build.gradle.kts")
     kt_source_path = os.path.join(
@@ -105,6 +125,7 @@ def extract_webtoons_ir(
         raise ValueError("Could not extract baseUrl from build.gradle.kts")
 
     ext_name = name_match.group(1).replace(".com", "")  # "Webtoons"
+    source_name = profile["name"] or ext_name
     version_code = version_code_match.group(1)
     lib_version = lib_version_match.group(1)
     upstream_version = f"{lib_version}.{version_code}"
@@ -131,7 +152,7 @@ def extract_webtoons_ir(
 
     cookies = [
         {"domain": "webtoons.com", "name": "ageGatePass", "value": "true"},
-        {"domain": "webtoons.com", "name": "locale", "value": "en"},
+        {"domain": "webtoons.com", "name": "locale", "value": profile["cookieLocale"]},
         {"domain": "webtoons.com", "name": "needGDPR", "value": "false"},
     ]
 
@@ -261,11 +282,15 @@ def extract_webtoons_ir(
     }
 
     # 5. Assemble IR v0.1
-    ir_data = {
+    ir_data: Dict[str, Any] = {
         "schemaVersion": "0.1.0",
-        "id": "en_webtoons",
-        "name": ext_name,
-        "languages": ["en"],
+        "id": profile["id"],
+    }
+    if source_version is not None:
+        ir_data["version"] = source_version
+    ir_data.update({
+        "name": source_name,
+        "languages": [language],
         "contentOrigins": [],
         "contentWarning": content_warning,
         "sourceType": "hybrid",
@@ -282,7 +307,7 @@ def extract_webtoons_ir(
         "chapters": chapters,
         "pages": pages,
         "provenance": provenance,
-    }
+    })
 
     return ir_data
 
@@ -310,6 +335,17 @@ def main() -> int:
         default=None,
         help="Optional ISO timestamp override for deterministic testing.",
     )
+    parser.add_argument(
+        "--language",
+        choices=tuple(WEBTOONS_PROFILES),
+        default="en",
+        help="Webtoons language profile to extract.",
+    )
+    parser.add_argument(
+        "--source-version",
+        default=None,
+        help="Optional Venera source release version to include in the IR.",
+    )
 
     args = parser.parse_args()
 
@@ -320,7 +356,12 @@ def main() -> int:
     print(f"[*] Target output: {output_path}")
 
     try:
-        ir_data = extract_webtoons_ir(extensions_root, timestamp=args.timestamp)
+        ir_data = extract_webtoons_ir(
+            extensions_root,
+            timestamp=args.timestamp,
+            language=args.language,
+            source_version=args.source_version,
+        )
     except Exception as e:
         print(f"[!] Extraction failed: {e}", file=sys.stderr)
         return 1

@@ -47,6 +47,8 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     # 1. Extract metadata & provenance
     name = ir_data.get("name", "Webtoons")
     source_id = ir_data.get("id", "en_webtoons")
+    languages = ir_data.get("languages") or ["en"]
+    route_language = str(languages[0]).lower()
 
     # Sanitize key for VeneraX runtime (only A-Z, a-z, 0-9, _)
     sanitized_key = re.sub(r'[^A-Za-z0-9_]', '_', source_id)
@@ -144,7 +146,7 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
 
         js_url_expr = f"`{tab_url}`"
         js_url_expr = js_url_expr.replace("{{baseUrl}}", f"${{{base_url_ref}}}")
-        js_url_expr = js_url_expr.replace("{{langCode}}", "en")
+        js_url_expr = js_url_expr.replace("{{langCode}}", route_language)
         js_url_expr = js_url_expr.replace("{{page}}", "${page}")
         js_url_expr = js_url_expr.replace("{{day}}", "${day}")
 
@@ -229,7 +231,7 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
 
     search_url_expr = f"`{search_url}`"
     search_url_expr = search_url_expr.replace("{{baseUrl}}", f"${{{base_url_ref}}}")
-    search_url_expr = search_url_expr.replace("{{langCode}}", "en")
+    search_url_expr = search_url_expr.replace("{{langCode}}", route_language)
     search_url_expr = search_url_expr.replace("{{query}}", "${encodeURIComponent(keyword)}")
     search_url_expr = search_url_expr.replace("{{page}}", "${page}")
 

@@ -209,6 +209,12 @@
         "version": "1.0.1"
     },
     {
+        "name": "Webtoons 繁體中文",
+        "fileName": "webtoons_zh_hant.js",
+        "key": "zh_Hant_webtoons",
+        "version": "1.0.0"
+    },
+    {
         "name": "Manhuashe",
         "fileName": "manhuashe.js",
         "key": "zh_Hans_manhuashe",

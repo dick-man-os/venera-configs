@@ -179,6 +179,23 @@ class TestGenerator(unittest.TestCase):
             js = generate_venera_js(ir)
             self.assertIn(f'key = "{expected_key}"', js)
 
+    def test_route_language_comes_from_ir_metadata(self):
+        ir = self.get_base_ir()
+        ir["id"] = "zh-Hant_webtoons"
+        ir["languages"] = ["zh-Hant"]
+        ir["explore"]["popular"] = {
+            "url": "{{baseUrl}}/{{langCode}}/ranking/trending",
+            "selector": ".webtoon_list li a",
+            "fields": {},
+        }
+        ir["search"]["url"] = "{{baseUrl}}/{{langCode}}/search?keyword={{query}}"
+
+        js = generate_venera_js(ir)
+
+        self.assertIn("/zh-hant/ranking/trending", js)
+        self.assertIn("/zh-hant/search?keyword=", js)
+        self.assertNotIn("/en/ranking/trending", js)
+
     def test_image_load_custom_false(self):
         ir = self.get_base_ir()
         ir["pages"]["imageLoadPatchRequired"] = False
