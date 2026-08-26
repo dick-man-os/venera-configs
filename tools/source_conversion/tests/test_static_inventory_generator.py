@@ -114,7 +114,7 @@ class TestStaticInventoryGenerator(unittest.TestCase):
         self.assertEqual([item["sourceId"] for item in inventory["candidates"]], ["1", "2"])
         self.assertEqual(inventory["unresolvedModules"], [])
 
-    def test_dynamic_source_construction_is_unresolved(self):
+    def test_literal_source_construction_is_statically_expanded(self):
         self.write_module(
             "all.dynamic",
             '''keiyoushi {
@@ -127,8 +127,12 @@ class TestStaticInventoryGenerator(unittest.TestCase):
 }
 ''',
         )
-        issue = self.generate()["unresolvedModules"][0]
-        self.assertEqual(issue["reason"]["code"], "unresolved-required-metadata")
+        inventory = self.generate()
+        self.assertEqual(
+            {candidate["upstreamLang"] for candidate in inventory["candidates"]},
+            {"en", "fr"},
+        )
+        self.assertEqual(inventory["unresolvedModules"], [])
 
     def test_unresolved_module_emits_no_guessed_candidate(self):
         self.write_module(
@@ -176,6 +180,45 @@ class TestStaticInventoryGenerator(unittest.TestCase):
         with self.assertRaisesRegex(InventoryGenerationError, "CANDIDATE_IDENTITY_DUPLICATE"):
             self.generate()
 
+    def test_duplicate_expanded_candidate_identity_fails_closed(self):
+        self.write_module(
+            "all.duplicate",
+            '''keiyoushi {
+    name = "Duplicate"
+    versionCode = 1
+    libVersion = "1.6"
+    contentWarning = ContentWarning.SAFE
+    listOf("en", "en").forEach { lang ->
+        source { lang = lang; baseUrl = "https://duplicate.example" }
+    }
+}
+''',
+        )
+        with self.assertRaisesRegex(InventoryGenerationError, "CANDIDATE_IDENTITY_DUPLICATE"):
+            self.generate()
+
+    def test_static_candidate_survives_unsupported_template_in_same_module(self):
+        self.write_module(
+            "all.mixed",
+            '''keiyoushi {
+    name = "Mixed"
+    versionCode = 1
+    libVersion = "1.6"
+    contentWarning = ContentWarning.SAFE
+    source { name = "Static"; lang = "en"; id = 42L; baseUrl = "https://static.example" }
+    helper().forEach { lang ->
+        source { lang = lang; baseUrl = "https://dynamic.example" }
+    }
+}
+''',
+        )
+        inventory = self.generate()
+        self.assertEqual([item["sourceId"] for item in inventory["candidates"]], ["42"])
+        self.assertEqual(
+            inventory["unresolvedModules"][0]["reason"]["code"],
+            "unresolved-required-metadata",
+        )
+
     def test_candidate_order_is_deterministic(self):
         self.write_module("en.zed", self.static_source(name="Zed", source_id="20"))
         self.write_module("en.alpha", self.static_source(name="Alpha", source_id="10"))
@@ -199,6 +242,37 @@ class TestStaticInventoryGenerator(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertTrue(first.endswith(b"\n"))
         self.assertNotIn(b"\r\n", first)
+
+    def test_repeated_expanded_serialization_is_byte_identical(self):
+        self.write_module(
+            "all.repeat",
+            '''keiyoushi {
+    name = "Repeat"
+    versionCode = 1
+    libVersion = "1.6"
+    contentWarning = ContentWarning.SAFE
+    listOf("fr", "en", "de").forEach { lang ->
+        source { lang = lang; baseUrl = "https://repeat.example/$lang" }
+    }
+}
+''',
+        )
+        first = serialize_inventory(self.generate())
+        second = serialize_inventory(self.generate())
+        self.assertEqual(first, second)
+        self.assertEqual(
+            json.loads(first)["candidates"],
+            sorted(
+                json.loads(first)["candidates"],
+                key=lambda item: (
+                    item["project"],
+                    item["sourceId"],
+                    item["module"],
+                    item["name"],
+                    item["upstreamLang"],
+                ),
+            ),
+        )
 
     def test_pinned_commit_is_recorded_at_root_only(self):
         self.write_module("en.pin", self.static_source())

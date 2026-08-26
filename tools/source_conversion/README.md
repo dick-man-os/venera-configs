@@ -159,6 +159,36 @@ commit copies. B2 records `metadataResolution: static` and
 not evaluate conversion or patch compatibility. `unsupported` and explicit
 patch booleans are reserved for candidates with classification evidence.
 
+The parser also performs bounded declarative source expansion. Its complete
+evaluation surface is deliberately small: quoted strings, integer/long
+literals, direct immutable `val` aliases, complete literal `listOf` and
+`mapOf` collections, direct `forEach` over those collections, two-item map
+destructuring, literal-only string interpolation/concatenation, and source
+metadata assignments selected by `binding == literal`, `binding != literal`,
+or `when (binding)` literal branches. The implicit `it` loop binding and an
+explicit single binding are supported. A direct `deeplink` sibling is ignored
+as inert metadata while the source template is expanded; other loop-body
+statements, nested iteration, shadowing, mutable bindings, incomplete
+collections, duplicate map keys, or unsupported expressions invalidate the
+whole affected template rather than producing a partial result.
+
+Expansion is capped at `MAX_STATIC_EXPANSION = 512` source instances per
+module, comfortably above the pinned maximum of 108, and literal/alias
+resolution is capped at 16 levels. Limit overflow, binding cycles, ambiguous
+bindings, unresolved predicates, or duplicate final `(project, sourceId)`
+identities fail closed. Auto IDs continue to use the existing authoritative
+final `(name, lang, versionId)` algorithm; a deterministically nonmatching
+conditional explicit-ID branch permits normal auto-ID generation, while an
+ambiguous branch never does.
+
+Everything outside that grammar remains evaluated-only: arbitrary function
+calls and helpers, providers, project/system/environment properties,
+filesystem or network access, time/randomness, mutable collections, collection
+transforms such as `filter`, `map`, or `flatMap`, plugin callbacks, external
+build-state conditions, unknown property access, and unknown expressions. The
+static parser never executes these constructs, and this inventory command does
+not implement or invoke an evaluated Gradle fallback.
+
 Ownership remains separated: the inventory persists pinned upstream evidence
 and compatibility observations; the registry owns artifact/runtime/provider
 identities and shared-runtime-key groups; login state, cookies, selected

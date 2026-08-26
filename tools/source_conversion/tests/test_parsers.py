@@ -350,7 +350,7 @@ class TestParsers(unittest.TestCase):
         source = parse_gradle_metadata(self.write_temp_file(content))["sources"][0]
         self.assertEqual(source["sourceId"], "6230622879116184108")
 
-    def test_dynamic_source_template_does_not_claim_conditional_id(self):
+    def test_literal_source_template_expands_and_claims_only_matching_conditional_id(self):
         content = """
         keiyoushi {
             name = "Template"
@@ -368,11 +368,11 @@ class TestParsers(unittest.TestCase):
             }
         }
         """
-        source = parse_gradle_metadata(self.write_temp_file(content))["sources"][0]
-        self.assertIsNone(source["lang"])
-        self.assertNotIn("id", source)
-        self.assertIsNone(source["sourceId"])
-        self.assertEqual(source["sourceIdKind"], "unresolved")
+        sources = parse_gradle_metadata(self.write_temp_file(content))["sources"]
+        self.assertEqual([source["lang"] for source in sources], ["en", "fr"])
+        self.assertEqual(sources[0]["sourceIdKind"], "generated")
+        self.assertEqual(sources[1]["sourceId"], "9000000000000000000")
+        self.assertEqual(sources[1]["sourceIdKind"], "explicit")
 
     def test_mixed_mirrors_raises(self):
         content = """
