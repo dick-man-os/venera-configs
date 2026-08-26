@@ -12,6 +12,7 @@ from tools.source_conversion.generator.js_generator import generate_venera_js
 from tools.source_conversion.patcher.js_patcher import patch_js
 from tools.source_conversion.validator.validate_ir import validate_ir_data
 from tools.source_conversion.validator.validate_registry import (
+    derive_index,
     is_bcp47_locale,
     validate_registry_data,
     validate_repository,
@@ -100,10 +101,25 @@ class TestSourceRegistry(unittest.TestCase):
         self.assertFalse(self.schema["$defs"]["upstream"]["additionalProperties"])
         source_id_schema = self.schema["$defs"]["upstream"]["properties"]["sourceId"]
         self.assertEqual(source_id_schema["type"], "string")
+        artifact_properties = self.schema["$defs"]["artifact"]["properties"]
+        self.assertEqual(artifact_properties["catalogName"]["type"], "string")
+        self.assertEqual(artifact_properties["catalogDescription"]["type"], "string")
 
         invalid = copy.deepcopy(self.registry)
         invalid["artifacts"][0]["typoField"] = True
         self.assertTrue(validate_registry_data(invalid).with_code("SCHEMA_UNKNOWN_FIELD"))
+
+    def test_catalog_metadata_is_optional_string_only(self):
+        for field in ("catalogName", "catalogDescription"):
+            invalid_type = copy.deepcopy(self.registry)
+            invalid_type["artifacts"][0][field] = 42
+            errors = validate_registry_data(invalid_type).with_code("SCHEMA_FIELD_TYPE")
+            self.assertTrue(any(field in error.message for error in errors), field)
+
+            invalid_empty = copy.deepcopy(self.registry)
+            invalid_empty["artifacts"][0][field] = ""
+            errors = validate_registry_data(invalid_empty).with_code("SCHEMA_FIELD_VALUE")
+            self.assertTrue(any(field in error.message for error in errors), field)
 
     def test_all_38_catalog_artifacts_are_registered(self):
         index = json.loads((repo_root / "index.json").read_text(encoding="utf-8"))
@@ -297,16 +313,81 @@ class TestSourceRegistry(unittest.TestCase):
             )
             self.assertEqual(validate_ir_data(ir), [], artifact_id)
 
-    def test_index_mismatches_are_reported_without_mutation(self):
+    def test_index_validation_is_non_writing_and_current_index_is_canonical(self):
         index_path = repo_root / "index.json"
         before = index_path.read_bytes()
         result = validate_repository(repo_root)
         after = index_path.read_bytes()
         self.assertEqual(after, before)
-        self.assertEqual(len(result.with_code("INDEX_NAME_MISMATCH")), 2)
-        self.assertEqual(len(result.with_code("INDEX_VERSION_MISMATCH")), 4)
+        self.assertEqual(len(result.with_code("INDEX_NAME_MISMATCH")), 0)
+        self.assertEqual(len(result.with_code("INDEX_VERSION_MISMATCH")), 0)
         self.assertEqual(len(result.with_code("INDEX_KEY_MISMATCH")), 0)
+        self.assertEqual(len(result.with_code("INDEX_DESCRIPTION_MISMATCH")), 0)
+        self.assertEqual(len(result.with_code("INDEX_ENTRY_MISSING")), 0)
+        self.assertEqual(len(result.with_code("INDEX_ENTRY_EXTRA")), 0)
+        self.assertEqual(len(result.with_code("INDEX_ORDER_MISMATCH")), 0)
         self.assertTrue(all(d.severity == "WARNING" for d in result.warnings))
+
+    def test_canonical_catalog_metadata_and_stale_version_regressions(self):
+        entries = derive_index(repo_root)
+        by_file = {entry["fileName"]: entry for entry in entries}
+
+        self.assertEqual(
+            {
+                artifact_id: artifact["catalogName"]
+                for artifact_id, artifact in self.by_id.items()
+                if "catalogName" in artifact
+            },
+            {
+                "comicabc": "無限動漫",
+                "copy_manga_multi_accounts": "拷贝漫画(多账号)",
+            },
+        )
+        expected_descriptions = {
+            "wnacg": "紳士漫畫漫畫源, 不能使用時請嘗試更換URL",
+            "jm": "禁漫天堂漫畫源, 不能使用時請嘗試切換分流",
+            "manga_dex": "Account feature is not supported yet.",
+            "happy": "中国大陆及日韩IP无法访问，遇到403可以尝试切换其他地区网络",
+            "mycomic": "mycomic.com漫画源, 遇到Cloudflare验证请在源设置中登录",
+        }
+        self.assertEqual(
+            {
+                artifact_id: artifact["catalogDescription"]
+                for artifact_id, artifact in self.by_id.items()
+                if "catalogDescription" in artifact
+            },
+            expected_descriptions,
+        )
+        self.assertEqual(
+            {
+                artifact_id: by_file[f"{artifact_id}.js"]["description"]
+                for artifact_id in expected_descriptions
+            },
+            expected_descriptions,
+        )
+
+        self.assertEqual(by_file["comicabc.js"]["name"], "無限動漫")
+        self.assertEqual(
+            by_file["copy_manga_multi_accounts.js"]["name"],
+            "拷贝漫画(多账号)",
+        )
+        self.assertEqual(
+            {
+                file_name: by_file[file_name]["version"]
+                for file_name in (
+                    "ehentai.js",
+                    "manga_dex.js",
+                    "manwaba.js",
+                    "lanraragi.js",
+                )
+            },
+            {
+                "ehentai.js": "1.2.0",
+                "manga_dex.js": "1.1.1",
+                "manwaba.js": "1.0.3",
+                "lanraragi.js": "1.2.0",
+            },
+        )
 
     def test_registry_linkage_does_not_change_generated_or_final_sources(self):
         tracked_paths = []

@@ -16,6 +16,7 @@
     {
       "artifactId": "copy_manga_multi_accounts",
       "runtimeKey": "copy_manga",
+      "catalogName": "拷贝漫画(多账号)",
       "providerId": "copy_manga",
       "siteUrl": "https://www.copy20.com",
       "implementation": {
@@ -63,6 +64,7 @@
     {
       "artifactId": "wnacg",
       "runtimeKey": "wnacg",
+      "catalogDescription": "紳士漫畫漫畫源, 不能使用時請嘗試更換URL",
       "providerId": "wnacg",
       "siteUrl": "https://wn01.link",
       "implementation": {
@@ -81,6 +83,7 @@
     {
       "artifactId": "jm",
       "runtimeKey": "jm",
+      "catalogDescription": "禁漫天堂漫畫源, 不能使用時請嘗試切換分流",
       "providerId": "jm",
       "implementation": {
         "producer": "manual"
@@ -89,6 +92,7 @@
     {
       "artifactId": "manga_dex",
       "runtimeKey": "manga_dex",
+      "catalogDescription": "Account feature is not supported yet.",
       "providerId": "manga_dex",
       "siteUrl": "https://mangadex.org",
       "implementation": {
@@ -278,6 +282,7 @@
     {
       "artifactId": "happy",
       "runtimeKey": "happy",
+      "catalogDescription": "中国大陆及日韩IP无法访问，遇到403可以尝试切换其他地区网络",
       "providerId": "happy",
       "siteUrl": "https://m.happymh.com",
       "implementation": {
@@ -287,6 +292,7 @@
     {
       "artifactId": "mycomic",
       "runtimeKey": "mycomic",
+      "catalogDescription": "mycomic.com漫画源, 遇到Cloudflare验证请在源设置中登录",
       "providerId": "mycomic",
       "siteUrl": "https://mycomic.com",
       "implementation": {
@@ -356,6 +362,7 @@
     {
       "artifactId": "comicabc",
       "runtimeKey": "zh_Hant_comicabc",
+      "catalogName": "無限動漫",
       "locales": ["zh-Hant"],
       "providerId": "comicabc",
       "siteUrl": "https://www.8comic.com",
