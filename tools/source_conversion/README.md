@@ -73,6 +73,59 @@ outside this registry. Final JavaScript remains authoritative for runtime
 `name`, `key`, and `version`, and taxonomy metadata does not participate in
 canonical index derivation.
 
+## Upstream Inventory Contract
+
+`schema/upstream_inventory.schema.json` defines the future generated inventory
+record without checking in a production inventory. Root `upstreams` entries pin
+each unique upstream `project` to one immutable `commit`; every resolved
+candidate and unresolved module must refer to a declared project snapshot.
+
+One resolved candidate is identified only by `(project, sourceId)`. `sourceId`
+is an opaque JSON string; `module` is a required current upstream locator and
+may change without redefining the candidate. The smallest candidate requires
+`project`, `sourceId`, `module`, raw upstream `name`, raw `upstreamLang`, and
+`compatibility`. `canonicalLocale`, `baseUrl`, `contentWarning`, `theme`,
+`version`, and `extensionLib` are optional evidence or derived values. The
+pinned commit is owned once by the root snapshot rather than duplicated across
+candidates.
+
+Raw `upstreamLang: "all"` stays raw and does not imply a `canonicalLocale`;
+omission means the normalized locale is unresolved. A dynamic module whose
+source instances or IDs cannot be established belongs in `unresolvedModules`,
+with `project`, current `module`, and a structured `reason.code`. It has no
+guessed `sourceId` and does not participate in candidate identity uniqueness.
+
+Compatibility observations are orthogonal:
+
+- `metadataResolution`: `static` or `evaluated`
+- `extraction`: `generic`, `adapter`, `manual`, or `unsupported`
+- `patchRequired`: boolean
+
+Readiness is derived from those observations; it is not a separately maintained
+truth. For example, `extraction: "adapter"` and `patchRequired: true` may
+coexist.
+
+Validate an inventory locally, with optional read-only registry join checking:
+
+```bash
+python tools/source_conversion/validator/validate_inventory.py inventory.json
+python tools/source_conversion/validator/validate_inventory.py inventory.json \
+  --registry sources_registry.json
+```
+
+The validator uses no network access and performs no Gradle or upstream build.
+With `--registry`, it computes and reports zero, one, or multiple matching
+artifact IDs from explicit registry `(upstream.project, upstream.sourceId)`
+metadata. Candidates do not persist those derived results. `runtimeKey`, names,
+and URLs never participate in candidate identity or registry joins, and invalid
+or ambiguous registry upstream mappings fail closed.
+
+Ownership remains separated: the inventory persists pinned upstream evidence
+and compatibility observations; the registry owns artifact/runtime/provider
+identities and shared-runtime-key groups; login state, cookies, selected
+mirrors, and live site health remain runtime-only. Manual overrides are deferred
+until a concrete non-derivable exception requires one.
+
 ## Planned First Bulk-Conversion Policy
 When the converter pipeline is stabilized beyond the Webtoons pilot, future bulk conversion will follow this tiered policy:
 

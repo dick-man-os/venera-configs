@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://venerax.app/schemas/upstream_inventory.schema.json",
+  "title": "Upstream source-instance inventory",
+  "description": "Durable upstream evidence from explicitly pinned project snapshots. Resolved candidate identity is only (project, sourceId).",
+  "type": "object",
+  "required": ["schemaVersion", "upstreams", "candidates", "unresolvedModules"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "upstreams": {
+      "description": "Pinned upstream inputs. Project uniqueness is enforced by deterministic validation.",
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/upstreamSnapshot"}
+    },
+    "candidates": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/candidate"}
+    },
+    "unresolvedModules": {
+      "description": "Module-level discovery failures for which stable source instances could not be resolved without guessing.",
+      "type": "array",
+      "items": {"$ref": "#/$defs/unresolvedModule"}
+    }
+  },
+  "anyOf": [
+    {"properties": {"candidates": {"minItems": 1}}},
+    {"properties": {"unresolvedModules": {"minItems": 1}}}
+  ],
+  "$defs": {
+    "upstreamSnapshot": {
+      "type": "object",
+      "required": ["project", "commit"],
+      "additionalProperties": false,
+      "properties": {
+        "project": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"},
+        "commit": {
+          "description": "Pinned immutable Git commit hash for this upstream project.",
+          "type": "string",
+          "pattern": "^[0-9a-f]{7,64}$"
+        }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "description": "One resolved upstream source instance. Stable identity is (project, sourceId); module may change without changing identity.",
+      "required": ["project", "sourceId", "module", "name", "upstreamLang", "compatibility"],
+      "additionalProperties": false,
+      "properties": {
+        "project": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"},
+        "sourceId": {
+          "description": "Opaque upstream continuity identity serialized as a JSON string.",
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        },
+        "module": {
+          "description": "Required current upstream locator and provenance; excluded from candidate identity.",
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:\\.[a-z0-9]+)*$"
+        },
+        "name": {"description": "Raw upstream source name evidence.", "type": "string", "minLength": 1},
+        "upstreamLang": {
+          "description": "Raw upstream language evidence. Values such as 'all' remain unnormalized.",
+          "type": "string",
+          "minLength": 1
+        },
+        "canonicalLocale": {
+          "description": "Optional derived VeneraX-facing locale. Omission means unresolved; no value is inferred from upstreamLang.",
+          "type": "string",
+          "pattern": "^[a-z]{2,3}(?:-[A-Z][a-z]{3})?(?:-(?:[A-Z]{2}|[0-9]{3}))?$"
+        },
+        "baseUrl": {
+          "description": "Optional upstream site evidence, not an identity or registry join key.",
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https?://"
+        },
+        "contentWarning": {
+          "description": "Optional evidence-backed warning; omission means unknown.",
+          "enum": ["SAFE", "MIXED", "NSFW"]
+        },
+        "theme": {"description": "Optional raw upstream theme or family evidence.", "type": "string", "minLength": 1},
+        "version": {"description": "Optional upstream extension version snapshot.", "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"},
+        "extensionLib": {"description": "Optional upstream extension-library build snapshot.", "type": "string", "pattern": "^[0-9]+\\.[0-9]+$"},
+        "compatibility": {"$ref": "#/$defs/compatibility"}
+      }
+    },
+    "unresolvedModule": {
+      "type": "object",
+      "description": "A current module locator whose source instances could not be resolved to stable IDs.",
+      "required": ["project", "module", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "project": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"},
+        "module": {"type": "string", "pattern": "^[a-z0-9]+(?:\\.[a-z0-9]+)*$"},
+        "reason": {
+          "type": "object",
+          "required": ["code"],
+          "additionalProperties": false,
+          "properties": {
+            "code": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"}
+          }
+        }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "description": "Orthogonal observations for an identified candidate; import readiness is derived rather than independently persisted.",
+      "required": ["metadataResolution", "extraction", "patchRequired"],
+      "additionalProperties": false,
+      "properties": {
+        "metadataResolution": {"enum": ["static", "evaluated"]},
+        "extraction": {"enum": ["generic", "adapter", "manual", "unsupported"]},
+        "patchRequired": {"type": "boolean"}
+      }
+    }
+  }
+}
