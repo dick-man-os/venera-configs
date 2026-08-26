@@ -41,6 +41,7 @@
           "minLength": 1
         },
         "locales": {
+          "description": "Source-instance locale tags in the bounded registry grammar. Omission means unknown; 'all' is not globally reserved because it is a valid three-letter primary language subtag.",
           "type": "array",
           "minItems": 1,
           "uniqueItems": true,
@@ -59,6 +60,7 @@
           "pattern": "^https?://"
         },
         "contentWarning": {
+          "description": "Evidence-backed source warning. Omission means unknown and has no implicit SAFE default.",
           "enum": ["SAFE", "MIXED", "NSFW"]
         },
         "implementation": {
@@ -89,6 +91,7 @@
       }
     },
     "upstream": {
+      "description": "Imported-artifact provenance. Project, module, and sourceId are stable locators; version, extensionLib, and commit are derived reproducibility snapshots.",
       "type": "object",
       "required": ["project", "module", "sourceId", "version", "extensionLib", "commit"],
       "additionalProperties": false,

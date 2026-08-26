@@ -263,15 +263,101 @@ class TestSourceRegistry(unittest.TestCase):
         }
         self.assertEqual(actual, EXPECTED_CONVERTED_UPSTREAM)
 
-    def test_bcp47_locale_acceptance_and_rejection(self):
-        for locale in ("en", "zh-Hans", "zh-Hant"):
+    def test_source_instance_locale_contract(self):
+        for locale in ("en", "ja", "all", "fil", "zh-Hans", "zh-Hant", "pt-BR"):
             self.assertTrue(is_bcp47_locale(locale), locale)
-        for locale in ("zh_Hant", "ZH-hant", "zh-hans", "english", ""):
+        for locale in (
+            "zh_Hant",
+            "ZH-hant",
+            "zh-hans",
+            "pt-br",
+            "english",
+            "",
+        ):
             self.assertFalse(is_bcp47_locale(locale), locale)
 
         invalid = copy.deepcopy(self.registry)
         invalid["artifacts"][-1]["locales"] = ["zh_Hant"]
         self.assertTrue(validate_registry_data(invalid).with_code("INVALID_LOCALE"))
+
+        valid_allar = copy.deepcopy(self.registry)
+        valid_allar["artifacts"][-1]["locales"] = ["all"]
+        self.assertEqual(validate_registry_data(valid_allar).errors, ())
+
+    def test_locale_omission_empty_and_duplicate_semantics(self):
+        artifact = copy.deepcopy(self.by_id["komiic"])
+        artifact.pop("locales", None)
+        omitted = validate_registry_data(
+            {"schemaVersion": "1.0", "artifacts": [artifact]}
+        )
+        self.assertEqual(omitted.errors, ())
+
+        empty = copy.deepcopy(artifact)
+        empty["locales"] = []
+        self.assertTrue(
+            validate_registry_data(
+                {"schemaVersion": "1.0", "artifacts": [empty]}
+            ).with_code("SCHEMA_FIELD_TYPE")
+        )
+
+        duplicate = copy.deepcopy(artifact)
+        duplicate["locales"] = ["en", "en"]
+        self.assertTrue(
+            validate_registry_data(
+                {"schemaVersion": "1.0", "artifacts": [duplicate]}
+            ).with_code("DUPLICATE_LOCALE")
+        )
+
+        locale_schema = self.schema["$defs"]["artifact"]["properties"]["locales"]
+        self.assertNotIn("default", locale_schema)
+        self.assertNotIn("not", locale_schema["items"])
+
+    def test_content_warning_is_optional_without_a_safe_default(self):
+        artifact = copy.deepcopy(self.by_id["komiic"])
+        artifact.pop("contentWarning", None)
+        omitted = validate_registry_data(
+            {"schemaVersion": "1.0", "artifacts": [artifact]}
+        )
+        self.assertEqual(omitted.errors, ())
+
+        for warning in ("SAFE", "MIXED", "NSFW"):
+            valid = copy.deepcopy(artifact)
+            valid["contentWarning"] = warning
+            self.assertEqual(
+                validate_registry_data(
+                    {"schemaVersion": "1.0", "artifacts": [valid]}
+                ).errors,
+                (),
+                warning,
+            )
+
+        for warning in ("safe", "UNKNOWN", None):
+            invalid = copy.deepcopy(artifact)
+            invalid["contentWarning"] = warning
+            self.assertTrue(
+                validate_registry_data(
+                    {"schemaVersion": "1.0", "artifacts": [invalid]}
+                ).with_code("SCHEMA_FIELD_VALUE"),
+                warning,
+            )
+
+        warning_schema = self.schema["$defs"]["artifact"]["properties"][
+            "contentWarning"
+        ]
+        self.assertNotIn("default", warning_schema)
+
+    def test_upstream_locator_and_snapshot_shape_remains_local_and_compatible(self):
+        upstream_schema = self.schema["$defs"]["upstream"]
+        self.assertEqual(
+            set(upstream_schema["required"]),
+            {"project", "module", "sourceId", "version", "extensionLib", "commit"},
+        )
+
+        artifact = copy.deepcopy(self.by_id["flamecomics"])
+        result = validate_registry_data(
+            {"schemaVersion": "1.0", "artifacts": [artifact]}
+        )
+        self.assertEqual(result.errors, ())
 
     def test_registry_ir_artifact_linkage(self):
         links = {}

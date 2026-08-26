@@ -112,6 +112,44 @@ class TestIndexDerivation(unittest.TestCase):
         )
         self.assertNotIn("description", entries[1])
 
+    def test_taxonomy_metadata_does_not_affect_canonical_index_fields(self):
+        baseline = artifact("sample", "sample_runtime")
+        taxonomy_hardened = artifact(
+            "sample",
+            "sample_runtime",
+            locales=["pt-BR"],
+            siteUrl="https://example.com",
+            contentWarning="MIXED",
+            upstream={
+                "project": "example/extensions-source",
+                "module": "pt.sample",
+                "sourceId": "123456789",
+                "version": "1.6.1",
+                "extensionLib": "1.6",
+                "commit": "0123456789abcdef0123456789abcdef01234567",
+            },
+        )
+
+        self.write_registry([baseline])
+        self.write_source("sample", "Runtime Sample", "sample_runtime", "4.5.6")
+        baseline_entry = derive_index(self.root)
+
+        self.write_registry([taxonomy_hardened])
+        hardened_entry = derive_index(self.root)
+
+        self.assertEqual(hardened_entry, baseline_entry)
+        self.assertEqual(
+            hardened_entry,
+            [
+                {
+                    "name": "Runtime Sample",
+                    "fileName": "sample.js",
+                    "key": "sample_runtime",
+                    "version": "4.5.6",
+                }
+            ],
+        )
+
     def test_duplicate_runtime_keys_remain_distinct_copy_manga_artifacts(self):
         shared = {"sharedRuntimeKeyGroup": "copy_manga"}
         artifacts = [

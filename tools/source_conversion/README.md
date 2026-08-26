@@ -47,6 +47,32 @@ Structural or identity violations are emitted as `ERROR`. Stale catalog
 name/version/key metadata is emitted as `WARNING`, while explicitly modeled
 shared installation slots are emitted as `REPORT`.
 
+Registry `locales` describe the source instance, not every language returned by
+the source, query-language support, content origin, or a mandatory search
+filter. The accepted bounded grammar is a 2-3 letter lowercase language subtag,
+an optional Titlecase four-letter script subtag, and an optional uppercase
+two-letter or three-digit region subtag (for example `en`, `ja`, `zh-Hans`,
+`zh-Hant`, or `pt-BR`). Omission means unknown. Empty arrays, duplicates,
+and non-canonical casing are invalid. The registry grammar does not reserve
+`all`: as a primary language subtag it may legitimately mean Allar. This is
+distinct from Keiyoushi's operational `all` sentinel. Future upstream
+inventory or extraction must not copy that sentinel into `locales` or normalize
+it to `en`, `mul`, or a guessed locale; when no reliable source-instance locale
+is available, `locales` remains omitted. That ingestion rule is outside the
+current registry validator.
+
+`contentWarning` is optional and, when present, is exactly `SAFE`, `MIXED`, or
+`NSFW`. Omission means unknown and never defaults to `SAFE`. Stable imported
+source locators are `upstream.project`, `upstream.module`, and
+`upstream.sourceId`; `upstream.version`, `upstream.extensionLib`, and
+`upstream.commit` are reproducibility snapshots. Normal registry validation is
+local and does not fetch or execute an upstream checkout.
+
+Runtime capabilities and transient workflow or session state are deliberately
+outside this registry. Final JavaScript remains authoritative for runtime
+`name`, `key`, and `version`, and taxonomy metadata does not participate in
+canonical index derivation.
+
 ## Planned First Bulk-Conversion Policy
 When the converter pipeline is stabilized beyond the Webtoons pilot, future bulk conversion will follow this tiered policy:
 

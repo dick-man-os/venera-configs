@@ -127,7 +127,7 @@ def _add(
 
 
 def is_bcp47_locale(value: Any) -> bool:
-    """Return whether value uses the bounded BCP-47 form accepted by phase 1."""
+    """Return whether value uses the bounded source-instance locale grammar."""
     return isinstance(value, str) and BCP47_LOCALE_RE.fullmatch(value) is not None
 
 
@@ -362,7 +362,7 @@ def _validate_artifact(
                         "ERROR",
                         "INVALID_LOCALE",
                         subject,
-                        f"Locale {locale!r} is not in the accepted BCP-47 form.",
+                        f"Locale {locale!r} is not in the accepted source-instance locale form.",
                     )
 
     if "siteUrl" in artifact:
