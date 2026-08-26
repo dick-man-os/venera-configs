@@ -98,8 +98,9 @@ guessed `sourceId` and does not participate in candidate identity uniqueness.
 Compatibility observations are orthogonal:
 
 - `metadataResolution`: `static` or `evaluated`
-- `extraction`: `generic`, `adapter`, `manual`, or `unsupported`
-- `patchRequired`: boolean
+- `extraction`: `unclassified`, `generic`, `adapter`, `manual`, or `unsupported`
+- optional `patchRequired`: omitted when unknown, otherwise an evidence-backed
+  boolean classification
 
 Readiness is derived from those observations; it is not a separately maintained
 truth. For example, `extraction: "adapter"` and `patchRequired: true` may
@@ -119,6 +120,44 @@ artifact IDs from explicit registry `(upstream.project, upstream.sourceId)`
 metadata. Candidates do not persist those derived results. `runtimeKey`, names,
 and URLs never participate in candidate identity or registry joins, and invalid
 or ambiguous registry upstream mappings fail closed.
+
+### Deterministic static inventory generation
+
+`inventory/generate_static_inventory.py` discovers `src/**/build.gradle.kts`
+modules in stable repository-relative order and reuses the existing Gradle
+parser. Repository-relative module segments are lowercased to the accepted B1
+locator grammar, with collisions rejected rather than merged. A source block
+becomes a candidate only when its raw name, raw language,
+and authoritative explicit or parser-derived source ID are all static. Dynamic
+or missing required metadata produces a module record with one of three bounded
+reason codes: `unresolved-required-metadata`, `no-source-blocks`, or
+`static-parse-error`. Optional base URL, content warning, theme, version, and
+extension-library metadata are emitted only when statically resolved. No locale
+is inferred, so raw `upstreamLang: "all"` remains `"all"` and does not produce a
+`canonicalLocale`.
+
+The CLI reads `git rev-parse --verify HEAD` with a process-local
+`safe.directory` override, without changing Git config or repository state, and
+can enforce an exact expected commit. It does not run Gradle or Kotlin and
+refuses to write output inside the supplied upstream checkout. Omitting
+`--output` writes JSON to stdout; file output always requires an explicit path:
+
+```bash
+python tools/source_conversion/inventory/generate_static_inventory.py \
+  --extensions-root ../extensions-source \
+  --project keiyoushi/extensions-source \
+  --expected-commit 5e06c412c0264b18120fd963fdd6efb529f3fa29
+```
+
+Serialization is UTF-8 JSON with controlled field insertion order, two-space
+indentation, `ensure_ascii=False`, and exactly one LF at EOF. Candidates sort by
+`(project, sourceId, module, name, upstreamLang)` and unresolved modules sort by
+`(project, module, reason.code)`. There are no timestamps, absolute paths,
+filesystem metadata, runtime keys, registry-owned artifact IDs, or candidate
+commit copies. B2 records `metadataResolution: static` and
+`extraction: unclassified`, omitting `patchRequired`, because discovery does
+not evaluate conversion or patch compatibility. `unsupported` and explicit
+patch booleans are reserved for candidates with classification evidence.
 
 Ownership remains separated: the inventory persists pinned upstream evidence
 and compatibility observations; the registry owns artifact/runtime/provider

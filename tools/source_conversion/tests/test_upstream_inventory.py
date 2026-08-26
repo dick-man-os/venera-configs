@@ -206,6 +206,46 @@ class TestUpstreamInventory(unittest.TestCase):
             "SCHEMA_FIELD_VALUE",
         )
 
+    def test_unclassified_extraction_may_omit_patch_required(self):
+        compatibility = {
+            "metadataResolution": "static",
+            "extraction": "unclassified",
+        }
+        self.assert_valid(inventory(candidate(compatibility=compatibility)))
+
+    def test_all_classified_extraction_modes_remain_valid(self):
+        for extraction in ("generic", "adapter", "manual", "unsupported"):
+            with self.subTest(extraction=extraction):
+                compatibility = {
+                    "metadataResolution": "evaluated",
+                    "extraction": extraction,
+                    "patchRequired": False,
+                }
+                self.assert_valid(
+                    inventory(candidate(compatibility=compatibility))
+                )
+
+    def test_classified_candidate_may_explicitly_set_patch_required_false(self):
+        compatibility = {
+            "metadataResolution": "evaluated",
+            "extraction": "generic",
+            "patchRequired": False,
+        }
+        self.assert_valid(inventory(candidate(compatibility=compatibility)))
+
+    def test_omitted_patch_required_is_not_defaulted_or_injected(self):
+        compatibility = {
+            "metadataResolution": "static",
+            "extraction": "unclassified",
+        }
+        data = inventory(candidate(compatibility=compatibility))
+        before = copy.deepcopy(data)
+        self.assert_valid(data)
+        self.assertEqual(data, before)
+        self.assertNotIn(
+            "patchRequired", data["candidates"][0]["compatibility"]
+        )
+
     def test_patch_required_can_coexist_with_adapter_extraction(self):
         compatibility = {
             "metadataResolution": "evaluated",
@@ -365,6 +405,14 @@ class TestUpstreamInventory(unittest.TestCase):
         self.assertEqual(
             compatibility_schema["properties"]["metadataResolution"]["enum"],
             ["static", "evaluated"],
+        )
+        self.assertEqual(
+            set(compatibility_schema["required"]),
+            {"metadataResolution", "extraction"},
+        )
+        self.assertEqual(
+            compatibility_schema["properties"]["extraction"]["enum"],
+            ["unclassified", "generic", "adapter", "manual", "unsupported"],
         )
 
 

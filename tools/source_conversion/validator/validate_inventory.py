@@ -53,9 +53,16 @@ REQUIRED_CANDIDATE_FIELDS = {
 UNRESOLVED_MODULE_FIELDS = {"project", "module", "reason"}
 UNRESOLVED_REASON_FIELDS = {"code"}
 COMPATIBILITY_FIELDS = {"metadataResolution", "extraction", "patchRequired"}
+REQUIRED_COMPATIBILITY_FIELDS = {"metadataResolution", "extraction"}
 
 METADATA_RESOLUTIONS = {"static", "evaluated"}
-EXTRACTION_MODES = {"generic", "adapter", "manual", "unsupported"}
+EXTRACTION_MODES = {
+    "unclassified",
+    "generic",
+    "adapter",
+    "manual",
+    "unsupported",
+}
 CONTENT_WARNINGS = {"SAFE", "MIXED", "NSFW"}
 SEVERITY_ORDER = {"ERROR": 0}
 
@@ -207,7 +214,9 @@ def _validate_compatibility(
         return
 
     _check_unknown_fields(diagnostics, value, COMPATIBILITY_FIELDS, subject)
-    _check_required_fields(diagnostics, value, COMPATIBILITY_FIELDS, subject)
+    _check_required_fields(
+        diagnostics, value, REQUIRED_COMPATIBILITY_FIELDS, subject
+    )
 
     metadata_resolution = value.get("metadataResolution")
     if metadata_resolution not in METADATA_RESOLUTIONS:
@@ -227,7 +236,7 @@ def _validate_compatibility(
             "Field 'compatibility.extraction' must be one of "
             f"{sorted(EXTRACTION_MODES)}.",
         )
-    if not isinstance(value.get("patchRequired"), bool):
+    if "patchRequired" in value and not isinstance(value["patchRequired"], bool):
         _add(
             diagnostics,
             "SCHEMA_FIELD_TYPE",

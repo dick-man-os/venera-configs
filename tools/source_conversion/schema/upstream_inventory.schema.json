@@ -107,12 +107,15 @@
     "compatibility": {
       "type": "object",
       "description": "Orthogonal observations for an identified candidate; import readiness is derived rather than independently persisted.",
-      "required": ["metadataResolution", "extraction", "patchRequired"],
+      "required": ["metadataResolution", "extraction"],
       "additionalProperties": false,
       "properties": {
         "metadataResolution": {"enum": ["static", "evaluated"]},
-        "extraction": {"enum": ["generic", "adapter", "manual", "unsupported"]},
-        "patchRequired": {"type": "boolean"}
+        "extraction": {"enum": ["unclassified", "generic", "adapter", "manual", "unsupported"]},
+        "patchRequired": {
+          "description": "Optional classified patch observation. Omission means unknown or not yet classified.",
+          "type": "boolean"
+        }
       }
     }
   }
