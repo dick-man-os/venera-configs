@@ -235,6 +235,61 @@ python tools/source_conversion/inventory/generate_static_inventory.py \
 The exact-path `.gitattributes` rule keeps the canonical JSON LF-normalized in
 both the Git index and Windows working tree without normalizing unrelated files.
 
+## Deterministic eligibility planner
+
+`planner/eligibility_planner.py` is a read-only planning boundary over the
+canonical inventory, the registry, and a clean checkout at the inventory pin.
+It validates those inputs, scans Kotlin/Gradle text for bounded capability
+signals without executing extension code, and writes one deterministic JSON
+report to stdout. It has no report-file mode and does not update the inventory,
+registry, index, IR, generated sources, or patches.
+
+```bash
+python tools/source_conversion/planner/eligibility_planner.py \
+  --extensions-root ../extensions-source
+```
+
+The normalized report has three levels. A family owns references to explicit
+member modules; a module summarizes its candidate routes; and each candidate
+owns exactly one canonical `(project, sourceId)` identity and its module
+locator. Families are derived only from explicit upstream `theme` metadata and
+multi-candidate module identity. No name, hostname, URL, or language similarity
+creates a family.
+
+Candidate eligibility uses these fail-closed routes:
+
+- `E0`: exactly one existing registry upstream-identity join
+- `E1`: explicit inventory `generic` extraction evidence
+- `E2`: explicit inventory `adapter` extraction evidence
+- `E3`: an explicit theme or multi-candidate-module relationship
+- `E4`: explicit inventory `manual` extraction evidence
+- `E5`: explicit evidence that required core extraction is `unsupported`
+- `E6`: unknown or insufficient static evidence
+
+Registry upstream identities that resolve to zero or multiple inventory
+candidates, and candidate identities joined to multiple registry artifacts,
+fail closed. Runtime keys, artifact IDs, filenames, import state, and generated
+paths are never created. Existing artifact IDs appear only as the evidence for
+an exact E0 registry join.
+
+Patch state is orthogonal: an explicit `patchRequired: false` is
+`not-required`, `true` is `required`, and omission remains `unknown`. Likewise,
+`contentWarning` is reported as metadata but never changes E0-E6. Raw upstream
+language is preserved; in particular, raw `zh` is not normalized to `zh-Hans`
+or `zh-Hant`.
+
+Credentials/token, WebView/QuickJS, crypto/decoder, request-signing, image-
+interceptor, user-configuration, and static-local-catalog matches are lexical
+evidence flags only. A flag alone never implies `E5`; absent explicit required-
+core evidence, the route remains `E6` or the independently justified family
+route. Current-pin counts live only in integration tests and report summaries,
+not planner rules.
+
+The accepted eight-member MangaCatalog set may appear under `proposals` only
+when all named candidates still resolve uniquely in the explicit theme and
+remain `E3`. It is labeled `review-only`, is selected by the bounded proposal
+rule rather than `contentWarning`, and does not create imports or artifacts.
+
 ## Planned First Bulk-Conversion Policy
 When the converter pipeline is stabilized beyond the Webtoons pilot, future bulk conversion will follow this tiered policy:
 
