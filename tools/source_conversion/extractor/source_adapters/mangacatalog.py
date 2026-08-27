@@ -166,9 +166,20 @@ def extract(
 
     lang_mapped = language_override if language_override else lang
 
+    normalized_path = source_path.replace("\\", "/")
+    parts = normalized_path.split("/")
+    if len(parts) != 2 or not parts[0] or not parts[1]:
+        raise ValueError(f"source_path must have exactly two non-empty components '<lang>/<module>', got: {repr(source_path)}")
+
+    for part in parts:
+        if not re.match(r"^[a-z0-9_]+$", part):
+            raise ValueError(f"Invalid character or uppercase in source_path component: {repr(part)}. Only lowercase letters, digits, and underscores are allowed.")
+
+    canonical_id = f"{parts[0]}_{parts[1]}"
+
     ir_data = {
         "schemaVersion": "0.2",
-        "id": f"{lang}_{name.lower().replace(' ', '')}",
+        "id": canonical_id,
         "name": name,
         "languages": [lang_mapped],
         "contentOrigins": ["KR", "JP", "CN"],

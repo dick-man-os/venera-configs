@@ -344,5 +344,104 @@ class TestMangaCatalogExtraction(unittest.TestCase):
             self.fail(fail_msg)
         self.assertTrue(done_called, "The assertions did not complete.")
 
+    def test_canonical_identity_derivation(self):
+        kt_content = """
+        package eu.kanade.tachiyomi.extension.en.synthetic
+        import eu.kanade.tachiyomi.multisrc.mangacatalog.MangaCatalog
+
+        class SyntheticManga : MangaCatalog() {
+            override val sourceList = listOf(
+                Pair("Zebra", "$baseUrl/manga/zebra/")
+            )
+        }
+        """
+
+        cases = [
+            ("en/readblackclovermangaonline", "Read Black Clover Manga Online", "en_readblackclovermangaonline"),
+            ("en/readfairytailedenszeromangaonline", "Read Fairy Tail & Edens Zero Manga Online", "en_readfairytailedenszeromangaonline"),
+            ("en/readjujutsukaisenmangaonline", "Read Jujutsu Kaisen Manga Online", "en_readjujutsukaisenmangaonline"),
+            ("en/readkingdommangaonline", "Read Kingdom Manga Online", "en_readkingdommangaonline"),
+            ("en/readnanatsunotaizai7deadlysinsmangaonline", "Read Nanatsu no Taizai 7 Deadly Sins Manga Online", "en_readnanatsunotaizai7deadlysinsmangaonline"),
+            ("en/readonepiecemangaonline", "Read One Piece Manga Online", "en_readonepiecemangaonline"),
+            ("en/readsololevelingmangamanhwaonline", "Read Solo Leveling Manga Manhwa Online", "en_readsololevelingmangamanhwaonline"),
+            ("en/readtokyoghoulretokyoghoulmangaonline", "Read Tokyo Ghoul Re & Tokyo Ghoul Manga Online", "en_readtokyoghoulretokyoghoulmangaonline")
+        ]
+
+        with mock.patch('os.walk') as mock_walk, \
+             mock.patch('os.path.exists', return_value=True), \
+             mock.patch('builtins.open', mock.mock_open(read_data=kt_content)), \
+             mock.patch('source_adapters.mangacatalog._get_git_commit', return_value="abcdef"), \
+             mock.patch('source_adapters.mangacatalog._get_upstream_license', return_value="MIT"):
+
+            mock_walk.return_value = [("/src", [], ["SyntheticManga.kt"])]
+
+            for source_path, display_name, expected_id in cases:
+                gradle_meta = {
+                    "name": display_name,
+                    "versionCode": 1,
+                    "libVersion": "1.4",
+                    "contentWarning": "SAFE",
+                    "theme": "mangacatalog",
+                    "sources": [
+                        {
+                            "lang": "en",
+                            "baseUrl": "https://synthetic.com",
+                            "sourceId": "12345"
+                        }
+                    ]
+                }
+
+                ir_data = mangacatalog.extract(
+                    "/dummy/path",
+                    source_path,
+                    gradle_meta=gradle_meta,
+                    timestamp="2026-08-27T00:00:00Z"
+                )
+
+                self.assertEqual(ir_data["id"], expected_id, f"Failed for {source_path}")
+
+
+    def test_invalid_canonical_identity_rejected(self):
+        kt_content = """
+        package eu.kanade.tachiyomi.extension.en.synthetic
+        import eu.kanade.tachiyomi.multisrc.mangacatalog.MangaCatalog
+
+        class SyntheticManga : MangaCatalog() {
+            override val sourceList = listOf(
+                Pair("Zebra", "$baseUrl/manga/zebra/")
+            )
+        }
+        """
+
+        bad_cases = [
+            "../evil",
+            "en/../evil",
+            "en/foo/bar",
+            "/en/foo",
+            "C:\\evil\\foo",
+            "en/Foo",
+            "en/foo-bar",
+            "en/foo&bar",
+            "en/foo bar",
+            "en//foo"
+        ]
+
+        with mock.patch('os.walk') as mock_walk, \
+             mock.patch('os.path.exists', return_value=True), \
+             mock.patch('builtins.open', mock.mock_open(read_data=kt_content)), \
+             mock.patch('source_adapters.mangacatalog._get_git_commit', return_value="abcdef"), \
+             mock.patch('source_adapters.mangacatalog._get_upstream_license', return_value="MIT"):
+
+            mock_walk.return_value = [("/src", [], ["SyntheticManga.kt"])]
+
+            for bad_path in bad_cases:
+                with self.assertRaises(ValueError, msg=f"Failed to reject: {bad_path}"):
+                    mangacatalog.extract(
+                        "/dummy/path",
+                        bad_path,
+                        gradle_meta=self.gradle_meta,
+                        timestamp="2026-08-27T00:00:00Z"
+                    )
+
 if __name__ == '__main__':
     unittest.main()

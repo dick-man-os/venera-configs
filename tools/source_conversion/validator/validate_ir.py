@@ -53,6 +53,20 @@ def validate_ir_data(data: Any) -> List[str]:
         if field not in data:
             errors.append(f"Missing required top-level field: '{field}'")
 
+    schema_version = data.get("schemaVersion")
+    is_v01 = False
+    is_v02 = False
+
+    if not isinstance(schema_version, str):
+        errors.append(f"Field 'schemaVersion' must be a string exactly '0.1', '0.1.0', or '0.2' (got: {repr(schema_version)})")
+    elif schema_version in ("0.1", "0.1.0"):
+        is_v01 = True
+    elif schema_version == "0.2":
+        is_v02 = True
+    else:
+        errors.append(f"Field 'schemaVersion' must be exactly '0.1', '0.1.0', or '0.2' (got: {repr(schema_version)})")
+
+
     # Check unknown top-level fields
     known_fields = set(required_fields) | {
         "artifactId",
@@ -67,6 +81,39 @@ def validate_ir_data(data: Any) -> List[str]:
         "cookies",
         "provenance",
     }
+
+    if is_v02:
+        known_fields.add("staticCatalog")
+
+    # Validate staticCatalog if present
+    if "staticCatalog" in data:
+        cat = data["staticCatalog"]
+        if not is_v02:
+            errors.append("Field 'staticCatalog' is only allowed in schemaVersion 0.2.")
+        elif not isinstance(cat, list):
+            errors.append("Field 'staticCatalog' must be an array.")
+        elif len(cat) < 1:
+            errors.append("Field 'staticCatalog' must contain at least 1 item.")
+        else:
+            for i, item in enumerate(cat):
+                if not isinstance(item, dict):
+                    errors.append(f"staticCatalog[{i}] must be an object.")
+                else:
+                    if "title" not in item:
+                        errors.append(f"staticCatalog[{i}] is missing required property 'title'.")
+                    elif not isinstance(item["title"], str):
+                        errors.append(f"staticCatalog[{i}] property 'title' must be a string.")
+
+                    if "url" not in item:
+                        errors.append(f"staticCatalog[{i}] is missing required property 'url'.")
+                    elif not isinstance(item["url"], str):
+                        errors.append(f"staticCatalog[{i}] property 'url' must be a string.")
+
+                    for k in item.keys():
+                        if k not in ("title", "url"):
+                            errors.append(f"staticCatalog[{i}] contains forbidden property '{k}'.")
+
+
     for field in data:
         if field not in known_fields:
             errors.append(f"Unknown top-level property: '{field}'")
@@ -87,14 +134,6 @@ def validate_ir_data(data: Any) -> List[str]:
         if not isinstance(v, str) or not re.match(r"^[0-9]+\.[0-9]+\.[0-9]+$", v):
             errors.append(
                 f"Field 'version' must be a semantic version string (e.g., '1.0.0') (got: {repr(v)})"
-            )
-
-    # schemaVersion
-    if "schemaVersion" in data:
-        sv = data["schemaVersion"]
-        if not isinstance(sv, str) or not SCHEMA_VERSION_RE.match(sv):
-            errors.append(
-                f"Field 'schemaVersion' must be a string matching '0.1' or '0.2' (got: {repr(sv)})"
             )
 
     # id & name
@@ -228,21 +267,51 @@ def validate_ir_data(data: Any) -> List[str]:
             for tab_name, tab_def in explore.items():
                 if not isinstance(tab_def, dict):
                     errors.append(f"Explore tab '{tab_name}' must be an object.")
-                elif not tab_def.get("manualPatchRequired", False):
-                    if "url" not in tab_def or not isinstance(tab_def["url"], str):
-                        errors.append(f"Explore tab '{tab_name}' requires 'url' string.")
-                    if "method" in tab_def and tab_def["method"] not in ALLOWED_METHODS:
-                        errors.append(f"Explore tab '{tab_name}' has invalid method '{tab_def['method']}'.")
+                else:
+                    use_static = False
+                    if "useStaticCatalog" in tab_def:
+                        use_static = tab_def["useStaticCatalog"]
+                        if not is_v02:
+                            errors.append(f"Explore tab '{tab_name}' has 'useStaticCatalog' which is only allowed in schemaVersion 0.2.")
+                        if not isinstance(use_static, bool):
+                            errors.append(f"Explore tab '{tab_name}' 'useStaticCatalog' must be a boolean.")
+
+                    if use_static is True:
+                        if "staticCatalog" not in data:
+                            errors.append(f"Explore tab '{tab_name}' uses staticCatalog but root 'staticCatalog' is missing.")
+                        for f_name in ("url", "method", "selector", "fields", "pagination"):
+                            if f_name in tab_def:
+                                errors.append(f"Explore tab '{tab_name}' has '{f_name}' but 'useStaticCatalog' is true.")
+                    elif not tab_def.get("manualPatchRequired", False):
+                        if "url" not in tab_def or not isinstance(tab_def["url"], str):
+                            errors.append(f"Explore tab '{tab_name}' requires 'url' string.")
+                        if "method" in tab_def and tab_def["method"] not in ALLOWED_METHODS:
+                            errors.append(f"Explore tab '{tab_name}' has invalid method '{tab_def['method']}'.")
 
     if "search" in data:
         search = data["search"]
         if not isinstance(search, dict):
             errors.append("Field 'search' must be an object.")
-        elif not search.get("manualPatchRequired", False):
-            if "url" not in search or not isinstance(search["url"], str):
-                errors.append("Field 'search' requires 'url' string.")
-            if "method" not in search or search["method"] not in ALLOWED_METHODS:
-                errors.append(f"Field 'search' requires 'method' to be one of {sorted(ALLOWED_METHODS)}.")
+        else:
+            use_static = False
+            if "useStaticCatalog" in search:
+                use_static = search["useStaticCatalog"]
+                if not is_v02:
+                    errors.append("Field 'search' has 'useStaticCatalog' which is only allowed in schemaVersion 0.2.")
+                if not isinstance(use_static, bool):
+                    errors.append("Field 'search' 'useStaticCatalog' must be a boolean.")
+
+            if use_static is True:
+                if "staticCatalog" not in data:
+                    errors.append("Field 'search' uses staticCatalog but root 'staticCatalog' is missing.")
+                for f_name in ("url", "method", "selector", "fields", "pagination"):
+                    if f_name in search:
+                        errors.append(f"Field 'search' has '{f_name}' but 'useStaticCatalog' is true.")
+            elif not search.get("manualPatchRequired", False):
+                if "url" not in search or not isinstance(search["url"], str):
+                    errors.append("Field 'search' requires 'url' string.")
+                if "method" not in search or search["method"] not in ALLOWED_METHODS:
+                    errors.append(f"Field 'search' requires 'method' to be one of {sorted(ALLOWED_METHODS)}.")
 
     if "details" in data:
         details = data["details"]
