@@ -75,10 +75,13 @@ canonical index derivation.
 
 ## Upstream Inventory Contract
 
-`schema/upstream_inventory.schema.json` defines the future generated inventory
-record without checking in a production inventory. Root `upstreams` entries pin
-each unique upstream `project` to one immutable `commit`; every resolved
-candidate and unresolved module must refer to a declared project snapshot.
+`schema/upstream_inventory.schema.json` defines the generated inventory record.
+`inventory/upstream_inventory.json` is the canonical checked-in snapshot of what
+exists in the exact pinned upstream checkout. It is upstream evidence only, not
+runtime, import, conversion, registry, or generated-JavaScript ownership. Root
+`upstreams` entries pin each unique upstream `project` to one immutable
+`commit`; every resolved candidate and unresolved module must refer to a
+declared project snapshot.
 
 One resolved candidate is identified only by `(project, sourceId)`. `sourceId`
 is an opaque JSON string; `module` is a required current upstream locator and
@@ -194,6 +197,43 @@ and compatibility observations; the registry owns artifact/runtime/provider
 identities and shared-runtime-key groups; login state, cookies, selected
 mirrors, and live site health remain runtime-only. Manual overrides are deferred
 until a concrete non-derivable exception requires one.
+
+### Canonical inventory lifecycle
+
+Ad-hoc generation remains available through stdout or an explicit `--output`.
+The fixed canonical path can only be managed through mutually exclusive
+`--write` and `--check` modes. Both modes require the exact canonical project
+and full pin, prove that `--extensions-root` is the Git top-level at that HEAD,
+and accept any configured fetch-remote name whose normalized GitHub HTTPS or SSH
+URL identifies `keiyoushi/extensions-source`. They do not fetch or alter Git
+configuration.
+
+Both modes generate twice in memory and fail closed on semantic or byte-order
+nondeterminism. Generated data is checked with the existing inventory validator,
+joined to registry upstream metadata only by `(project, sourceId)`, and gated by
+the existing whole-repository registry validator. `--check` requires the
+snapshot to exist, never repairs it, and distinguishes semantic inventory drift
+from byte-only serialization drift. `--write` treats an absent snapshot as a
+bootstrap, prints an ephemeral deterministic review summary, writes a
+same-directory temporary file only after every guard passes, and atomically
+replaces the canonical path. No summary or hash sidecar is persisted.
+
+```bash
+python tools/source_conversion/inventory/generate_static_inventory.py \
+  --extensions-root ../extensions-source \
+  --project keiyoushi/extensions-source \
+  --expected-commit 5e06c412c0264b18120fd963fdd6efb529f3fa29 \
+  --write
+
+python tools/source_conversion/inventory/generate_static_inventory.py \
+  --extensions-root ../extensions-source \
+  --project keiyoushi/extensions-source \
+  --expected-commit 5e06c412c0264b18120fd963fdd6efb529f3fa29 \
+  --check
+```
+
+The exact-path `.gitattributes` rule keeps the canonical JSON LF-normalized in
+both the Git index and Windows working tree without normalizing unrelated files.
 
 ## Planned First Bulk-Conversion Policy
 When the converter pipeline is stabilized beyond the Webtoons pilot, future bulk conversion will follow this tiered policy:
