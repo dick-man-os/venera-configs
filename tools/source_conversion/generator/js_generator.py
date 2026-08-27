@@ -133,12 +133,21 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     explore_sections: List[str] = []
     explore_custom_hooks: List[str] = []
 
+    static_catalog = ir_data.get("staticCatalog")
+    if static_catalog:
+        import json
+        static_catalog_json = json.dumps(static_catalog, indent=8, ensure_ascii=False)
+        static_catalog_code = f"    // Static Catalog Array\n    staticCatalog = {static_catalog_json.strip()};\n\n"
+    else:
+        static_catalog_code = ""
+
     for tab_key, tab_def in explore_dict.items():
         tab_title = tab_key.capitalize()
         tab_url = tab_def.get("url", "")
         tab_selector = tab_def.get("selector", "")
         tab_fields = tab_def.get("fields", {})
         manual_patch = tab_def.get("manualPatchRequired", False)
+        use_static = tab_def.get("useStaticCatalog", False)
 
         fail_closed = enforce_fail_closed(manual_patch, f"explore {tab_key}", True)
 
@@ -176,7 +185,16 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
 
         custom_hook_name = f"load{tab_key.capitalize()}Custom"
 
-        if manual_patch:
+        if use_static:
+            explore_body = f"""                return {{
+                    comics: this.staticCatalog.map(item => new Comic({{
+                        id: item.url,
+                        title: item.title,
+                        cover: \"\"
+                    }})),
+                    hasMore: false
+                }};"""
+        elif manual_patch:
             explore_body = f"                return await this.{custom_hook_name}(page);"
             explore_custom_hook = f"""
     /**
@@ -221,6 +239,7 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     # 5. Extract search
     search_dict = ir_data.get("search", {})
     search_manual = search_dict.get("manualPatchRequired", False)
+    search_use_static = search_dict.get("useStaticCatalog", False)
     search_url = search_dict.get("url", "")
     search_selector = search_dict.get("selector", "")
     search_fields = search_dict.get("fields", {})
@@ -254,7 +273,20 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
         search_pagination_js = ""
         search_max_page_expr = "100"
 
-    if search_manual:
+    if search_use_static:
+        search_body = f"""              const q = (keyword || \"\").toLowerCase();
+              return {{
+                  comics: this.staticCatalog
+                      .filter(item => item.title.toLowerCase().includes(q))
+                      .map(item => new Comic({{
+                          id: item.url,
+                          title: item.title,
+                          cover: \"\"
+                      }})),
+                  hasMore: false
+              }};"""
+        search_custom_hook = ""
+    elif search_manual:
         search_body = "            return await this.loadSearchCustom(keyword, options, page);"
         search_custom_hook = """
     /**
@@ -526,7 +558,7 @@ class {class_name} extends ComicSource {{
     static headers = {{
 {headers_code}
     }}{settings_code}{cookies_init}
-
+{static_catalog_code}
     // Explore / Discovery Sections
     explore = [
 {explore_code}

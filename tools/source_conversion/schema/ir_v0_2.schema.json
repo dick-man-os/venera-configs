@@ -45,7 +45,12 @@
       "type": "array",
       "items": {
         "type": "string",
-        "enum": ["zh-Hans", "zh-Hant", "ko", "en"]
+        "enum": [
+          "zh-Hans",
+          "zh-Hant",
+          "ko",
+          "en"
+        ]
       },
       "minItems": 1,
       "uniqueItems": true
@@ -54,17 +59,29 @@
       "type": "array",
       "items": {
         "type": "string",
-        "enum": ["KR", "CN", "JP"]
+        "enum": [
+          "KR",
+          "CN",
+          "JP"
+        ]
       },
       "uniqueItems": true
     },
     "contentWarning": {
       "type": "string",
-      "enum": ["SAFE", "MIXED", "NSFW"]
+      "enum": [
+        "SAFE",
+        "MIXED",
+        "NSFW"
+      ]
     },
     "sourceType": {
       "type": "string",
-      "enum": ["api", "html", "hybrid"]
+      "enum": [
+        "api",
+        "html",
+        "hybrid"
+      ]
     },
     "requiresAuth": {
       "type": "boolean",
@@ -76,7 +93,13 @@
     },
     "status": {
       "type": "string",
-      "enum": ["ONGOING", "COMPLETED", "UNKNOWN", "PAUSED", "DISCONTINUED"]
+      "enum": [
+        "ONGOING",
+        "COMPLETED",
+        "UNKNOWN",
+        "PAUSED",
+        "DISCONTINUED"
+      ]
     },
     "lastVerified": {
       "type": "string",
@@ -91,10 +114,16 @@
       "items": {
         "type": "object",
         "properties": {
-          "label": { "type": "string" },
-          "url": { "type": "string" }
+          "label": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
         },
-        "required": ["url"]
+        "required": [
+          "url"
+        ]
       },
       "minItems": 1
     },
@@ -112,12 +141,22 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["domain", "name", "value"],
+        "required": [
+          "domain",
+          "name",
+          "value"
+        ],
         "additionalProperties": false,
         "properties": {
-          "domain": { "type": "string" },
-          "name": { "type": "string" },
-          "value": { "type": "string" }
+          "domain": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
         }
       }
     },
@@ -126,77 +165,236 @@
       "additionalProperties": {
         "type": "object",
         "properties": {
-          "url": { "type": "string" },
-          "method": { "type": "string", "enum": ["GET", "POST"] },
-          "selector": { "type": "string" },
-          "fields": { "type": "object" },
-          "manualPatchRequired": { "type": "boolean" },
-          "pagination": { "type": "object" }
+          "url": {
+            "type": "string"
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "GET",
+              "POST"
+            ]
+          },
+          "selector": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "object"
+          },
+          "manualPatchRequired": {
+            "type": "boolean"
+          },
+          "pagination": {
+            "type": "object"
+          },
+          "useStaticCatalog": {
+            "type": "boolean"
+          }
+        },
+        "if": {
+          "properties": {
+            "useStaticCatalog": {
+              "const": true
+            }
+          },
+          "required": [
+            "useStaticCatalog"
+          ]
+        },
+        "then": {
+          "properties": {
+            "url": false,
+            "method": false,
+            "selector": false,
+            "fields": false,
+            "pagination": false
+          }
+        },
+        "else": {
+          "if": {
+            "properties": {
+              "manualPatchRequired": {
+                "const": true
+              }
+            },
+            "required": [
+              "manualPatchRequired"
+            ]
+          },
+          "then": {},
+          "else": {
+            "required": [
+              "url",
+              "method"
+            ]
+          }
         }
       }
     },
     "search": {
       "type": "object",
       "properties": {
-        "url": { "type": "string" },
-        "method": { "type": "string", "enum": ["GET", "POST"] },
-        "selector": { "type": "string" },
-        "fields": { "type": "object" },
-        "manualPatchRequired": { "type": "boolean" },
-        "pagination": { "type": "object" }
+        "url": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "GET",
+            "POST"
+          ]
+        },
+        "selector": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "object"
+        },
+        "manualPatchRequired": {
+          "type": "boolean"
+        },
+        "pagination": {
+          "type": "object"
+        },
+        "useStaticCatalog": {
+          "type": "boolean"
+        }
       },
       "if": {
         "properties": {
-          "manualPatchRequired": { "const": true }
+          "useStaticCatalog": {
+            "const": true
+          }
         },
-        "required": ["manualPatchRequired"]
+        "required": [
+          "useStaticCatalog"
+        ]
       },
-      "then": {},
+      "then": {
+        "properties": {
+          "url": false,
+          "method": false,
+          "selector": false,
+          "fields": false,
+          "pagination": false
+        }
+      },
       "else": {
-        "required": ["url", "method"]
+        "if": {
+          "properties": {
+            "manualPatchRequired": {
+              "const": true
+            }
+          },
+          "required": [
+            "manualPatchRequired"
+          ]
+        },
+        "then": {},
+        "else": {
+          "required": [
+            "url",
+            "method"
+          ]
+        }
       }
     },
     "details": {
       "type": "object",
       "properties": {
-        "url": { "type": "string" },
-        "method": { "type": "string", "enum": ["GET", "POST"] },
-        "selector": { "type": "string" },
-        "fields": { "type": "object" },
-        "manualPatchRequired": { "type": "boolean" }
+        "url": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "GET",
+            "POST"
+          ]
+        },
+        "selector": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "object"
+        },
+        "manualPatchRequired": {
+          "type": "boolean"
+        }
       },
       "if": {
         "properties": {
-          "manualPatchRequired": { "const": true }
+          "manualPatchRequired": {
+            "const": true
+          }
         },
-        "required": ["manualPatchRequired"]
+        "required": [
+          "manualPatchRequired"
+        ]
       },
       "then": {},
       "else": {
-        "required": ["url", "method"]
+        "required": [
+          "url",
+          "method"
+        ]
       }
     },
     "chapters": {
       "type": "object",
       "properties": {
-        "url": { "type": "string" },
-        "method": { "type": "string", "enum": ["GET", "POST"] },
-        "isJson": { "type": "boolean" },
-        "listPath": { "type": "string" },
-        "fields": { "type": "object" },
-        "manualPatchRequired": { "type": "boolean" },
-        "selector": { "type": "string" },
-        "reverse": { "type": "boolean" }
+        "url": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "GET",
+            "POST"
+          ]
+        },
+        "isJson": {
+          "type": "boolean"
+        },
+        "listPath": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "object"
+        },
+        "manualPatchRequired": {
+          "type": "boolean"
+        },
+        "selector": {
+          "type": "string"
+        },
+        "reverse": {
+          "type": "boolean"
+        }
       }
     },
     "pages": {
       "type": "object",
       "properties": {
-        "url": { "type": "string" },
-        "method": { "type": "string", "enum": ["GET", "POST"] },
-        "selector": { "type": "string" },
-        "fields": { "type": "object" },
-        "manualPatchRequired": { "type": "boolean" }
+        "url": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "GET",
+            "POST"
+          ]
+        },
+        "selector": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "object"
+        },
+        "manualPatchRequired": {
+          "type": "boolean"
+        }
       }
     },
     "provenance": {
@@ -212,19 +410,90 @@
       ],
       "additionalProperties": false,
       "properties": {
-        "type": { "type": "string", "enum": ["converted", "native", "hybrid"] },
-        "upstreamProject": { "type": "string" },
-        "upstreamPackage": { "type": "string" },
-        "upstreamSourceId": { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": [
+            "converted",
+            "native",
+            "hybrid"
+          ]
+        },
+        "upstreamProject": {
+          "type": "string"
+        },
+        "upstreamPackage": {
+          "type": "string"
+        },
+        "upstreamSourceId": {
+          "type": "string"
+        },
         "upstreamCommit": {
           "type": "string",
           "pattern": "^(?!HEAD$)[0-9a-fA-F]{7,40}$"
         },
-        "upstreamVersion": { "type": "string" },
-        "upstreamLicense": { "type": "string" },
-        "converterVersion": { "type": "string" },
-        "generatedTimestamp": { "type": "string", "format": "date-time" }
+        "upstreamVersion": {
+          "type": "string"
+        },
+        "upstreamLicense": {
+          "type": "string"
+        },
+        "converterVersion": {
+          "type": "string"
+        },
+        "generatedTimestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "staticCatalog": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "url"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "not": {
+          "required": [
+            "staticCatalog"
+          ]
+        }
+      },
+      "then": {
+        "properties": {
+          "search": {
+            "properties": {
+              "useStaticCatalog": false
+            }
+          },
+          "explore": {
+            "patternProperties": {
+              "^.*$": {
+                "properties": {
+                  "useStaticCatalog": false
+                }
+              }
+            }
+          }
+        }
       }
     }
-  }
+  ]
 }

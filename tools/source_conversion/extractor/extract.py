@@ -27,6 +27,7 @@ def extract_generic(
     timestamp: str = None,
     language_override: str = None,
     source_id: str = None,
+    gradle_meta: Dict[str, Any] = None,
 ) -> Dict[str, Any]:
     """Perform generic extraction on a source."""
     source_dir = resolve_source_dir(extensions_root, source_path)
@@ -35,9 +36,10 @@ def extract_generic(
     if not os.path.exists(build_gradle_path):
         raise FileNotFoundError(f"build.gradle.kts not found in {source_dir}")
 
-    gradle_meta = gradle_parser.parse_gradle_metadata(
-        build_gradle_path, extensions_root=extensions_root
-    )
+    if gradle_meta is None:
+        gradle_meta = gradle_parser.parse_gradle_metadata(
+            build_gradle_path, extensions_root=extensions_root
+        )
 
     # Try to find the main Kotlin file. This is heuristic for the generic path
     # since we don't know the exact package. Usually it's in src/eu/kanade/tachiyomi/extension/...
@@ -143,14 +145,37 @@ def main() -> int:
             from source_adapters import flamecomics
             ir_data = flamecomics.extract(extensions_root, timestamp=args.timestamp)
         else:
-            print("[*] Using generic extraction pathway...")
-            ir_data = extract_generic(
-                extensions_root,
-                source_path,
-                timestamp=args.timestamp,
-                language_override=args.language_override,
-                source_id=args.source_id,
-            )
+            # Parse gradle metadata early for theme dispatch
+            source_dir = resolve_source_dir(extensions_root, source_path)
+            build_gradle_path = os.path.join(source_dir, "build.gradle.kts")
+            gradle_meta = None
+            theme = None
+            if os.path.exists(build_gradle_path):
+                from common import gradle_parser
+                gradle_meta = gradle_parser.parse_gradle_metadata(build_gradle_path, extensions_root=extensions_root)
+                theme = gradle_meta.get("theme")
+
+            if theme == "mangacatalog":
+                print("[*] Dispatching to MangaCatalog adapter...")
+                from source_adapters import mangacatalog
+                ir_data = mangacatalog.extract(
+                    extensions_root,
+                    source_path,
+                    gradle_meta=gradle_meta,
+                    timestamp=args.timestamp,
+                    language_override=args.language_override,
+                    source_id=args.source_id
+                )
+            else:
+                print("[*] Using generic extraction pathway...")
+                ir_data = extract_generic(
+                    extensions_root,
+                    source_path,
+                    timestamp=args.timestamp,
+                    language_override=args.language_override,
+                    source_id=args.source_id,
+                    gradle_meta=gradle_meta,
+                )
 
     except Exception as e:
         print(f"[!] Extraction failed: {e}", file=sys.stderr)
