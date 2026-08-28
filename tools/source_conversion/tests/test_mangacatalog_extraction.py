@@ -29,6 +29,8 @@ class TestMangaCatalogExtraction(unittest.TestCase):
             "name": "Synthetic Manga",
             "versionCode": 2,
             "libVersion": "1.4",
+            "versionResolution": "resolved",
+            "version": "1.4.2",
             "contentWarning": "SAFE",
             "theme": "mangacatalog",
             "sources": [
@@ -380,6 +382,8 @@ class TestMangaCatalogExtraction(unittest.TestCase):
                     "name": display_name,
                     "versionCode": 1,
                     "libVersion": "1.4",
+                    "versionResolution": "resolved",
+                    "version": "1.4.1",
                     "contentWarning": "SAFE",
                     "theme": "mangacatalog",
                     "sources": [
@@ -504,6 +508,126 @@ class TestMangaCatalogExtraction(unittest.TestCase):
             # Page generated assertion
             page_fragment = 'let images = imgElements.map(el => el.attributes["abs:data-src"]).filter(Boolean);'
             self.assertIn(page_fragment, js_code)
+
+    def test_resolved_version_extracted_exactly(self):
+        kt_content = """
+        package eu.kanade.tachiyomi.extension.en.synthetic
+        import eu.kanade.tachiyomi.multisrc.mangacatalog.MangaCatalog
+
+        class SyntheticManga : MangaCatalog() {
+            override val sourceList = listOf(
+                Pair("Zebra", "/manga/zebra/")
+            )
+        }
+        """
+        with mock.patch('os.walk') as mock_walk, \
+             mock.patch('os.path.exists', return_value=True), \
+             mock.patch('builtins.open', mock.mock_open(read_data=kt_content)), \
+             mock.patch('source_adapters.mangacatalog._get_git_commit', return_value="abcdef"), \
+             mock.patch('source_adapters.mangacatalog._get_upstream_license', return_value="MIT"):
+
+            mock_walk.return_value = [("/src", [], ["SyntheticManga.kt"])]
+
+            gradle_meta = {**self.gradle_meta, "versionResolution": "resolved", "version": "1.4.12"}
+
+            ir_data = mangacatalog.extract(
+                "/dummy/path",
+                "en/synthetic",
+                gradle_meta=gradle_meta,
+                timestamp="2026-08-27T00:00:00Z"
+            )
+
+            self.assertEqual(ir_data["provenance"]["upstreamVersion"], "1.4.12")
+
+    def test_lower_level_version_code_ignored(self):
+        kt_content = """
+        package eu.kanade.tachiyomi.extension.en.synthetic
+        import eu.kanade.tachiyomi.multisrc.mangacatalog.MangaCatalog
+
+        class SyntheticManga : MangaCatalog() {
+            override val sourceList = listOf(
+                Pair("Zebra", "/manga/zebra/")
+            )
+        }
+        """
+        with mock.patch('os.walk') as mock_walk, \
+             mock.patch('os.path.exists', return_value=True), \
+             mock.patch('builtins.open', mock.mock_open(read_data=kt_content)), \
+             mock.patch('source_adapters.mangacatalog._get_git_commit', return_value="abcdef"), \
+             mock.patch('source_adapters.mangacatalog._get_upstream_license', return_value="MIT"):
+
+            mock_walk.return_value = [("/src", [], ["SyntheticManga.kt"])]
+
+            gradle_meta = {
+                **self.gradle_meta,
+                "versionResolution": "resolved",
+                "version": "1.4.15", # Authoritative
+                "libVersion": "1.2", # Should be ignored
+                "versionCode": 3     # Should be ignored
+            }
+
+            ir_data = mangacatalog.extract(
+                "/dummy/path",
+                "en/synthetic",
+                gradle_meta=gradle_meta,
+                timestamp="2026-08-27T00:00:00Z"
+            )
+
+            self.assertEqual(ir_data["provenance"]["upstreamVersion"], "1.4.15")
+            self.assertNotEqual(ir_data["provenance"]["upstreamVersion"], "1.2.3")
+
+    def test_fails_closed_on_invalid_version_metadata(self):
+        kt_content = """
+        package eu.kanade.tachiyomi.extension.en.synthetic
+        import eu.kanade.tachiyomi.multisrc.mangacatalog.MangaCatalog
+
+        class SyntheticManga : MangaCatalog() {
+            override val sourceList = listOf(
+                Pair("Zebra", "/manga/zebra/")
+            )
+        }
+        """
+        with mock.patch('os.walk') as mock_walk, \
+             mock.patch('os.path.exists', return_value=True), \
+             mock.patch('builtins.open', mock.mock_open(read_data=kt_content)), \
+             mock.patch('source_adapters.mangacatalog._get_git_commit', return_value="abcdef"), \
+             mock.patch('source_adapters.mangacatalog._get_upstream_license', return_value="MIT"):
+
+            mock_walk.return_value = [("/src", [], ["SyntheticManga.kt"])]
+
+            cases = [
+                # missing versionResolution
+                {**self.gradle_meta, "versionResolution": None, "version": "1.4.1"},
+                # unresolved versionResolution
+                {**self.gradle_meta, "versionResolution": "unresolved", "version": "1.4.1"},
+                # missing version
+                {**self.gradle_meta, "versionResolution": "resolved", "version": None},
+                # empty-string version
+                {**self.gradle_meta, "versionResolution": "resolved", "version": "   "},
+                # non-string version
+                {**self.gradle_meta, "versionResolution": "resolved", "version": 123},
+            ]
+
+            # Remove keys where None means missing entirely to test that as well
+            missing_resolution = self.gradle_meta.copy()
+            if "versionResolution" in missing_resolution:
+                del missing_resolution["versionResolution"]
+            cases.append(missing_resolution)
+
+            missing_version = {**self.gradle_meta, "versionResolution": "resolved"}
+            if "version" in missing_version:
+                del missing_version["version"]
+            cases.append(missing_version)
+
+            for i, bad_meta in enumerate(cases):
+                with self.subTest(i=i, meta=bad_meta):
+                    with self.assertRaises(ValueError):
+                        mangacatalog.extract(
+                            "/dummy/path",
+                            "en/synthetic",
+                            gradle_meta=bad_meta,
+                            timestamp="2026-08-27T00:00:00Z"
+                        )
 
 if __name__ == '__main__':
     unittest.main()

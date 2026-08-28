@@ -148,9 +148,15 @@ def extract(
                 distinct_catalog.append(item)
         catalog = distinct_catalog
 
+    version_resolution = gradle_meta.get("versionResolution")
+    if version_resolution != "resolved":
+        raise ValueError(f"gradle_meta must have versionResolution 'resolved', got: {repr(version_resolution)}")
+
+    upstream_version = gradle_meta.get("version")
+    if not isinstance(upstream_version, str) or not upstream_version.strip():
+        raise ValueError(f"gradle_meta must have a valid non-empty string version, got: {repr(upstream_version)}")
+
     name = gradle_meta.get("name", "")
-    version_code = gradle_meta.get("versionCode", 1)
-    lib_version = gradle_meta.get("libVersion", "1.4")
     content_warning = gradle_meta.get("contentWarning", "SAFE")
     lang = primary_source.get("lang", "en")
     source_id_val = primary_source.get("sourceId", primary_source.get("id"))
@@ -231,7 +237,7 @@ def extract(
             "upstreamPackage": package_name,
             "upstreamSourceId": str(source_id_val),
             "upstreamCommit": upstream_commit,
-            "upstreamVersion": f"{lib_version}.{version_code}",
+            "upstreamVersion": upstream_version,
             "upstreamLicense": upstream_license,
             "converterVersion": "0.1.0",
             "generatedTimestamp": timestamp,
