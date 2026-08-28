@@ -334,8 +334,83 @@ python tools/source_conversion/validator/validate_ir.py sources_ir/webtoons.json
 ```bash
 python tools/source_conversion/generator/js_generator.py --input sources_ir/webtoons.json --output sources_generated/webtoons.base.js
 ```
+## Canonical Materializer (P2C v0.1)
 
-### 4. Compose Final Venera JavaScript Source
+The `materialize.py` script transforms a reviewed local identity plan, canonical inventory, and a pinned upstream checkout into a deterministic repository transaction.
+
+### Scope and Limitations
+P2C v0.1 supports **generated / NO-PATCH CREATE only**.
+The following are **unsupported**:
+- updates, renames, migrations, or deletions
+- sources requiring manual patches (`manualPatchRequired: true` or `PATCH_REQUIRED`)
+- mass discover-and-write (transactions must be explicitly planned)
+- automatic version bumping
+
+### Identity and Metadata
+- **`artifactId`**: The local generated filename stem (e.g., `test_source`). Distinct from the opaque runtime ID.
+- **`providerId`**: The explicit local provider ownership string.
+- **`localVersion`**: The explicit local version (e.g., `1.0.0`), separate from the `upstreamVersion` provided by the original extension.
+- **`sourceId`**: The inventory-resolved upstream source identity used to locate the candidate.
+
+### Explicit Plan Contract
+The materializer requires a strict, explicit local plan in JSON format.
+- `generatedTimestamp` must be a strict explicit UTC ISO-8601 string (e.g., `YYYY-MM-DDTHH:MM:SSZ`).
+- Unknown fields at the top level, `upstream`, or artifact items are rejected.
+- Naive timestamps, malformed values, and non-UTC offsets are rejected.
+
+**Synthetic Plan Example:**
+```json
+{
+  "schemaVersion": "1",
+  "upstream": {
+    "project": "keiyoushi/extensions-source",
+    "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29"
+  },
+  "generatedTimestamp": "2023-10-15T12:00:00Z",
+  "artifacts": [
+    {
+      "sourceId": "123456789",
+      "artifactId": "test_artifact",
+      "providerId": "my_provider",
+      "localVersion": "1.0.0"
+    }
+  ]
+}
+```
+
+### Safety Guards
+- **Upstream Provenance**: Reads actual extensions checkout using `git rev-parse HEAD` and `git status --porcelain` to ensure the exact expected commit and a clean working tree.
+- **Stale-State Guard**: The preflight registry and index fingerprints are captured and re-verified immediately before promotion. Any drift aborts the transaction.
+- **Collision Rejection**: Artifacts and files already existing in the repository abort the transaction.
+- **Two-Pass Determinism**: Executes extraction and generation twice in separate temporary directories, asserting byte-identical results and identical SHAs.
+- **Transaction Digest**: Normalized hash over the reviewed inputs (schemaVersion, upstream project/commit, generatedTimestamp, artifact inputs) and the resulting target file SHAs.
+
+### Promotion and Rollback (Same-Filesystem Atomic)
+For every target file, a temporary sibling (`.tmp`) is prepared on the same filesystem directory as its destination.
+Only after complete preparation are they atomically promoted using `os.replace`.
+- **Promotion Order**: New artifact files are promoted first, followed by shared registry and index files last.
+- **Rollback Guarantees**: Any failure during copy or promotion triggers a transaction-owned rollback. Shared files are restored, created temporary siblings and final paths are unlinked, and empty transaction-created directories are cleaned. Unrelated files are untouched. No partial files are ever exposed.
+
+### Modes
+
+#### CHECK Mode
+Executes the real transaction preparation path (extraction, validation, determinism pass, digest calculation) but performs **ZERO live repository writes**.
+
 ```bash
-python tools/source_conversion/patcher/js_patcher.py --base sources_generated/webtoons.base.js --patch sources_patches/webtoons.patch.js --output webtoons.js
+python tools/source_conversion/materializer/materialize.py \
+  --mode check \
+  --plan plan.json \
+  --repo-root . \
+  --extensions-root ../extensions-source
+```
+
+#### WRITE Mode
+Executes the same verified prepared transaction as CHECK mode. Upon passing the stale-state revalidation, the prepared temporary transaction is atomically promoted to the live repository.
+
+```bash
+python tools/source_conversion/materializer/materialize.py \
+  --mode write \
+  --plan plan.json \
+  --repo-root . \
+  --extensions-root ../extensions-source
 ```

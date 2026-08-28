@@ -87,6 +87,59 @@ def extract_generic(
 
     return ir_data
 
+def dispatch_extraction(
+    extensions_root: str,
+    source_path: str,
+    timestamp: str = None,
+    language_override: str = None,
+    source_id: str = None,
+) -> Dict[str, Any]:
+    """Canonical dispatch function for Keiyoushi source extraction."""
+    if source_path == "all/webtoons":
+        print("[*] Dispatching to Webtoons adapter...")
+        from source_adapters import webtoons
+        return webtoons.extract(extensions_root, timestamp=timestamp)
+    elif source_path == "zh/comicabc":
+        print("[*] Dispatching to Comicabc adapter...")
+        from source_adapters import comicabc
+        return comicabc.extract(extensions_root, timestamp=timestamp)
+    elif source_path == "en/flamecomics":
+        print("[*] Dispatching to Flame Comics adapter...")
+        from source_adapters import flamecomics
+        return flamecomics.extract(extensions_root, timestamp=timestamp)
+    else:
+        # Parse gradle metadata early for theme dispatch
+        source_dir = resolve_source_dir(extensions_root, source_path)
+        build_gradle_path = os.path.join(source_dir, "build.gradle.kts")
+        gradle_meta = None
+        theme = None
+        if os.path.exists(build_gradle_path):
+            from common import gradle_parser
+            gradle_meta = gradle_parser.parse_gradle_metadata(build_gradle_path, extensions_root=extensions_root)
+            theme = gradle_meta.get("theme")
+
+        if theme == "mangacatalog":
+            print("[*] Dispatching to MangaCatalog adapter...")
+            from source_adapters import mangacatalog
+            return mangacatalog.extract(
+                extensions_root,
+                source_path,
+                gradle_meta=gradle_meta,
+                timestamp=timestamp,
+                language_override=language_override,
+                source_id=source_id
+            )
+        else:
+            print("[*] Using generic extraction pathway...")
+            return extract_generic(
+                extensions_root,
+                source_path,
+                timestamp=timestamp,
+                language_override=language_override,
+                source_id=source_id,
+                gradle_meta=gradle_meta,
+            )
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generic Extraction CLI for Keiyoushi Sources.")
     parser.add_argument(
@@ -132,50 +185,13 @@ def main() -> int:
     print(f"[*] Target output: {output_path}")
 
     try:
-        if source_path == "all/webtoons":
-            print("[*] Dispatching to Webtoons adapter...")
-            from source_adapters import webtoons
-            ir_data = webtoons.extract(extensions_root, timestamp=args.timestamp)
-        elif source_path == "zh/comicabc":
-            print("[*] Dispatching to Comicabc adapter...")
-            from source_adapters import comicabc
-            ir_data = comicabc.extract(extensions_root, timestamp=args.timestamp)
-        elif source_path == "en/flamecomics":
-            print("[*] Dispatching to Flame Comics adapter...")
-            from source_adapters import flamecomics
-            ir_data = flamecomics.extract(extensions_root, timestamp=args.timestamp)
-        else:
-            # Parse gradle metadata early for theme dispatch
-            source_dir = resolve_source_dir(extensions_root, source_path)
-            build_gradle_path = os.path.join(source_dir, "build.gradle.kts")
-            gradle_meta = None
-            theme = None
-            if os.path.exists(build_gradle_path):
-                from common import gradle_parser
-                gradle_meta = gradle_parser.parse_gradle_metadata(build_gradle_path, extensions_root=extensions_root)
-                theme = gradle_meta.get("theme")
-
-            if theme == "mangacatalog":
-                print("[*] Dispatching to MangaCatalog adapter...")
-                from source_adapters import mangacatalog
-                ir_data = mangacatalog.extract(
-                    extensions_root,
-                    source_path,
-                    gradle_meta=gradle_meta,
-                    timestamp=args.timestamp,
-                    language_override=args.language_override,
-                    source_id=args.source_id
-                )
-            else:
-                print("[*] Using generic extraction pathway...")
-                ir_data = extract_generic(
-                    extensions_root,
-                    source_path,
-                    timestamp=args.timestamp,
-                    language_override=args.language_override,
-                    source_id=args.source_id,
-                    gradle_meta=gradle_meta,
-                )
+        ir_data = dispatch_extraction(
+            extensions_root=extensions_root,
+            source_path=source_path,
+            timestamp=args.timestamp,
+            language_override=args.language_override,
+            source_id=args.source_id,
+        )
 
     except Exception as e:
         print(f"[!] Extraction failed: {e}", file=sys.stderr)
