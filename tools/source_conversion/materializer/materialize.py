@@ -13,11 +13,10 @@ import json
 import os
 import re
 import shutil
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
+from typing import Any, Mapping, Sequence
 
 repo_root = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(repo_root))
@@ -25,24 +24,36 @@ sys.path.insert(0, str(repo_root / "tools" / "source_conversion" / "extractor"))
 sys.path.insert(0, str(repo_root / "tools" / "source_conversion" / "generator"))
 sys.path.insert(0, str(repo_root / "tools" / "source_conversion" / "validator"))
 
-from tools.source_conversion.extractor.common import gradle_parser
 from tools.source_conversion.extractor.extract import dispatch_extraction
 from tools.source_conversion.generator.js_generator import generate_venera_js
+from tools.source_conversion.planner import eligibility_planner
 from tools.source_conversion.validator.validate_ir import validate_ir_data
 from tools.source_conversion.validator.static_js_validator import validate_js_file
-from tools.source_conversion.validator.validate_registry import validate_registry_data, _derive_index_entries, inspect_final_js
+from tools.source_conversion.validator.validate_registry import (
+    IndexDerivationError,
+    inspect_final_js,
+    validate_repository,
+    write_index,
+)
 
 # --- Constants & Patterns ---
 ARTIFACT_ID_RE = re.compile(r"^[a-z0-9]+(?:_[a-z0-9]+)*$")
 LOCAL_VERSION_RE = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 SOURCE_ID_RE = re.compile(r"^[0-9]+$")
+PROJECT_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+MODULE_RE = re.compile(r"^[a-z0-9]+(?:\.[a-z0-9]+)*$")
+COMMIT_RE = re.compile(r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
+MATERIALIZABLE_ELIGIBILITY = frozenset({"E1", "E2", "E3"})
 
 class MaterializationError(Exception):
     pass
 
 def load_json(path: Path) -> Any:
-    with path.open("r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise MaterializationError(f"Failed to read JSON input {path}: {exc}") from exc
 
 def write_json(path: Path, data: Any, indent: int = 4):
     with path.open("w", encoding="utf-8", newline="") as f:
@@ -50,8 +61,6 @@ def write_json(path: Path, data: Any, indent: int = 4):
         f.write("\n")
 
 def check_path_traversal(value: str, field_name: str):
-    if not isinstance(value, str):
-        return
     if ".." in value or "/" in value or "\\" in value:
         raise MaterializationError(f"Path traversal detected in {field_name}: {value}")
     if os.path.isabs(value):
@@ -59,25 +68,38 @@ def check_path_traversal(value: str, field_name: str):
 
 def _parse_plan(plan_path: Path) -> dict:
     plan = load_json(plan_path)
+    if not isinstance(plan, dict):
+        raise MaterializationError("Plan root must be an object")
+
+    allowed_top_level = {"schemaVersion", "upstream", "generatedTimestamp", "artifacts"}
+    missing_top_level = sorted(allowed_top_level - set(plan))
+    if missing_top_level:
+        raise MaterializationError(f"Missing top-level plan fields: {missing_top_level}")
+    unknown_top_level = sorted(set(plan) - allowed_top_level)
+    if unknown_top_level:
+        raise MaterializationError(f"Unknown top-level field in plan: {unknown_top_level[0]}")
+
     if plan.get("schemaVersion") != "1":
         raise MaterializationError(f"Unsupported schemaVersion: {plan.get('schemaVersion')}")
 
-    # Strict validation of unknown fields at top level
-    allowed_top_level = {"schemaVersion", "upstream", "generatedTimestamp", "artifacts"}
-    for k in plan:
-        if k not in allowed_top_level:
-            raise MaterializationError(f"Unknown top-level field in plan: {k}")
-
-    if "upstream" not in plan or "project" not in plan["upstream"] or "commit" not in plan["upstream"]:
-        raise MaterializationError("Plan must contain upstream.project and upstream.commit")
+    upstream = plan["upstream"]
+    if not isinstance(upstream, dict):
+        raise MaterializationError("Plan upstream must be an object")
 
     allowed_upstream = {"project", "commit"}
-    for k in plan["upstream"]:
-        if k not in allowed_upstream:
-            raise MaterializationError(f"Unknown upstream field in plan: {k}")
+    missing_upstream = sorted(allowed_upstream - set(upstream))
+    if missing_upstream:
+        raise MaterializationError(f"Missing upstream fields in plan: {missing_upstream}")
+    unknown_upstream = sorted(set(upstream) - allowed_upstream)
+    if unknown_upstream:
+        raise MaterializationError(f"Unknown upstream field in plan: {unknown_upstream[0]}")
 
-    if "generatedTimestamp" not in plan:
-        raise MaterializationError("Plan must contain generatedTimestamp")
+    project = upstream["project"]
+    if not isinstance(project, str) or not PROJECT_RE.fullmatch(project):
+        raise MaterializationError(f"Invalid upstream project: {project!r}")
+    commit = upstream["commit"]
+    if not isinstance(commit, str) or not COMMIT_RE.fullmatch(commit):
+        raise MaterializationError(f"Invalid upstream commit: {commit!r}")
 
     # Strict explicit UTC ISO-8601 timestamp validation
     ts_str = plan["generatedTimestamp"]
@@ -92,42 +114,62 @@ def _parse_plan(plan_path: Path) -> dict:
     except ValueError as e:
         raise MaterializationError(f"Invalid timestamp date/time values: {ts_str}") from e
 
-    artifacts = plan.get("artifacts", [])
+    artifacts = plan["artifacts"]
     if not isinstance(artifacts, list):
         raise MaterializationError("Plan artifacts must be a list")
+    if not artifacts:
+        raise MaterializationError("Plan artifacts must contain at least one artifact")
 
     seen_artifacts = set()
     seen_sources = set()
 
     allowed_artifact_fields = {"sourceId", "artifactId", "providerId", "localVersion", "moduleAssert"}
+    required_artifact_fields = {"sourceId", "artifactId", "providerId", "localVersion"}
 
-    for item in artifacts:
-        for k in item:
-            if k not in allowed_artifact_fields:
-                raise MaterializationError(f"Unknown artifact field in plan: {k}")
+    for position, item in enumerate(artifacts):
+        if not isinstance(item, dict):
+            raise MaterializationError(f"Plan artifact at position {position} must be an object")
+        missing_artifact_fields = sorted(required_artifact_fields - set(item))
+        if missing_artifact_fields:
+            raise MaterializationError(
+                f"Missing artifact fields at position {position}: {missing_artifact_fields}"
+            )
+        unknown_artifact_fields = sorted(set(item) - allowed_artifact_fields)
+        if unknown_artifact_fields:
+            raise MaterializationError(
+                f"Unknown artifact field in plan: {unknown_artifact_fields[0]}"
+            )
 
-        source_id = item.get("sourceId")
-        artifact_id = item.get("artifactId")
-        provider_id = item.get("providerId")
-        local_version = item.get("localVersion")
+        source_id = item["sourceId"]
+        artifact_id = item["artifactId"]
+        provider_id = item["providerId"]
+        local_version = item["localVersion"]
 
-        if not source_id or not str(source_id).strip():
-            raise MaterializationError("Missing sourceId in plan artifact")
-        source_id = str(source_id)
-        if not SOURCE_ID_RE.fullmatch(source_id):
+        if not isinstance(source_id, str) or not SOURCE_ID_RE.fullmatch(source_id):
             raise MaterializationError(f"Invalid sourceId format: {source_id}")
 
-        if not artifact_id or not ARTIFACT_ID_RE.fullmatch(artifact_id):
+        if not isinstance(artifact_id, str):
+            raise MaterializationError(f"Invalid or missing artifactId: {artifact_id!r}")
+        check_path_traversal(artifact_id, "artifactId")
+        if not ARTIFACT_ID_RE.fullmatch(artifact_id):
             raise MaterializationError(f"Invalid or missing artifactId: {artifact_id}")
 
-        if not provider_id or not ARTIFACT_ID_RE.fullmatch(provider_id):
+        if not isinstance(provider_id, str):
+            raise MaterializationError(f"Invalid or missing providerId: {provider_id!r}")
+        check_path_traversal(provider_id, "providerId")
+        if not ARTIFACT_ID_RE.fullmatch(provider_id):
             raise MaterializationError(f"Invalid or missing providerId: {provider_id}")
 
-        if not local_version or not LOCAL_VERSION_RE.fullmatch(local_version):
+        if not isinstance(local_version, str) or not LOCAL_VERSION_RE.fullmatch(local_version):
             raise MaterializationError(f"Invalid or missing localVersion: {local_version}")
 
-        check_path_traversal(artifact_id, "artifactId")
-        check_path_traversal(provider_id, "providerId")
+        if "moduleAssert" in item:
+            module_assert = item["moduleAssert"]
+            if not isinstance(module_assert, str):
+                raise MaterializationError("moduleAssert must be a string")
+            check_path_traversal(module_assert, "moduleAssert")
+            if not MODULE_RE.fullmatch(module_assert):
+                raise MaterializationError(f"Invalid moduleAssert: {module_assert!r}")
 
         if artifact_id in seen_artifacts:
             raise MaterializationError(f"Duplicate artifactId in plan: {artifact_id}")
@@ -137,33 +179,52 @@ def _parse_plan(plan_path: Path) -> dict:
             raise MaterializationError(f"Duplicate sourceId in plan: {source_id}")
         seen_sources.add(source_id)
 
-        item["sourceId"] = source_id # ensure string
-
     return plan
 
-def _resolve_candidates(plan: dict, inventory_path: Path) -> dict:
-    inventory = load_json(inventory_path)
-
+def _resolve_candidates(
+    plan: Mapping[str, Any],
+    inventory: Mapping[str, Any],
+    registry: Mapping[str, Any],
+) -> dict:
     upstream_project = plan["upstream"]["project"]
     upstream_commit = plan["upstream"]["commit"]
 
-    found_upstream = False
-    for up in inventory.get("upstreams", []):
-        if up.get("project") == upstream_project:
-            if up.get("commit") != upstream_commit:
-                raise MaterializationError(f"Inventory commit {up.get('commit')} does not match plan commit {upstream_commit}")
-            found_upstream = True
-            break
+    try:
+        eligibility_report = eligibility_planner.build_plan(inventory, registry)
+    except eligibility_planner.PlannerError as exc:
+        raise MaterializationError(
+            f"Canonical eligibility planner rejected inputs ({exc.code}): {exc}"
+        ) from exc
 
-    if not found_upstream:
-        raise MaterializationError(f"Project {upstream_project} not found in inventory upstreams")
+    upstreams = [
+        item
+        for item in eligibility_report["upstreams"]
+        if item["project"] == upstream_project
+    ]
+    if len(upstreams) != 1:
+        raise MaterializationError(
+            f"Project {upstream_project} resolves to {len(upstreams)} inventory snapshots"
+        )
+    if upstreams[0]["commit"] != upstream_commit:
+        raise MaterializationError(
+            f"Inventory commit {upstreams[0]['commit']} does not match plan commit {upstream_commit}"
+        )
 
-    candidates = inventory.get("candidates", [])
+    candidates = inventory["candidates"]
+    eligibility_by_identity = {
+        (item["project"], item["sourceId"]): item
+        for item in eligibility_report["candidates"]
+    }
     resolved = {}
 
     for item in plan["artifacts"]:
         source_id = item["sourceId"]
-        matches = [c for c in candidates if c.get("project") == upstream_project and str(c.get("sourceId")) == source_id]
+        matches = [
+            candidate
+            for candidate in candidates
+            if candidate["project"] == upstream_project
+            and candidate["sourceId"] == source_id
+        ]
 
         if not matches:
             raise MaterializationError(f"No inventory candidate found for sourceId {source_id}")
@@ -172,11 +233,22 @@ def _resolve_candidates(plan: dict, inventory_path: Path) -> dict:
 
         match = matches[0]
 
-        # Enforce COMPATIBLE boundary
-        if match.get("compatibility") != "COMPATIBLE":
-            raise MaterializationError(f"Candidate for sourceId {source_id} is not COMPATIBLE: {match.get('compatibility')}")
+        planned = eligibility_by_identity.get((upstream_project, source_id))
+        if planned is None:
+            raise MaterializationError(
+                f"Canonical eligibility planner omitted sourceId {source_id}"
+            )
+        if planned["eligibility"] not in MATERIALIZABLE_ELIGIBILITY:
+            raise MaterializationError(
+                f"Candidate for sourceId {source_id} has ineligible canonical route "
+                f"{planned['eligibility']}: {planned['reasonCodes']}"
+            )
+        if planned["patchState"] == "required":
+            raise MaterializationError(
+                f"Candidate for sourceId {source_id} requires a patch, unsupported in P2C v0.1"
+            )
 
-        if "moduleAssert" in item and item["moduleAssert"]:
+        if "moduleAssert" in item:
             if match.get("module") != item["moduleAssert"]:
                 raise MaterializationError(f"moduleAssert failed for sourceId {source_id}: expected {item['moduleAssert']}, got {match.get('module')}")
 
@@ -193,6 +265,21 @@ def _check_collisions(plan: dict, repo: Path):
             if item["artifactId"] in existing_artifacts:
                 raise MaterializationError(f"Collision: artifactId {item['artifactId']} already exists in registry")
 
+    index_path = repo / "index.json"
+    if index_path.exists():
+        index = load_json(index_path)
+        if not isinstance(index, list):
+            raise MaterializationError("Existing index root must be an array")
+        indexed_files = {
+            entry.get("fileName") for entry in index if isinstance(entry, dict)
+        }
+        for item in plan["artifacts"]:
+            file_name = f"{item['artifactId']}.js"
+            if file_name in indexed_files:
+                raise MaterializationError(
+                    f"Collision: index already contains fileName {file_name}"
+                )
+
     for item in plan["artifacts"]:
         aid = item["artifactId"]
         if (repo / f"{aid}.js").exists():
@@ -201,29 +288,29 @@ def _check_collisions(plan: dict, repo: Path):
             raise MaterializationError(f"Collision: sources_ir/{aid}.json already exists")
         if (repo / "sources_generated" / f"{aid}.base.js").exists():
             raise MaterializationError(f"Collision: sources_generated/{aid}.base.js already exists")
+        if (repo / "sources_patches" / f"{aid}.patch.js").exists():
+            raise MaterializationError(f"Collision: sources_patches/{aid}.patch.js already exists")
 
-def _verify_extensions_checkout(extensions_root: Path, expected_commit: str):
+def _verify_extensions_checkout(
+    extensions_root: Path,
+    inventory: Mapping[str, Any],
+    project: str,
+    expected_commit: str,
+):
     try:
-        actual_commit = subprocess.check_output(
-            ["git", "-C", str(extensions_root), "rev-parse", "HEAD"], text=True
-        ).strip()
-    except subprocess.CalledProcessError as e:
-        raise MaterializationError(f"Failed to query extensions checkout HEAD: {e}")
+        actual_commit = eligibility_planner.validate_upstream_checkout(
+            extensions_root, inventory, project
+        )
+    except eligibility_planner.PlannerError as exc:
+        raise MaterializationError(
+            f"Extensions checkout attestation failed ({exc.code}): {exc}"
+        ) from exc
 
     if actual_commit != expected_commit:
         raise MaterializationError(f"Extensions checkout HEAD ({actual_commit}) does not match expected ({expected_commit})")
 
-    try:
-        status = subprocess.check_output(
-            ["git", "-C", str(extensions_root), "status", "--porcelain"], text=True
-        )
-        if status.strip():
-            raise MaterializationError(f"Extensions checkout is dirty. Clean state required.")
-    except subprocess.CalledProcessError as e:
-        raise MaterializationError(f"Failed to query extensions checkout status: {e}")
-
 def _extract_to_temp(item: dict, candidate: dict, timestamp: str, extensions_root: Path) -> dict:
-    source_path = candidate["module"]
+    source_path = "/".join(candidate["module"].split("."))
     ir_data = dispatch_extraction(
         extensions_root=str(extensions_root),
         source_path=source_path,
@@ -231,11 +318,53 @@ def _extract_to_temp(item: dict, candidate: dict, timestamp: str, extensions_roo
         language_override=candidate.get("canonicalLocale"),
         source_id=item["sourceId"]
     )
+    if not isinstance(ir_data, dict):
+        raise MaterializationError("Canonical extraction dispatch did not return an IR object")
 
     ir_data["artifactId"] = item["artifactId"]
     ir_data["version"] = item["localVersion"]
 
     return ir_data
+
+def _validate_extracted_identity(
+    plan_item: Mapping[str, Any],
+    candidate: Mapping[str, Any],
+    ir_data: Mapping[str, Any],
+    plan: Mapping[str, Any],
+):
+    provenance = ir_data.get("provenance")
+    if not isinstance(provenance, dict):
+        raise MaterializationError("Extracted IR has no authoritative provenance object")
+    if provenance.get("upstreamCommit") != plan["upstream"]["commit"]:
+        raise MaterializationError(
+            "Extracted IR upstreamCommit does not match the attested checkout commit"
+        )
+    source_id = provenance.get("upstreamSourceId")
+    if source_id is not None and str(source_id) != plan_item["sourceId"]:
+        raise MaterializationError(
+            f"Extracted IR sourceId {source_id!r} does not match planned sourceId "
+            f"{plan_item['sourceId']}"
+        )
+    if provenance.get("generatedTimestamp") != plan["generatedTimestamp"]:
+        raise MaterializationError(
+            "Extracted IR generatedTimestamp does not match the reviewed plan"
+        )
+    candidate_version = candidate.get("version")
+    if candidate_version is not None and provenance.get("upstreamVersion") != candidate_version:
+        raise MaterializationError(
+            f"Extracted upstreamVersion {provenance.get('upstreamVersion')!r} does not "
+            f"match inventory version {candidate_version!r}"
+        )
+    candidate_warning = candidate.get("contentWarning")
+    if candidate_warning is not None and ir_data.get("contentWarning") != candidate_warning:
+        raise MaterializationError(
+            "Extracted contentWarning does not match canonical inventory evidence"
+        )
+    candidate_locale = candidate.get("canonicalLocale")
+    if candidate_locale is not None and ir_data.get("languages") != [candidate_locale]:
+        raise MaterializationError(
+            "Extracted languages do not match canonicalLocale inventory evidence"
+        )
 
 def _validate_ir(ir_data: dict):
     errors = validate_ir_data(ir_data)
@@ -265,35 +394,28 @@ def _compose_final_js(ir_data: dict, base_js_bytes: bytes) -> bytes:
     return base_js_bytes
 
 def _build_registry_record(plan_item: dict, candidate: dict, ir_data: dict, final_js_metadata: dict, plan: dict) -> dict:
+    for field in ("name", "languages", "baseUrl", "contentWarning", "sourceType"):
+        if field not in ir_data:
+            raise MaterializationError(f"Missing authoritative {field} in extracted IR")
+    if not candidate.get("extensionLib"):
+        raise MaterializationError("Missing authoritative extensionLib in inventory candidate")
+    for field in ("name", "key", "version"):
+        if not final_js_metadata.get(field):
+            raise MaterializationError(f"Final JS is missing authoritative {field} metadata")
+    if final_js_metadata["name"] != ir_data["name"]:
+        raise MaterializationError("Final JS name does not match extracted IR name")
+    if final_js_metadata["version"] != plan_item["localVersion"]:
+        raise MaterializationError("Final JS version does not match planned localVersion")
+
     record = {
         "artifactId": plan_item["artifactId"],
         "runtimeKey": final_js_metadata["key"],
+        "catalogName": ir_data["name"],
+        "locales": ir_data["languages"],
+        "providerId": plan_item["providerId"],
+        "siteUrl": ir_data["baseUrl"],
+        "contentWarning": ir_data["contentWarning"],
     }
-
-    # Deriving fields authoritatively
-    # ir_data represents the canonical extracted source config
-    if "name" in ir_data:
-        record["catalogName"] = ir_data["name"]
-    elif "name" in candidate:
-        record["catalogName"] = candidate["name"]
-    else:
-        raise MaterializationError("Missing authoritative catalogName")
-
-    if "languages" in ir_data and ir_data["languages"]:
-        record["locales"] = ir_data["languages"]
-
-    record["providerId"] = plan_item["providerId"]
-
-    if "baseUrl" in ir_data:
-        record["siteUrl"] = ir_data["baseUrl"]
-
-    if "contentWarning" in candidate:
-        record["contentWarning"] = candidate["contentWarning"]
-    elif "contentWarning" in ir_data:
-        record["contentWarning"] = ir_data["contentWarning"]
-
-    if "sourceType" not in ir_data:
-        raise MaterializationError("Missing authoritative sourceType in extracted IR")
 
     record["implementation"] = {
         "producer": "generated",
@@ -309,8 +431,7 @@ def _build_registry_record(plan_item: dict, candidate: dict, ir_data: dict, fina
         "sourceId": str(plan_item["sourceId"]),
         "version": ir_data["provenance"]["upstreamVersion"],
     }
-    if "extensionLib" in candidate:
-        upstream["extensionLib"] = candidate["extensionLib"]
+    upstream["extensionLib"] = candidate["extensionLib"]
     upstream["commit"] = plan["upstream"]["commit"]
     if "theme" in candidate:
         upstream["theme"] = candidate["theme"]
@@ -326,12 +447,56 @@ def _build_proposed_registry(existing_registry: dict, new_records: list) -> dict
 
     return proposed
 
-def _derive_proposed_index(proposed_registry: dict, inspected_metadata: dict) -> list:
-    artifacts = [item for item in proposed_registry.get("artifacts", []) if isinstance(item, dict)]
-    entries = _derive_index_entries(artifacts, inspected_metadata)
-    if entries is None:
-        raise MaterializationError("Proposed index derivation failed")
-    return entries
+def _blocking_diagnostics(result) -> tuple:
+    return result.errors + result.warnings
+
+def _format_diagnostics(diagnostics) -> str:
+    return "; ".join(
+        f"{item.code} {item.subject}: {item.message}" for item in diagnostics
+    )
+
+def _validate_live_repository(repo: Path):
+    result = validate_repository(repo)
+    blocking = _blocking_diagnostics(result)
+    if blocking:
+        raise MaterializationError(
+            f"Live repository validation failed: {_format_diagnostics(blocking)}"
+        )
+
+def _stage_existing_transaction_inputs(
+    repo: Path,
+    transaction_dir: Path,
+    existing_registry: Mapping[str, Any],
+):
+    try:
+        for artifact in existing_registry["artifacts"]:
+            artifact_id = artifact["artifactId"]
+            source = repo / f"{artifact_id}.js"
+            destination = transaction_dir / f"{artifact_id}.js"
+            if not destination.exists():
+                shutil.copy2(source, destination)
+
+        existing_ir_dir = repo / "sources_ir"
+        if existing_ir_dir.is_dir():
+            staged_ir_dir = transaction_dir / "sources_ir"
+            staged_ir_dir.mkdir(parents=True, exist_ok=True)
+            for source in sorted(existing_ir_dir.glob("*.json"), key=lambda path: path.name):
+                destination = staged_ir_dir / source.name
+                if not destination.exists():
+                    shutil.copy2(source, destination)
+    except OSError as exc:
+        raise MaterializationError(
+            f"Failed to stage existing canonical inputs for transaction validation: {exc}"
+        ) from exc
+
+def _validate_prepared_transaction(transaction_dir: Path):
+    result = validate_repository(transaction_dir)
+    blocking = _blocking_diagnostics(result)
+    if blocking:
+        raise MaterializationError(
+            f"Proposed transaction linkage validation failed: "
+            f"{_format_diagnostics(blocking)}"
+        )
 
 def _compute_digest(plan: dict, targets: list) -> str:
     normalized_plan = {
@@ -374,23 +539,24 @@ def _compute_digest(plan: dict, targets: list) -> str:
     return hashlib.sha256(payload_bytes).hexdigest()
 
 def _capture_preflight_fingerprint(repo: Path) -> dict:
-    fingerprint = {}
-    reg_path = repo / "sources_registry.json"
-    if reg_path.exists():
-        fingerprint["registry"] = hashlib.sha256(reg_path.read_bytes()).hexdigest()
-    else:
-        fingerprint["registry"] = None
+    fingerprint = {
+        "sources_registry.json": None,
+        "index.json": None,
+    }
+    paths = [repo / "sources_registry.json", repo / "index.json"]
+    paths.extend(sorted(repo.glob("*.js"), key=lambda path: path.name))
+    ir_dir = repo / "sources_ir"
+    if ir_dir.is_dir():
+        paths.extend(sorted(ir_dir.glob("*.json"), key=lambda path: path.name))
 
-    idx_path = repo / "index.json"
-    if idx_path.exists():
-        fingerprint["index"] = hashlib.sha256(idx_path.read_bytes()).hexdigest()
-    else:
-        fingerprint["index"] = None
+    for path in paths:
+        relative = path.relative_to(repo).as_posix()
+        if path.is_file():
+            fingerprint[relative] = hashlib.sha256(path.read_bytes()).hexdigest()
     return fingerprint
 
 def _execute_pass(plan: dict, resolved: dict, extensions_root: Path, repo: Path, temp_dir: Path) -> dict:
     targets = []
-    inspected = {}
     new_records = []
 
     existing_registry = {"schemaVersion": "1.0", "artifacts": []}
@@ -398,18 +564,10 @@ def _execute_pass(plan: dict, resolved: dict, extensions_root: Path, repo: Path,
     if reg_path.exists():
         existing_registry = load_json(reg_path)
 
-    existing_artifacts = [item for item in existing_registry.get("artifacts", []) if isinstance(item, dict)]
-
-    # Read existing final JS files to resolve index derivation
-    for art in existing_artifacts:
-        aid = art.get("artifactId")
-        js_path = repo / f"{aid}.js"
-        if js_path.exists():
-            inspected[aid] = inspect_final_js(js_path)
-
     for item in plan["artifacts"]:
         candidate = resolved[item["sourceId"]]
         ir_data = _extract_to_temp(item, candidate, plan["generatedTimestamp"], extensions_root)
+        _validate_extracted_identity(item, candidate, ir_data, plan)
         _validate_ir(ir_data)
 
         ir_path = temp_dir / "sources_ir" / f"{item['artifactId']}.json"
@@ -453,7 +611,6 @@ def _execute_pass(plan: dict, resolved: dict, extensions_root: Path, repo: Path,
         })
 
         final_js_metadata = inspect_final_js(final_js_path)
-        inspected[item["artifactId"]] = final_js_metadata
 
         record = _build_registry_record(item, candidate, ir_data, final_js_metadata, plan)
         new_records.append(record)
@@ -468,9 +625,14 @@ def _execute_pass(plan: dict, resolved: dict, extensions_root: Path, repo: Path,
         "byteLength": registry_path.stat().st_size
     })
 
-    proposed_index = _derive_proposed_index(proposed_registry, inspected)
+    _stage_existing_transaction_inputs(repo, temp_dir, existing_registry)
+    try:
+        proposed_index = write_index(temp_dir)
+    except IndexDerivationError as exc:
+        raise MaterializationError(
+            f"Canonical proposed index derivation failed: {exc}"
+        ) from exc
     index_path = temp_dir / "index.json"
-    write_json(index_path, proposed_index, indent=4)
     targets.append({
         "relativePath": "index.json",
         "sourcePath": index_path,
@@ -478,140 +640,197 @@ def _execute_pass(plan: dict, resolved: dict, extensions_root: Path, repo: Path,
         "byteLength": index_path.stat().st_size
     })
 
+    _validate_prepared_transaction(temp_dir)
+
     return {
         "targets": targets,
         "proposed_registry": proposed_registry,
         "proposed_index": proposed_index
     }
 
-def _promote_transaction(repo: Path, transaction_dir: Path, plan: dict, preflight_fingerprint: dict):
-    # Stale-state guard
-    current_fingerprint = _capture_preflight_fingerprint(repo)
-    if current_fingerprint != preflight_fingerprint:
-        raise MaterializationError("Stale-state guard failed: registry or index changed before promotion.")
-
+def _artifact_target_paths(plan: Mapping[str, Any]) -> list[str]:
+    paths = []
     for item in plan["artifacts"]:
         aid = item["artifactId"]
-        if (repo / f"{aid}.js").exists():
-            raise MaterializationError(f"Stale-state guard failed: {aid}.js appeared before promotion.")
-        if (repo / "sources_ir" / f"{aid}.json").exists():
-            raise MaterializationError(f"Stale-state guard failed: sources_ir/{aid}.json appeared before promotion.")
-        if (repo / "sources_generated" / f"{aid}.base.js").exists():
-            raise MaterializationError(f"Stale-state guard failed: sources_generated/{aid}.base.js appeared before promotion.")
+        paths.extend(
+            (
+                f"sources_ir/{aid}.json",
+                f"sources_generated/{aid}.base.js",
+                f"{aid}.js",
+            )
+        )
+    return paths
 
-    registry_target = transaction_dir / "sources_registry.json"
-    index_target = transaction_dir / "index.json"
+def _assert_new_targets_absent(repo: Path, artifact_targets: Sequence[str]):
+    for relative_path in artifact_targets:
+        if (repo / relative_path).exists():
+            raise MaterializationError(
+                f"Stale-state guard failed: {relative_path} appeared before promotion."
+            )
 
-    if not registry_target.exists() or not index_target.exists():
-        raise MaterializationError("Missing registry or index in prepared transaction")
+def _verify_prepared_target_manifest(
+    transaction_dir: Path,
+    plan: Mapping[str, Any],
+    targets: Sequence[Mapping[str, Any]],
+):
+    expected_paths = set(_artifact_target_paths(plan)) | {
+        "sources_registry.json",
+        "index.json",
+    }
+    targets_by_path = {target["relativePath"]: target for target in targets}
+    if set(targets_by_path) != expected_paths or len(targets_by_path) != len(targets):
+        raise MaterializationError("Prepared target manifest is incomplete or contains duplicates")
+
+    for relative_path in sorted(expected_paths):
+        source_path = transaction_dir / relative_path
+        if not source_path.is_file():
+            raise MaterializationError(
+                f"Prepared transaction target is missing: {relative_path}"
+            )
+        payload = source_path.read_bytes()
+        target = targets_by_path[relative_path]
+        if len(payload) != target["byteLength"]:
+            raise MaterializationError(
+                f"Prepared transaction target length changed: {relative_path}"
+            )
+        if hashlib.sha256(payload).hexdigest() != target["sha256"]:
+            raise MaterializationError(
+                f"Prepared transaction target digest changed: {relative_path}"
+            )
+
+def _restore_bytes_atomically(path: Path, payload: bytes | None):
+    if payload is None:
+        path.unlink(missing_ok=True)
+        return
+
+    descriptor, temp_name = tempfile.mkstemp(
+        prefix=f".{path.name}.", suffix=".rollback.tmp", dir=path.parent
+    )
+    temp_path = Path(temp_name)
+    try:
+        with os.fdopen(descriptor, "wb") as handle:
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temp_path, path)
+    finally:
+        temp_path.unlink(missing_ok=True)
+
+def _promote_transaction(
+    repo: Path,
+    transaction_dir: Path,
+    plan: Mapping[str, Any],
+    preflight_fingerprint: Mapping[str, Any],
+    targets: Sequence[Mapping[str, Any]],
+):
+    _verify_prepared_target_manifest(transaction_dir, plan, targets)
+
+    current_fingerprint = _capture_preflight_fingerprint(repo)
+    if current_fingerprint != preflight_fingerprint:
+        raise MaterializationError(
+            "Stale-state guard failed: canonical live state changed before promotion."
+        )
+
+    artifact_targets = _artifact_target_paths(plan)
+    _assert_new_targets_absent(repo, artifact_targets)
 
     registry_live = repo / "sources_registry.json"
     index_live = repo / "index.json"
+    original_shared = {
+        registry_live: registry_live.read_bytes() if registry_live.exists() else None,
+        index_live: index_live.read_bytes() if index_live.exists() else None,
+    }
 
-    orig_registry_bytes = registry_live.read_bytes() if registry_live.exists() else None
-    orig_index_bytes = index_live.read_bytes() if index_live.exists() else None
-
-    # 1. new artifact files
-    # 2. shared registry/index commit-state files LAST
-
-    # Target relatives (excluding registry/index)
-    artifact_targets = []
-    for item in plan["artifacts"]:
-        aid = item["artifactId"]
-        artifact_targets.append(f"sources_ir/{aid}.json")
-        artifact_targets.append(f"sources_generated/{aid}.base.js")
-        artifact_targets.append(f"{aid}.js")
-
-    created_siblings = []
-    created_final_paths = []
+    prepared_siblings: dict[Path, Path] = {}
+    published_artifacts: list[Path] = []
+    promoted_shared: list[Path] = []
     created_directories = []
 
     try:
-        # Create temporary siblings on the SAME filesystem and os.replace
-        for rel_path in artifact_targets:
-            source_path = transaction_dir / rel_path
-            dest_path = repo / rel_path
-            sibling_path = dest_path.with_suffix(dest_path.suffix + ".tmp")
+        for relative_path in (*artifact_targets, "sources_registry.json", "index.json"):
+            source_path = transaction_dir / relative_path
+            destination = repo / relative_path
+            if not destination.parent.exists():
+                try:
+                    destination.parent.mkdir(parents=True, exist_ok=False)
+                except FileExistsError:
+                    pass
+                else:
+                    created_directories.append(destination.parent)
 
-            if not dest_path.parent.exists():
-                dest_path.parent.mkdir(parents=True, exist_ok=True)
-                if dest_path.parent not in created_directories:
-                    created_directories.append(dest_path.parent)
+            descriptor, sibling_name = tempfile.mkstemp(
+                prefix=f".{destination.name}.",
+                suffix=".tmp",
+                dir=destination.parent,
+            )
+            os.close(descriptor)
+            sibling = Path(sibling_name)
+            prepared_siblings[destination] = sibling
+            shutil.copy2(source_path, sibling)
+            if sibling.read_bytes() != source_path.read_bytes():
+                raise MaterializationError(
+                    f"Temporary publication copy mismatch: {relative_path}"
+                )
 
-            shutil.copy2(source_path, sibling_path)
-            created_siblings.append(sibling_path)
+        # This is the last complete live-state check before any target is published.
+        if _capture_preflight_fingerprint(repo) != preflight_fingerprint:
+            raise MaterializationError(
+                "Stale-state guard failed: canonical live state changed during preparation."
+            )
+        _assert_new_targets_absent(repo, artifact_targets)
 
-        for rel_path in ["sources_registry.json", "index.json"]:
-            source_path = transaction_dir / rel_path
-            dest_path = repo / rel_path
-            sibling_path = dest_path.with_suffix(dest_path.suffix + ".tmp")
+        # Hard-linking a fully prepared sibling provides atomic CREATE without
+        # overwriting a destination that appears concurrently.
+        for relative_path in artifact_targets:
+            destination = repo / relative_path
+            sibling = prepared_siblings[destination]
+            os.link(sibling, destination)
+            published_artifacts.append(destination)
+            sibling.unlink()
+            del prepared_siblings[destination]
 
-            if not dest_path.parent.exists():
-                dest_path.parent.mkdir(parents=True, exist_ok=True)
-                if dest_path.parent not in created_directories:
-                    created_directories.append(dest_path.parent)
+        # Shared commit-state files are atomically replaced last.
+        for relative_path in ("sources_registry.json", "index.json"):
+            destination = repo / relative_path
+            sibling = prepared_siblings[destination]
+            os.replace(sibling, destination)
+            promoted_shared.append(destination)
+            del prepared_siblings[destination]
 
-            shutil.copy2(source_path, sibling_path)
-            created_siblings.append(sibling_path)
+    except Exception as exc:
+        rollback_errors = []
 
-        # Atomic promotion phase
-        # New artifact files first
-        for rel_path in artifact_targets:
-            dest_path = repo / rel_path
-            sibling_path = dest_path.with_suffix(dest_path.suffix + ".tmp")
-            os.replace(sibling_path, dest_path)
-            created_siblings.remove(sibling_path)
-            created_final_paths.append(dest_path)
+        for path in reversed(published_artifacts):
+            try:
+                path.unlink(missing_ok=True)
+            except OSError as rollback_exc:
+                rollback_errors.append(f"remove {path}: {rollback_exc}")
 
-        # Shared files last
-        for rel_path in ["sources_registry.json", "index.json"]:
-            dest_path = repo / rel_path
-            sibling_path = dest_path.with_suffix(dest_path.suffix + ".tmp")
-            os.replace(sibling_path, dest_path)
-            created_siblings.remove(sibling_path)
-            created_final_paths.append(dest_path)
+        for path in reversed(promoted_shared):
+            try:
+                _restore_bytes_atomically(path, original_shared[path])
+            except OSError as rollback_exc:
+                rollback_errors.append(f"restore {path}: {rollback_exc}")
 
-    except Exception as e:
-        # Rollback
-        if orig_registry_bytes is not None:
-            # write temporary then atomic replace to avoid partial registry
-            r_tmp = registry_live.with_suffix(".tmp.rollback")
-            r_tmp.write_bytes(orig_registry_bytes)
-            os.replace(r_tmp, registry_live)
-        else:
-            if registry_live.exists(): registry_live.unlink()
+        for path in tuple(prepared_siblings.values()):
+            try:
+                path.unlink(missing_ok=True)
+            except OSError as rollback_exc:
+                rollback_errors.append(f"remove {path}: {rollback_exc}")
 
-        if orig_index_bytes is not None:
-            i_tmp = index_live.with_suffix(".tmp.rollback")
-            i_tmp.write_bytes(orig_index_bytes)
-            os.replace(i_tmp, index_live)
-        else:
-            if index_live.exists(): index_live.unlink()
-
-        # Remove every transaction-created published file
-        for path in created_final_paths:
-            if path.exists():
-                path.unlink()
-
-        # Remove every transaction-owned temporary sibling
-        for path in created_siblings:
-            if path.exists():
-                path.unlink()
-
-        # Best-effort remove empty directories created by this transaction
         for p in reversed(created_directories):
             try:
                 p.rmdir()
             except OSError:
                 pass
 
-        raise MaterializationError(f"Promotion failed, rollback successful: {e}")
-
-class TransactionContext:
-    def __init__(self, repo: Path, temp_dir: str):
-        self.repo = repo
-        self.temp_dir = temp_dir
-        self.preflight_fingerprint = _capture_preflight_fingerprint(repo)
+        if rollback_errors:
+            raise MaterializationError(
+                f"Promotion failed ({exc}); rollback incomplete: {rollback_errors}"
+            ) from exc
+        raise MaterializationError(
+            f"Promotion failed, rollback successful: {exc}"
+        ) from exc
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="P2C Canonical Materializer")
@@ -625,16 +844,21 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         plan = _parse_plan(args.plan)
         inventory_path = args.repo_root / "tools" / "source_conversion" / "inventory" / "upstream_inventory.json"
+        inventory = load_json(inventory_path)
+        registry = load_json(args.repo_root / "sources_registry.json")
 
-        # Verify extensions checkout provenance BEFORE extracting
-        _verify_extensions_checkout(args.extensions_root, plan["upstream"]["commit"])
-
-        resolved = _resolve_candidates(plan, inventory_path)
+        _validate_live_repository(args.repo_root)
+        resolved = _resolve_candidates(plan, inventory, registry)
+        _verify_extensions_checkout(
+            args.extensions_root,
+            inventory,
+            plan["upstream"]["project"],
+            plan["upstream"]["commit"],
+        )
         _check_collisions(plan, args.repo_root)
+        preflight_fingerprint = _capture_preflight_fingerprint(args.repo_root)
 
         with tempfile.TemporaryDirectory() as td:
-            ctx = TransactionContext(args.repo_root, td)
-
             # Determinism Pass 1
             pass1_dir = Path(td) / "pass1"
             pass1_dir.mkdir()
@@ -656,28 +880,18 @@ def main(argv: Sequence[str] | None = None) -> int:
                 if t1[path]["sha256"] != t2[path]["sha256"]:
                     raise MaterializationError(f"Determinism failed: {path} hash differs between passes")
 
-            # Full Linkage Validation of the prepared transaction
-            from tools.source_conversion.validator.validate_registry import _validate_runtime_artifacts, _validate_ir_linkage
-
-            val = validate_registry_data(res1["proposed_registry"])
-            diagnostics = list(val.diagnostics)
-
-            if val.errors:
-                raise MaterializationError(f"Proposed transaction schema validation failed: {val.errors}")
-
-            artifacts = [item for item in res1["proposed_registry"].get("artifacts", []) if isinstance(item, dict)]
-            artifacts_by_id = {
-                item["artifactId"]: item
-                for item in artifacts
-                if isinstance(item.get("artifactId"), str)
-            }
-
-            _validate_runtime_artifacts(diagnostics, pass1_dir, artifacts)
-            _validate_ir_linkage(diagnostics, pass1_dir, artifacts_by_id)
-
-            linkage_errors = [d for d in diagnostics if d.severity == "ERROR"]
-            if linkage_errors:
-                raise MaterializationError(f"Proposed transaction linkage validation failed: {linkage_errors}")
+            # Re-attest both external inputs after preparation so CHECK reports
+            # and WRITE promotion are bound to the same live/upstream state.
+            _verify_extensions_checkout(
+                args.extensions_root,
+                inventory,
+                plan["upstream"]["project"],
+                plan["upstream"]["commit"],
+            )
+            if _capture_preflight_fingerprint(args.repo_root) != preflight_fingerprint:
+                raise MaterializationError(
+                    "Stale-state guard failed: canonical live state changed during preparation."
+                )
 
             targets_no_local_path = []
             for t in res1["targets"]:
@@ -702,7 +916,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             }
 
             if args.mode == "write":
-                _promote_transaction(args.repo_root, pass1_dir, plan, ctx.preflight_fingerprint)
+                _promote_transaction(
+                    args.repo_root,
+                    pass1_dir,
+                    plan,
+                    preflight_fingerprint,
+                    res1["targets"],
+                )
                 print(f"[+] Wrote {len(res1['targets'])} files.")
 
             print(json.dumps(report, indent=2))

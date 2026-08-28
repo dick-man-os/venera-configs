@@ -340,6 +340,13 @@ The `materialize.py` script transforms a reviewed local identity plan, canonical
 
 ### Scope and Limitations
 P2C v0.1 supports **generated / NO-PATCH CREATE only**.
+Candidate readiness is not stored as a `"COMPATIBLE"` inventory sentinel. The
+materializer calls the canonical eligibility planner over the validated
+inventory and live registry, accepts only planner routes `E1`, `E2`, and `E3`,
+and rejects `E0`, `E4`, `E5`, and `E6`. An explicit planner patch state of
+`required` is rejected before extraction; otherwise the extracted IR must still
+prove that no manual patch is required before final JS can be proposed.
+
 The following are **unsupported**:
 - updates, renames, migrations, or deletions
 - sources requiring manual patches (`manualPatchRequired: true` or `PATCH_REQUIRED`)
@@ -351,6 +358,7 @@ The following are **unsupported**:
 - **`providerId`**: The explicit local provider ownership string.
 - **`localVersion`**: The explicit local version (e.g., `1.0.0`), separate from the `upstreamVersion` provided by the original extension.
 - **`sourceId`**: The inventory-resolved upstream source identity used to locate the candidate.
+- **`moduleAssert`**: An optional exact assertion over the inventory module locator. Inventory modules remain dot-separated; the materializer translates that locator to a source-tree path and delegates all source-family selection to `extract.py::dispatch_extraction`.
 
 ### Explicit Plan Contract
 The materializer requires a strict, explicit local plan in JSON format.
@@ -379,17 +387,26 @@ The materializer requires a strict, explicit local plan in JSON format.
 ```
 
 ### Safety Guards
-- **Upstream Provenance**: Reads actual extensions checkout using `git rev-parse HEAD` and `git status --porcelain` to ensure the exact expected commit and a clean working tree.
-- **Stale-State Guard**: The preflight registry and index fingerprints are captured and re-verified immediately before promotion. Any drift aborts the transaction.
+- **Upstream Provenance**: Reuses the planner checkout attestation to verify the supplied root is the Git top-level, its actual `HEAD` equals the inventory/plan pin, and its tracked and untracked state is clean before extraction.
+- **Canonical Eligibility**: Reuses `eligibility_planner.build_plan`; the materializer does not reinterpret structured `compatibility` fields or duplicate E0-E6 derivation rules.
+- **Stale-State Guard**: Preflight fingerprints cover the registry, index, root final JS files, and converted IR files consumed by proposal preparation. The complete fingerprint and all new-target absence checks are repeated immediately before publication. Any drift aborts before a transaction target is published.
 - **Collision Rejection**: Artifacts and files already existing in the repository abort the transaction.
 - **Two-Pass Determinism**: Executes extraction and generation twice in separate temporary directories, asserting byte-identical results and identical SHAs.
 - **Transaction Digest**: Normalized hash over the reviewed inputs (schemaVersion, upstream project/commit, generatedTimestamp, artifact inputs) and the resulting target file SHAs.
+- **Complete Proposal Validation**: Each pass builds a temporary overlay containing existing and proposed final JS/IR plus the complete proposed registry. The canonical registry validator checks schema, runtime identity, IR linkage, and index relationships before publication.
+- **Canonical Index Bytes**: Proposed `index.json` bytes are produced by `validate_registry.py`'s canonical `write_index` implementation, including its ordering, formatting, UTF-8 encoding, and trailing newline.
 
-### Promotion and Rollback (Same-Filesystem Atomic)
-For every target file, a temporary sibling (`.tmp`) is prepared on the same filesystem directory as its destination.
-Only after complete preparation are they atomically promoted using `os.replace`.
+### Promotion and Rollback (Per-Target Same-Filesystem Atomicity)
+For every target file, an exclusive random temporary sibling is created on the
+same filesystem and recorded before copying begins. A partial or failed copy is
+therefore transaction-owned and removable. New artifact files are published by
+an atomic hard-link create that cannot overwrite a concurrently appearing
+destination. Shared registry/index files are atomically replaced with
+`os.replace` only after all new artifacts have been published.
+
 - **Promotion Order**: New artifact files are promoted first, followed by shared registry and index files last.
 - **Rollback Guarantees**: Any failure during copy or promotion triggers a transaction-owned rollback. Shared files are restored, created temporary siblings and final paths are unlinked, and empty transaction-created directories are cleaned. Unrelated files are untouched. No partial files are ever exposed.
+- **Atomicity Boundary**: Individual target publication is atomic, and detected failures are rolled back byte-for-byte. The materializer does not claim impossible whole-filesystem global atomicity across all targets.
 
 ### Modes
 
