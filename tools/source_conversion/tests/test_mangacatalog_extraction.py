@@ -443,5 +443,67 @@ class TestMangaCatalogExtraction(unittest.TestCase):
                         timestamp="2026-08-27T00:00:00Z"
                     )
 
+    def test_grammar_and_js_generation(self):
+        kt_content = """
+        package eu.kanade.tachiyomi.extension.en.synthetic
+        import eu.kanade.tachiyomi.multisrc.mangacatalog.MangaCatalog
+
+        class SyntheticManga : MangaCatalog() {
+            override val sourceList = listOf(
+                Pair("Zebra", "/manga/zebra/")
+            )
+        }
+        """
+
+        with mock.patch('os.walk') as mock_walk, \
+             mock.patch('os.path.exists', return_value=True), \
+             mock.patch('builtins.open', mock.mock_open(read_data=kt_content)), \
+             mock.patch('source_adapters.mangacatalog._get_git_commit', return_value="abcdef"), \
+             mock.patch('source_adapters.mangacatalog._get_upstream_license', return_value="MIT"):
+
+            mock_walk.return_value = [("/src", [], ["SyntheticManga.kt"])]
+
+            ir_data = mangacatalog.extract(
+                "/dummy/path",
+                "en/synthetic",
+                gradle_meta=self.gradle_meta,
+                timestamp="2026-08-27T00:00:00Z"
+            )
+
+            # 1. & 2. & 3. Prove IR extraction produces valid grammar
+            thumbnail = ir_data["details"]["fields"]["thumbnail"]
+            chapter_url = ir_data["chapters"]["fields"]["url"]
+            image_url = ir_data["pages"]["fields"]["imageUrl"]
+
+            # Must NOT use thumbnailUrl contract
+            self.assertNotIn("thumbnailUrl", ir_data["details"]["fields"])
+
+            self.assertEqual(thumbnail, "div.flex > img@abs:src")
+            self.assertEqual(chapter_url, ".col-span-4 > a@abs:href")
+            self.assertEqual(image_url, "@abs:data-src")
+
+            # 4. Feed through generator
+            js_code = js_generator.generate_venera_js(ir_data)
+
+            # 5. Must NOT contain malformed expressions
+            self.assertNotIn("attributes['.col-span-4 > a@abs:href']", js_code)
+            self.assertNotIn("attributes['div.flex > img@abs:src']", js_code)
+            self.assertNotIn("attributes['@abs:data-src']", js_code)
+
+            # 6. Positively prove semantic behavior uses generator's canonical selector + attribute
+
+            # Cover generated assertion
+            cover_fragment = "let cover = (doc.querySelector('div.flex > img') ? (doc.querySelector('div.flex > img').attributes['abs:src'] || '') : '');"
+            self.assertIn(cover_fragment, js_code)
+            self.assertNotIn(".detail_header .thmb img", js_code)
+
+            # Chapter generated assertion
+            chapter_fragment = "id: (el.querySelector('.col-span-4 > a') ? (el.querySelector('.col-span-4 > a').attributes['abs:href'] || '') : ''),"
+            self.assertIn(chapter_fragment, js_code)
+
+            # Page generated assertion
+            page_fragment = 'let images = imgElements.map(el => el.attributes["abs:data-src"]).filter(Boolean);'
+            self.assertIn(page_fragment, js_code)
+
 if __name__ == '__main__':
     unittest.main()

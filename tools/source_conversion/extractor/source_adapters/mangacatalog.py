@@ -203,7 +203,7 @@ def extract(
             "fields": {
                 "title": "div.container > h1",
                 "description": "text",
-                "thumbnailUrl": "@div.flex > img@abs:src"
+                "thumbnail": "div.flex > img@abs:src"
             }
         },
         "chapters": {
@@ -213,7 +213,7 @@ def extract(
             "manualPatchRequired": False,
             "fields": {
                 "name": ".col-span-4 > a",
-                "url": "@.col-span-4 > a@abs:href"
+                "url": ".col-span-4 > a@abs:href"
             }
         },
         "pages": {
@@ -222,7 +222,7 @@ def extract(
             "selector": "img[data-src]",
             "manualPatchRequired": False,
             "fields": {
-                "imageUrl": "@@abs:data-src"
+                "imageUrl": "@abs:data-src"
             }
         },
         "provenance": {
