@@ -772,6 +772,17 @@ class TestCanonicalEligibilityAudit(MaterializerTestBase):
             / "upstream_inventory.json"
         )
         registry = mat.load_json(REPO_ROOT / "sources_registry.json")
+        e4b_ids = {
+            "readblackclovermangaonline",
+            "readfairytailedenszeromangaonline",
+            "readjujutsukaisenmangaonline",
+            "readkingdommangaonline",
+            "readnanatsunotaizai7deadlysinsmangaonline",
+            "readonepiecemangaonline",
+            "readsololevelingmangamanhwaonline",
+            "readtokyoghoulretokyoghoulmangaonline",
+        }
+        registry["artifacts"] = [a for a in registry["artifacts"] if a["artifactId"] not in e4b_ids]
         source_id = "6485938153129890061"
         plan = {
             "schemaVersion": "1",

@@ -483,6 +483,22 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         )
         cls.plan = build_plan(cls.inventory, cls.registry)
 
+
+    def _get_pre_e4b_registry(self):
+        import copy
+        reg = copy.deepcopy(self.registry)
+        e4b_ids = {
+            "readblackclovermangaonline",
+            "readfairytailedenszeromangaonline",
+            "readjujutsukaisenmangaonline",
+            "readkingdommangaonline",
+            "readnanatsunotaizai7deadlysinsmangaonline",
+            "readonepiecemangaonline",
+            "readsololevelingmangamanhwaonline",
+            "readtokyoghoulretokyoghoulmangaonline",
+        }
+        reg["artifacts"] = [a for a in reg["artifacts"] if a["artifactId"] not in e4b_ids]
+        return reg
     def test_current_pin_family_derivation_regression(self):
         summary = self.plan["summary"]
         self.assertEqual(summary["modules"], 1368)
@@ -502,6 +518,14 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         overrides = {
             "2522335540328470744": "webtoons",
             "2959982438613576472": "webtoons_zh_hant",
+            "6485938153129890061": "readblackclovermangaonline",
+            "1330793582354406642": "readfairytailedenszeromangaonline",
+            "808850989053853006": "readjujutsukaisenmangaonline",
+            "7952360835727640966": "readkingdommangaonline",
+            "3945031984510180731": "readnanatsunotaizai7deadlysinsmangaonline",
+            "1061544757733451419": "readonepiecemangaonline",
+            "1374366734159205648": "readsololevelingmangamanhwaonline",
+            "6468833665354206027": "readtokyoghoulretokyoghoulmangaonline",
         }
         webtoons_family = next(
             family
@@ -516,7 +540,8 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         for source_id, artifact_id in overrides.items():
             item = candidates_by_id[source_id]
             self.assertIn((item["project"], source_id), shared_candidates)
-            self.assertEqual(item["module"], "all.webtoons")
+            if artifact_id.startswith("webtoons"):
+                self.assertEqual(item["module"], "all.webtoons")
             self.assertEqual(item["eligibility"], "E0")
             self.assertEqual(
                 item["registryJoin"]["artifactIds"], [artifact_id]
@@ -533,7 +558,7 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         self.assertEqual(
             shared_candidates - override_identities, e3_candidates
         )
-        self.assertEqual(len(shared_candidates) - len(overrides), 1542)
+        self.assertEqual(len(shared_candidates) - len(overrides), 1534)
 
     def test_current_pin_classification_count_regression(self):
         counts = self.plan["summary"]["eligibilityCounts"]
@@ -543,11 +568,11 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         )
         self.assertEqual(
             counts["modules"],
-            {"E0": 3, "E1": 0, "E2": 0, "E3": 784, "E4": 0, "E5": 0, "E6": 581},
+            {"E0": 11, "E1": 0, "E2": 0, "E3": 776, "E4": 0, "E5": 0, "E6": 581},
         )
         self.assertEqual(
             counts["candidates"],
-            {"E0": 5, "E1": 0, "E2": 0, "E3": 1542, "E4": 0, "E5": 0, "E6": 581},
+            {"E0": 13, "E1": 0, "E2": 0, "E3": 1534, "E4": 0, "E5": 0, "E6": 581},
         )
         self.assertEqual(
             self.plan["summary"]["patchStateCounts"]["candidates"],
@@ -601,10 +626,10 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
             second, second_summary = invoke()
             self.assertEqual(first, second)
             self.assertEqual(first_summary, second_summary)
-            self.assertEqual(len(first), 2239108)
+            self.assertEqual(len(first), 2237181)
             self.assertEqual(
                 hashlib.sha256(first).hexdigest(),
-                "402bda851b3c9e2bb0fa6facd7dd81a7f60490ac3cbe572cf7d33751d647c0a6",
+                "cd610bc27f031ad1206082c6ca6262ffef027adc53a65859eef68e423b36f500",
             )
             self.assertEqual(before, snapshot())
 
@@ -622,16 +647,26 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
                 "manhuashe",
                 "comicabc",
                 "flamecomics",
+                "readblackclovermangaonline",
+                "readfairytailedenszeromangaonline",
+                "readjujutsukaisenmangaonline",
+                "readkingdommangaonline",
+                "readnanatsunotaizai7deadlysinsmangaonline",
+                "readonepiecemangaonline",
+                "readsololevelingmangamanhwaonline",
+                "readtokyoghoulretokyoghoulmangaonline",
             },
         )
         self.assertEqual(
             self.plan["summary"]["registryJoins"],
-            {"registeredCandidates": 5, "unregisteredCandidates": 2123},
+            {"registeredCandidates": 13, "unregisteredCandidates": 2115},
         )
 
     def test_mangacatalog_proposal_is_report_only(self):
-        self.assertEqual(len(self.plan["proposals"]), 1)
-        proposal = self.plan["proposals"][0]
+        self.assertEqual(len(self.plan["proposals"]), 0)
+        plan = build_plan(self.inventory, self._get_pre_e4b_registry())
+        self.assertEqual(len(plan["proposals"]), 1)
+        proposal = plan["proposals"][0]
         self.assertEqual(proposal["status"], "review-only")
         self.assertEqual(proposal["technicalEligibility"], "E3")
         self.assertEqual(
@@ -655,7 +690,9 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         else:
             self.fail("Current-pin MangaCatalog proposal member is missing.")
 
-        proposal = build_plan(changed, self.registry)["proposals"][0]
+        plan = build_plan(changed, self._get_pre_e4b_registry())
+        self.assertEqual(len(plan["proposals"]), 1)
+        proposal = plan["proposals"][0]
         first_member = proposal["members"][0]
         self.assertEqual(first_member["module"], MANGACATALOG_REVIEW_MODULES[0])
         self.assertEqual(first_member["contentWarning"], "NSFW")
@@ -678,8 +715,9 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         else:
             self.fail("Current-pin MangaCatalog proposal member is missing.")
 
-        missing_plan = build_plan(missing_member, self.registry)
-        changed_plan = build_plan(no_longer_e3, self.registry)
+        pre_reg = self._get_pre_e4b_registry()
+        missing_plan = build_plan(missing_member, pre_reg)
+        changed_plan = build_plan(no_longer_e3, pre_reg)
         self.assertEqual(missing_plan["proposals"], [])
         self.assertEqual(changed_plan["proposals"], [])
         self.assertNotIn(

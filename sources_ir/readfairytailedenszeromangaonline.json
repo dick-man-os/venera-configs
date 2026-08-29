@@ -1,0 +1,149 @@
+{
+  "schemaVersion": "0.2",
+  "id": "en_readfairytailedenszeromangaonline",
+  "name": "Read Fairy Tail & Edens Zero Manga Online",
+  "languages": [
+    "en"
+  ],
+  "contentOrigins": [
+    "KR",
+    "JP",
+    "CN"
+  ],
+  "contentWarning": "SAFE",
+  "sourceType": "hybrid",
+  "baseUrl": "https://ww8.readfairytail.com",
+  "staticCatalog": [
+    {
+      "title": "Eden's Zero",
+      "url": "https://ww8.readfairytail.com/manga/edens-zero/"
+    },
+    {
+      "title": "Fairy Tail",
+      "url": "https://ww8.readfairytail.com/manga/fairy-tail/"
+    },
+    {
+      "title": "FT Zero",
+      "url": "https://ww8.readfairytail.com/manga/fairy-tail-zero/"
+    },
+    {
+      "title": "FT City Hero",
+      "url": "https://ww8.readfairytail.com/manga/fairy-tail-city-hero/"
+    },
+    {
+      "title": "Hero’s",
+      "url": "https://ww8.readfairytail.com/manga/heros/"
+    },
+    {
+      "title": "FT Happy Adv",
+      "url": "https://ww8.readfairytail.com/manga/fairy-tail-happys-grand-adventure/"
+    },
+    {
+      "title": "FT 100 Year",
+      "url": "https://ww8.readfairytail.com/manga/fairy-tail-100-years-quest/"
+    },
+    {
+      "title": "FT Ice Trail",
+      "url": "https://ww8.readfairytail.com/manga/fairy-tail-ice-trail/"
+    },
+    {
+      "title": "FT x Taizai",
+      "url": "https://ww8.readfairytail.com/manga/fairy-tail-x-nanatsu-no-taizai-christmas-special/"
+    },
+    {
+      "title": "Parasyte x FT",
+      "url": "https://ww8.readfairytail.com/manga/parasyte-x-fairy-tail/"
+    },
+    {
+      "title": "Gaiden 1",
+      "url": "https://ww8.readfairytail.com/manga/fairy-tail-gaiden-raigo-issen/"
+    },
+    {
+      "title": "FT x Rave",
+      "url": "https://ww8.readfairytail.com/manga/fairy-tail-x-rave/"
+    },
+    {
+      "title": "Monster Hunter",
+      "url": "https://ww8.readfairytail.com/manga/monster-hunter-orage/"
+    },
+    {
+      "title": "Rave Master",
+      "url": "https://ww8.readfairytail.com/manga/rave-master/"
+    },
+    {
+      "title": "Dead Rock",
+      "url": "https://ww8.readfairytail.com/manga/dead-rock/"
+    },
+    {
+      "title": "Fairy Girls",
+      "url": "https://ww8.readfairytail.com/manga/fairy-girls/"
+    },
+    {
+      "title": "Gaiden 4",
+      "url": "https://ww8.readfairytail.com/manga/fairy-tail-gaiden-raigo-issen/"
+    },
+    {
+      "title": "Gaiden 2",
+      "url": "https://ww8.readfairytail.com/manga/fairy-tail-gaiden-kengami-no-souryuu/"
+    },
+    {
+      "title": "Gaiden 3",
+      "url": "https://ww8.readfairytail.com/manga/fairy-tail-gaiden-road-knight/"
+    },
+    {
+      "title": "FT x 7DS",
+      "url": "https://ww8.readfairytail.com/manga/fairy-tail-x-nanatsu-no-taizai-christmas-special/"
+    }
+  ],
+  "explore": {
+    "popular": {
+      "useStaticCatalog": true
+    }
+  },
+  "search": {
+    "useStaticCatalog": true
+  },
+  "details": {
+    "url": "manga.url",
+    "method": "GET",
+    "selector": "div.bg-bg-secondary > div.px-6 > div.flex-col",
+    "manualPatchRequired": false,
+    "fields": {
+      "title": "div.container > h1",
+      "description": "text",
+      "thumbnail": "div.flex > img@abs:src"
+    }
+  },
+  "chapters": {
+    "url": "manga.url",
+    "method": "GET",
+    "selector": "div.w-full > div.bg-bg-secondary > div.grid",
+    "manualPatchRequired": false,
+    "fields": {
+      "name": ".col-span-4 > a",
+      "url": ".col-span-4 > a@abs:href"
+    }
+  },
+  "pages": {
+    "url": "chapter.url",
+    "method": "GET",
+    "selector": "img[data-src]",
+    "manualPatchRequired": false,
+    "fields": {
+      "imageUrl": "@abs:data-src"
+    }
+  },
+  "provenance": {
+    "type": "converted",
+    "upstreamProject": "keiyoushi",
+    "upstreamPackage": "eu.kanade.tachiyomi.extension.en.readfairytailedenszeromangaonline",
+    "upstreamSourceId": "1330793582354406642",
+    "upstreamCommit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+    "upstreamVersion": "1.4.9",
+    "upstreamLicense": "Apache-2.0",
+    "converterVersion": "0.1.0",
+    "generatedTimestamp": "2026-08-28T16:32:00Z"
+  },
+  "artifactId": "readfairytailedenszeromangaonline",
+  "version": "1.0.0"
+}

@@ -302,7 +302,9 @@
     {
       "artifactId": "webtoons",
       "runtimeKey": "en_webtoons",
-      "locales": ["en"],
+      "locales": [
+        "en"
+      ],
       "providerId": "webtoons",
       "siteUrl": "https://www.webtoons.com",
       "contentWarning": "SAFE",
@@ -322,7 +324,9 @@
     {
       "artifactId": "webtoons_zh_hant",
       "runtimeKey": "zh_Hant_webtoons",
-      "locales": ["zh-Hant"],
+      "locales": [
+        "zh-Hant"
+      ],
       "providerId": "webtoons",
       "siteUrl": "https://www.webtoons.com",
       "contentWarning": "SAFE",
@@ -342,7 +346,9 @@
     {
       "artifactId": "manhuashe",
       "runtimeKey": "zh_Hans_manhuashe",
-      "locales": ["zh-Hans"],
+      "locales": [
+        "zh-Hans"
+      ],
       "providerId": "manhuashe",
       "siteUrl": "https://www.311s.com",
       "contentWarning": "MIXED",
@@ -363,7 +369,9 @@
       "artifactId": "comicabc",
       "runtimeKey": "zh_Hant_comicabc",
       "catalogName": "無限動漫",
-      "locales": ["zh-Hant"],
+      "locales": [
+        "zh-Hant"
+      ],
       "providerId": "comicabc",
       "siteUrl": "https://www.8comic.com",
       "contentWarning": "SAFE",
@@ -383,7 +391,9 @@
     {
       "artifactId": "flamecomics",
       "runtimeKey": "en_flamecomics",
-      "locales": ["en"],
+      "locales": [
+        "en"
+      ],
       "providerId": "flamecomics",
       "siteUrl": "https://flamecomics.xyz",
       "contentWarning": "SAFE",
@@ -398,6 +408,198 @@
         "version": "1.4.50",
         "extensionLib": "1.4",
         "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29"
+      }
+    },
+    {
+      "artifactId": "readblackclovermangaonline",
+      "runtimeKey": "en_readblackclovermangaonline",
+      "catalogName": "Read Black Clover Manga Online",
+      "locales": [
+        "en"
+      ],
+      "providerId": "readblackclovermangaonline",
+      "siteUrl": "https://ww10.readblackclover.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated",
+        "transport": "hybrid"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "en.readblackclovermangaonline",
+        "sourceId": "6485938153129890061",
+        "version": "1.4.8",
+        "extensionLib": "1.4",
+        "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+        "theme": "mangacatalog"
+      }
+    },
+    {
+      "artifactId": "readfairytailedenszeromangaonline",
+      "runtimeKey": "en_readfairytailedenszeromangaonline",
+      "catalogName": "Read Fairy Tail & Edens Zero Manga Online",
+      "locales": [
+        "en"
+      ],
+      "providerId": "readfairytailedenszeromangaonline",
+      "siteUrl": "https://ww8.readfairytail.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated",
+        "transport": "hybrid"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "en.readfairytailedenszeromangaonline",
+        "sourceId": "1330793582354406642",
+        "version": "1.4.9",
+        "extensionLib": "1.4",
+        "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+        "theme": "mangacatalog"
+      }
+    },
+    {
+      "artifactId": "readjujutsukaisenmangaonline",
+      "runtimeKey": "en_readjujutsukaisenmangaonline",
+      "catalogName": "Read Jujutsu Kaisen Manga Online",
+      "locales": [
+        "en"
+      ],
+      "providerId": "readjujutsukaisenmangaonline",
+      "siteUrl": "https://ww6.readjujutsukaisen.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated",
+        "transport": "hybrid"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "en.readjujutsukaisenmangaonline",
+        "sourceId": "808850989053853006",
+        "version": "1.4.10",
+        "extensionLib": "1.4",
+        "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+        "theme": "mangacatalog"
+      }
+    },
+    {
+      "artifactId": "readkingdommangaonline",
+      "runtimeKey": "en_readkingdommangaonline",
+      "catalogName": "Read Kingdom Manga Online",
+      "locales": [
+        "en"
+      ],
+      "providerId": "readkingdommangaonline",
+      "siteUrl": "https://ww6.readkingdom.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated",
+        "transport": "hybrid"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "en.readkingdommangaonline",
+        "sourceId": "7952360835727640966",
+        "version": "1.4.9",
+        "extensionLib": "1.4",
+        "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+        "theme": "mangacatalog"
+      }
+    },
+    {
+      "artifactId": "readnanatsunotaizai7deadlysinsmangaonline",
+      "runtimeKey": "en_readnanatsunotaizai7deadlysinsmangaonline",
+      "catalogName": "Read Nanatsu no Taizai 7 Deadly Sins Manga Online",
+      "locales": [
+        "en"
+      ],
+      "providerId": "readnanatsunotaizai7deadlysinsmangaonline",
+      "siteUrl": "https://ww7.read7deadlysins.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated",
+        "transport": "hybrid"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "en.readnanatsunotaizai7deadlysinsmangaonline",
+        "sourceId": "3945031984510180731",
+        "version": "1.4.10",
+        "extensionLib": "1.4",
+        "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+        "theme": "mangacatalog"
+      }
+    },
+    {
+      "artifactId": "readonepiecemangaonline",
+      "runtimeKey": "en_readonepiecemangaonline",
+      "catalogName": "Read One Piece Manga Online",
+      "locales": [
+        "en"
+      ],
+      "providerId": "readonepiecemangaonline",
+      "siteUrl": "https://ww12.readonepiece.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated",
+        "transport": "hybrid"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "en.readonepiecemangaonline",
+        "sourceId": "1061544757733451419",
+        "version": "1.4.8",
+        "extensionLib": "1.4",
+        "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+        "theme": "mangacatalog"
+      }
+    },
+    {
+      "artifactId": "readsololevelingmangamanhwaonline",
+      "runtimeKey": "en_readsololevelingmangamanhwaonline",
+      "catalogName": "Read Solo Leveling Manga Manhwa Online",
+      "locales": [
+        "en"
+      ],
+      "providerId": "readsololevelingmangamanhwaonline",
+      "siteUrl": "https://ww3.readsololeveling.org",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated",
+        "transport": "hybrid"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "en.readsololevelingmangamanhwaonline",
+        "sourceId": "1374366734159205648",
+        "version": "1.4.10",
+        "extensionLib": "1.4",
+        "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+        "theme": "mangacatalog"
+      }
+    },
+    {
+      "artifactId": "readtokyoghoulretokyoghoulmangaonline",
+      "runtimeKey": "en_readtokyoghoulretokyoghoulmangaonline",
+      "catalogName": "Read Tokyo Ghoul Re & Tokyo Ghoul Manga Online",
+      "locales": [
+        "en"
+      ],
+      "providerId": "readtokyoghoulretokyoghoulmangaonline",
+      "siteUrl": "https://ww12.tokyoghoulre.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated",
+        "transport": "hybrid"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "en.readtokyoghoulretokyoghoulmangaonline",
+        "sourceId": "6468833665354206027",
+        "version": "1.4.12",
+        "extensionLib": "1.4",
+        "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+        "theme": "mangacatalog"
       }
     }
   ]

@@ -52,6 +52,14 @@ EXPECTED_RUNTIME_KEYS = {
     "mycomic": "mycomic",
     "nhentai": "nhentai",
     "picacg": "picacg",
+    "readblackclovermangaonline": "en_readblackclovermangaonline",
+    "readfairytailedenszeromangaonline": "en_readfairytailedenszeromangaonline",
+    "readjujutsukaisenmangaonline": "en_readjujutsukaisenmangaonline",
+    "readkingdommangaonline": "en_readkingdommangaonline",
+    "readnanatsunotaizai7deadlysinsmangaonline": "en_readnanatsunotaizai7deadlysinsmangaonline",
+    "readonepiecemangaonline": "en_readonepiecemangaonline",
+    "readsololevelingmangamanhwaonline": "en_readsololevelingmangamanhwaonline",
+    "readtokyoghoulretokyoghoulmangaonline": "en_readtokyoghoulretokyoghoulmangaonline",
     "shonen_jump_plus": "shonen_jump_plus",
     "webtoons": "en_webtoons",
     "webtoons_zh_hant": "zh_Hant_webtoons",
@@ -66,6 +74,14 @@ CONVERTED_ARTIFACTS = {
     "manhuashe",
     "webtoons",
     "webtoons_zh_hant",
+    "readblackclovermangaonline",
+    "readfairytailedenszeromangaonline",
+    "readjujutsukaisenmangaonline",
+    "readkingdommangaonline",
+    "readnanatsunotaizai7deadlysinsmangaonline",
+    "readonepiecemangaonline",
+    "readsololevelingmangamanhwaonline",
+    "readtokyoghoulretokyoghoulmangaonline",
 }
 
 EXPECTED_CONVERTED_UPSTREAM = {
@@ -74,6 +90,14 @@ EXPECTED_CONVERTED_UPSTREAM = {
     "manhuashe": ("6230622879116184108", "1.6.1", "1.6"),
     "comicabc": ("8110122805257580230", "1.4.3", "1.4"),
     "flamecomics": ("8531542650987673943", "1.4.50", "1.4"),
+    "readblackclovermangaonline": ("6485938153129890061", "1.4.8", "1.4"),
+    "readfairytailedenszeromangaonline": ("1330793582354406642", "1.4.9", "1.4"),
+    "readjujutsukaisenmangaonline": ("808850989053853006", "1.4.10", "1.4"),
+    "readkingdommangaonline": ("7952360835727640966", "1.4.9", "1.4"),
+    "readnanatsunotaizai7deadlysinsmangaonline": ("3945031984510180731", "1.4.10", "1.4"),
+    "readonepiecemangaonline": ("1061544757733451419", "1.4.8", "1.4"),
+    "readsololevelingmangamanhwaonline": ("1374366734159205648", "1.4.10", "1.4"),
+    "readtokyoghoulretokyoghoulmangaonline": ("6468833665354206027", "1.4.12", "1.4"),
 }
 
 
@@ -121,10 +145,10 @@ class TestSourceRegistry(unittest.TestCase):
             errors = validate_registry_data(invalid_empty).with_code("SCHEMA_FIELD_VALUE")
             self.assertTrue(any(field in error.message for error in errors), field)
 
-    def test_all_38_catalog_artifacts_are_registered(self):
+    def test_all_46_catalog_artifacts_are_registered(self):
         index = json.loads((repo_root / "index.json").read_text(encoding="utf-8"))
         indexed_ids = {Path(entry["fileName"]).stem for entry in index}
-        self.assertEqual(len(self.artifacts), 38)
+        self.assertEqual(len(self.artifacts), 46)
         self.assertEqual(set(self.by_id), indexed_ids)
 
     def test_artifact_ids_are_unique(self):
@@ -244,7 +268,7 @@ class TestSourceRegistry(unittest.TestCase):
 
     def test_upstream_source_ids_are_json_strings(self):
         upstream_records = [item["upstream"] for item in self.artifacts if "upstream" in item]
-        self.assertEqual(len(upstream_records), 5)
+        self.assertEqual(len(upstream_records), 13)
         self.assertTrue(all(isinstance(item["sourceId"], str) for item in upstream_records))
 
         invalid = copy.deepcopy(self.registry)
@@ -418,16 +442,26 @@ class TestSourceRegistry(unittest.TestCase):
         entries = derive_index(repo_root)
         by_file = {entry["fileName"]: entry for entry in entries}
 
+        expected_names = {
+            "comicabc": "無限動漫",
+            "copy_manga_multi_accounts": "拷贝漫画(多账号)",
+            "readblackclovermangaonline": "Read Black Clover Manga Online",
+            "readfairytailedenszeromangaonline": "Read Fairy Tail & Edens Zero Manga Online",
+            "readjujutsukaisenmangaonline": "Read Jujutsu Kaisen Manga Online",
+            "readkingdommangaonline": "Read Kingdom Manga Online",
+            "readnanatsunotaizai7deadlysinsmangaonline": "Read Nanatsu no Taizai 7 Deadly Sins Manga Online",
+            "readonepiecemangaonline": "Read One Piece Manga Online",
+            "readsololevelingmangamanhwaonline": "Read Solo Leveling Manga Manhwa Online",
+            "readtokyoghoulretokyoghoulmangaonline": "Read Tokyo Ghoul Re & Tokyo Ghoul Manga Online",
+        }
+
         self.assertEqual(
             {
                 artifact_id: artifact["catalogName"]
                 for artifact_id, artifact in self.by_id.items()
                 if "catalogName" in artifact
             },
-            {
-                "comicabc": "無限動漫",
-                "copy_manga_multi_accounts": "拷贝漫画(多账号)",
-            },
+            expected_names,
         )
         expected_descriptions = {
             "wnacg": "紳士漫畫漫畫源, 不能使用時請嘗試更換URL",
@@ -497,7 +531,21 @@ class TestSourceRegistry(unittest.TestCase):
             final_path = repo_root / f"{artifact_id}.js"
             generated = generate_venera_js(ir)
             self.assertEqual(generated, base_path.read_text(encoding="utf-8"), artifact_id)
-            composed = patch_js(generated, patch_path.read_text(encoding="utf-8"))
+            E4B_GENERATED_NO_PATCH = {
+                "readblackclovermangaonline",
+                "readfairytailedenszeromangaonline",
+                "readjujutsukaisenmangaonline",
+                "readkingdommangaonline",
+                "readnanatsunotaizai7deadlysinsmangaonline",
+                "readonepiecemangaonline",
+                "readsololevelingmangamanhwaonline",
+                "readtokyoghoulretokyoghoulmangaonline",
+            }
+            if artifact_id in E4B_GENERATED_NO_PATCH:
+                self.assertFalse(patch_path.exists(), f"Expected no patch file for {artifact_id}")
+                composed = generated
+            else:
+                composed = patch_js(generated, patch_path.read_text(encoding="utf-8"))
             self.assertEqual(composed, final_path.read_text(encoding="utf-8"), artifact_id)
 
         validate_repository(repo_root)

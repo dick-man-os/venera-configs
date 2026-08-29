@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "0.2",
+  "id": "en_readtokyoghoulretokyoghoulmangaonline",
+  "name": "Read Tokyo Ghoul Re & Tokyo Ghoul Manga Online",
+  "languages": [
+    "en"
+  ],
+  "contentOrigins": [
+    "KR",
+    "JP",
+    "CN"
+  ],
+  "contentWarning": "SAFE",
+  "sourceType": "hybrid",
+  "baseUrl": "https://ww12.tokyoghoulre.com",
+  "staticCatalog": [
+    {
+      "title": "Tokyo Ghoul",
+      "url": "https://ww12.tokyoghoulre.com/manga/tokyo-ghoul/"
+    },
+    {
+      "title": "Tokyo Ghoul Jack",
+      "url": "https://ww12.tokyoghoulre.com/manga/tokyo-ghoul-jack/"
+    },
+    {
+      "title": "Tokyo Ghoul: re Colored",
+      "url": "https://ww12.tokyoghoulre.com/manga/tokyo-ghoulre-colored/"
+    },
+    {
+      "title": "Gorilla",
+      "url": "https://ww12.tokyoghoulre.com/manga/this-gorilla-will-die-in-1-day/"
+    },
+    {
+      "title": "Zakki",
+      "url": "https://ww12.tokyoghoulre.com/manga/tokyo-ghoul-zakki/"
+    },
+    {
+      "title": "Light Novel",
+      "url": "https://ww12.tokyoghoulre.com/manga/tokyo-ghoul-re-light-novels/"
+    },
+    {
+      "title": "Choujin X",
+      "url": "https://ww12.tokyoghoulre.com/manga/choujin-x/"
+    },
+    {
+      "title": "Tokyo Ghoul re",
+      "url": "https://ww12.tokyoghoulre.com/manga/tokyo-ghoulre/"
+    }
+  ],
+  "explore": {
+    "popular": {
+      "useStaticCatalog": true
+    }
+  },
+  "search": {
+    "useStaticCatalog": true
+  },
+  "details": {
+    "url": "manga.url",
+    "method": "GET",
+    "selector": "div.bg-bg-secondary > div.px-6 > div.flex-col",
+    "manualPatchRequired": false,
+    "fields": {
+      "title": "div.container > h1",
+      "description": "text",
+      "thumbnail": "div.flex > img@abs:src"
+    }
+  },
+  "chapters": {
+    "url": "manga.url",
+    "method": "GET",
+    "selector": "div.w-full > div.bg-bg-secondary > div.grid",
+    "manualPatchRequired": false,
+    "fields": {
+      "name": ".col-span-4 > a",
+      "url": ".col-span-4 > a@abs:href"
+    }
+  },
+  "pages": {
+    "url": "chapter.url",
+    "method": "GET",
+    "selector": "img[data-src]",
+    "manualPatchRequired": false,
+    "fields": {
+      "imageUrl": "@abs:data-src"
+    }
+  },
+  "provenance": {
+    "type": "converted",
+    "upstreamProject": "keiyoushi",
+    "upstreamPackage": "eu.kanade.tachiyomi.extension.en.readtokyoghoulretokyoghoulmangaonline",
+    "upstreamSourceId": "6468833665354206027",
+    "upstreamCommit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+    "upstreamVersion": "1.4.12",
+    "upstreamLicense": "Apache-2.0",
+    "converterVersion": "0.1.0",
+    "generatedTimestamp": "2026-08-28T16:32:00Z"
+  },
+  "artifactId": "readtokyoghoulretokyoghoulmangaonline",
+  "version": "1.0.0"
+}

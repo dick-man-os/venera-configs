@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "0.2",
+  "id": "en_readnanatsunotaizai7deadlysinsmangaonline",
+  "name": "Read Nanatsu no Taizai 7 Deadly Sins Manga Online",
+  "languages": [
+    "en"
+  ],
+  "contentOrigins": [
+    "KR",
+    "JP",
+    "CN"
+  ],
+  "contentWarning": "SAFE",
+  "sourceType": "hybrid",
+  "baseUrl": "https://ww7.read7deadlysins.com",
+  "staticCatalog": [
+    {
+      "title": "Four Horsemen of the Apocalypse",
+      "url": "https://ww7.read7deadlysins.com/manga/four-horsemen-of-the-apocalypse/"
+    },
+    {
+      "title": "7DS: School",
+      "url": "https://ww7.read7deadlysins.com/manga/mayoe-nanatsu-no-taizai-gakuen/"
+    },
+    {
+      "title": "7DS:7 Days",
+      "url": "https://ww7.read7deadlysins.com/manga/nanatsu-no-taizai-seven-days/"
+    },
+    {
+      "title": "7DS:Vampires",
+      "url": "https://ww7.read7deadlysins.com/manga/nanatsu-no-taizai-vampires-of-edinburgh/"
+    },
+    {
+      "title": "Queen of Altar",
+      "url": "https://ww7.read7deadlysins.com/manga/the-queen-of-the-altar/"
+    },
+    {
+      "title": "7DS: 7 Colors",
+      "url": "https://ww7.read7deadlysins.com/manga/nanatsu-no-taizai-nanairo-no-tsuioku/"
+    },
+    {
+      "title": "7DS x FT",
+      "url": "https://ww7.read7deadlysins.com/manga/fairy-tail-x-nanatsu-no-taizai-christmas-special/"
+    },
+    {
+      "title": "Kongou Banchou",
+      "url": "https://ww7.read7deadlysins.com/manga/kongou-banchou/"
+    },
+    {
+      "title": "7DS:7 Scars",
+      "url": "https://ww7.read7deadlysins.com/manga/nanatsu-no-taizai-the-seven-scars-which-they-left-behind/"
+    },
+    {
+      "title": "7 Deadly Sins",
+      "url": "https://ww7.read7deadlysins.com/manga/nanatsu-no-taizai/"
+    },
+    {
+      "title": "Mokushiroku no Yonkishi",
+      "url": "https://ww7.read7deadlysins.com/manga/four-horsemen-of-the-apocalypse/"
+    }
+  ],
+  "explore": {
+    "popular": {
+      "useStaticCatalog": true
+    }
+  },
+  "search": {
+    "useStaticCatalog": true
+  },
+  "details": {
+    "url": "manga.url",
+    "method": "GET",
+    "selector": "div.bg-bg-secondary > div.px-6 > div.flex-col",
+    "manualPatchRequired": false,
+    "fields": {
+      "title": "div.container > h1",
+      "description": "text",
+      "thumbnail": "div.flex > img@abs:src"
+    }
+  },
+  "chapters": {
+    "url": "manga.url",
+    "method": "GET",
+    "selector": "div.w-full > div.bg-bg-secondary > div.grid",
+    "manualPatchRequired": false,
+    "fields": {
+      "name": ".col-span-4 > a",
+      "url": ".col-span-4 > a@abs:href"
+    }
+  },
+  "pages": {
+    "url": "chapter.url",
+    "method": "GET",
+    "selector": "img[data-src]",
+    "manualPatchRequired": false,
+    "fields": {
+      "imageUrl": "@abs:data-src"
+    }
+  },
+  "provenance": {
+    "type": "converted",
+    "upstreamProject": "keiyoushi",
+    "upstreamPackage": "eu.kanade.tachiyomi.extension.en.readnanatsunotaizai7deadlysinsmangaonline",
+    "upstreamSourceId": "3945031984510180731",
+    "upstreamCommit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+    "upstreamVersion": "1.4.10",
+    "upstreamLicense": "Apache-2.0",
+    "converterVersion": "0.1.0",
+    "generatedTimestamp": "2026-08-28T16:32:00Z"
+  },
+  "artifactId": "readnanatsunotaizai7deadlysinsmangaonline",
+  "version": "1.0.0"
+}
