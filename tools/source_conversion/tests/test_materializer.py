@@ -535,24 +535,24 @@ class TestIntegration(MaterializerTestBase):
         reg["artifacts"].append({"artifactId": "test_artifact"})
         self.write_json(self.repo_root / "sources_registry.json", reg)
         with self.assertRaisesRegex(mat.MaterializationError, "already exists in registry"):
-            mat._check_collisions(self.valid_plan, self.repo_root)
+            mat._check_preconditions(self.valid_plan, self.repo_root, {})
 
     def test_collision_existing_js(self):
         (self.repo_root / "test_artifact.js").write_text("")
         with self.assertRaisesRegex(mat.MaterializationError, "already exists in repository root"):
-            mat._check_collisions(self.valid_plan, self.repo_root)
+            mat._check_preconditions(self.valid_plan, self.repo_root, {})
 
     def test_collision_existing_ir(self):
         (self.repo_root / "sources_ir").mkdir()
         (self.repo_root / "sources_ir" / "test_artifact.json").write_text("")
         with self.assertRaisesRegex(mat.MaterializationError, "sources_ir/test_artifact.json already exists"):
-            mat._check_collisions(self.valid_plan, self.repo_root)
+            mat._check_preconditions(self.valid_plan, self.repo_root, {})
 
     def test_collision_existing_base_js(self):
         (self.repo_root / "sources_generated").mkdir()
         (self.repo_root / "sources_generated" / "test_artifact.base.js").write_text("")
         with self.assertRaisesRegex(mat.MaterializationError, "sources_generated/test_artifact.base.js already exists"):
-            mat._check_collisions(self.valid_plan, self.repo_root)
+            mat._check_preconditions(self.valid_plan, self.repo_root, {})
 
     @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
     def test_manual_patch_required_fails(self, mock_dispatch):
@@ -1118,7 +1118,7 @@ class GenericSafe : KeiSource() {
             "keiyoushi/extensions-source",
             self.commit_hash,
         )
-        mat._check_collisions(plan, self.repo_root)
+        mat._check_preconditions(plan, self.repo_root, {})
         fingerprint = mat._capture_preflight_fingerprint(self.repo_root)
         transaction = tempfile.TemporaryDirectory()
         self.addCleanup(transaction.cleanup)
@@ -1191,6 +1191,22 @@ class TestRealMaterializerModes(RealMaterializerTestBase):
             report = json.loads(stdout[report_start:])
             digests.append(report["transactionDigest"])
         self.assertEqual(digests[0], digests[1])
+
+    def test_create_check_still_targets_registry_and_index(self):
+        result, stdout, stderr = self._run_real("check")
+        self.assertEqual((result, stderr), (0, ""), msg=stderr)
+        report_start = stdout.index('{\n  "mode"')
+        report = json.loads(stdout[report_start:])
+        self.assertEqual(
+            [target["relativePath"] for target in report["targets"]],
+            [
+                "sources_ir/test_artifact.json",
+                "sources_generated/test_artifact.base.js",
+                "test_artifact.js",
+                "sources_registry.json",
+                "index.json",
+            ],
+        )
 
     def test_digest_covers_reviewed_semantics_not_machine_paths(self):
         plan = copy.deepcopy(self.valid_plan)
@@ -1416,14 +1432,14 @@ class TestRealPromotionFailures(RealMaterializerTestBase):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(b"existing")
                 with self.assertRaisesRegex(mat.MaterializationError, "Collision"):
-                    mat._check_collisions(self.valid_plan, self.repo_root)
+                    mat._check_preconditions(self.valid_plan, self.repo_root, {})
                 path.unlink()
 
         registry = self.read_json(self.repo_root / "sources_registry.json")
         registry["artifacts"].append({"artifactId": "test_artifact"})
         self.write_json(self.repo_root / "sources_registry.json", registry)
         with self.assertRaisesRegex(mat.MaterializationError, "already exists in registry"):
-            mat._check_collisions(self.valid_plan, self.repo_root)
+            mat._check_preconditions(self.valid_plan, self.repo_root, {})
 
         self._create_live_baseline()
         index = self.read_json(self.repo_root / "index.json")
@@ -1435,7 +1451,7 @@ class TestRealPromotionFailures(RealMaterializerTestBase):
         })
         self.write_json(self.repo_root / "index.json", index)
         with self.assertRaisesRegex(mat.MaterializationError, "index already contains"):
-            mat._check_collisions(self.valid_plan, self.repo_root)
+            mat._check_preconditions(self.valid_plan, self.repo_root, {})
 
     def test_manual_patch_ir_is_rejected_without_patch_consumption(self):
         with self.assertRaisesRegex(mat.MaterializationError, "requires manual patching"):
@@ -1446,3 +1462,926 @@ class TestRealPromotionFailures(RealMaterializerTestBase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TestUpdateTransaction(MaterializerTestBase):
+    def setUp(self):
+        super().setUp()
+
+        self.update_plan = copy.deepcopy(self.valid_plan)
+        self.update_plan["operation"] = "update"
+        del self.update_plan["artifacts"][0]["localVersion"]
+        self.update_plan["artifacts"][0]["expectedCurrentLocalVersion"] = "1.0.0"
+        self.update_plan["artifacts"][0]["newLocalVersion"] = "1.0.1"
+        self.write_json(self.plan_path, self.update_plan)
+
+        self.artifact_id = self.update_plan["artifacts"][0]["artifactId"]
+
+        self.final_js_path = self.repo_root / f"{self.artifact_id}.js"
+        self.final_js_path.write_text(
+            'class ExistingSource extends ComicSource {\n'
+            '    name = "Test Source"\n'
+            f'    key = "en_test_artifact"\n'
+            '    version = "1.0.0"\n'
+            '}\n',
+            encoding="utf-8"
+        )
+
+        (self.repo_root / "sources_generated").mkdir()
+        self.base_js_path = self.repo_root / "sources_generated" / f"{self.artifact_id}.base.js"
+        self.base_js_path.write_text(self.final_js_path.read_text(encoding="utf-8"), encoding="utf-8")
+
+        (self.repo_root / "sources_ir").mkdir()
+        self.ir_path = self.repo_root / "sources_ir" / f"{self.artifact_id}.json"
+        self.old_ir = copy.deepcopy(self.valid_ir_template)
+        self.old_ir["version"] = "1.0.0"
+        self.write_json(self.ir_path, self.old_ir)
+
+        self.registry_path = self.repo_root / "sources_registry.json"
+        self.registry = {
+            "schemaVersion": "1.0",
+            "artifacts": [{
+                "artifactId": self.artifact_id,
+                "runtimeKey": "en_test_artifact",
+                "providerId": "test_provider",
+                "implementation": {"producer": "generated"},
+                "upstream": {
+                    "project": "keiyoushi/extensions-source",
+                    "module": "en.testsource",
+                    "sourceId": "1234",
+                    "version": "1.2.3", "extensionLib": "1.4",
+                    "commit": self.commit_hash,
+                }
+            }]
+        }
+        self.write_json(self.registry_path, self.registry)
+
+        mat.write_index(self.repo_root)
+
+        self.valid_ir_update = copy.deepcopy(self.valid_ir_template)
+        self.valid_ir_update["version"] = "1.0.1"
+        self.valid_ir_update["id"] = "en_test_artifact"
+        self.valid_ir_update["name"] = "Test Source"
+
+    def _configure_dispatch(self, mock_dispatch, runtime_override=None):
+        def extract(**kwargs):
+            source_id = kwargs["source_id"]
+            ir_data = copy.deepcopy(self.valid_ir_update)
+            if source_id == "5678":
+                ir_data["artifactId"] = "test_artifact_two"
+                ir_data["id"] = self.second_runtime_key
+                ir_data["name"] = "Test Source 2"
+            if runtime_override is not None:
+                ir_data["id"] = runtime_override
+            return ir_data
+
+        mock_dispatch.side_effect = extract
+
+    def _run_update(self, mock_dispatch, mode, expected_digest=None):
+        self._configure_dispatch(mock_dispatch)
+        arguments = [
+            "--mode", mode,
+            "--plan", str(self.plan_path),
+            "--repo-root", str(self.repo_root),
+            "--extensions-root", str(self.extensions_root),
+        ]
+        if expected_digest is not None:
+            arguments.extend(["--expected-digest", expected_digest])
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with redirect_stdout(stdout), redirect_stderr(stderr):
+            result = mat.main(arguments)
+        report = None
+        marker = '{\n  "mode"'
+        if marker in stdout.getvalue():
+            report = json.loads(stdout.getvalue()[stdout.getvalue().index(marker):])
+        return result, report, stderr.getvalue()
+
+    def _add_second_artifact(self, *, shared_runtime_key=False, include_in_plan=True):
+        artifact_id = "test_artifact_two"
+        self.second_runtime_key = (
+            "en_test_artifact" if shared_runtime_key else "en_test_artifact_two"
+        )
+        second_plan_item = {
+            "sourceId": "5678",
+            "artifactId": artifact_id,
+            "providerId": "test_provider_two",
+            "expectedCurrentLocalVersion": "1.0.0",
+            "newLocalVersion": "1.0.1",
+        }
+        if include_in_plan:
+            self.update_plan["artifacts"].append(second_plan_item)
+            self.write_json(self.plan_path, self.update_plan)
+
+        final_path = self.repo_root / f"{artifact_id}.js"
+        final_path.write_text(
+            'class ExistingSourceTwo extends ComicSource {\n'
+            '    name = "Test Source 2"\n'
+            f'    key = "{self.second_runtime_key}"\n'
+            '    version = "1.0.0"\n'
+            '}\n',
+            encoding="utf-8",
+        )
+        base_path = self.repo_root / "sources_generated" / f"{artifact_id}.base.js"
+        base_path.write_bytes(final_path.read_bytes())
+        ir_data = copy.deepcopy(self.old_ir)
+        ir_data.update({
+            "artifactId": artifact_id,
+            "id": self.second_runtime_key,
+            "name": "Test Source 2",
+        })
+        self.write_json(self.repo_root / "sources_ir" / f"{artifact_id}.json", ir_data)
+
+        compatibility = None
+        if shared_runtime_key:
+            compatibility = {"sharedRuntimeKeyGroup": "en_test_artifact"}
+            self.registry["artifacts"][0]["compatibility"] = copy.deepcopy(
+                compatibility
+            )
+        record = {
+            "artifactId": artifact_id,
+            "runtimeKey": self.second_runtime_key,
+            "providerId": "test_provider_two",
+            "implementation": {"producer": "generated"},
+            "upstream": {
+                "project": "keiyoushi/extensions-source",
+                "module": "en.testsource2",
+                "sourceId": "5678",
+                "version": "1.2.3",
+                "extensionLib": "1.4",
+                "commit": self.commit_hash,
+            },
+        }
+        if compatibility is not None:
+            record["compatibility"] = compatibility
+        self.registry["artifacts"].append(record)
+        self.write_json(self.registry_path, self.registry)
+        mat.write_index(self.repo_root)
+        return second_plan_item
+
+    def _prepare_update_transaction(self, mock_dispatch):
+        self._configure_dispatch(mock_dispatch)
+        plan = mat._parse_plan(self.plan_path)
+        inventory = mat.load_json(self.inventory_path)
+        registry = mat.load_json(self.registry_path)
+        resolved = mat._resolve_candidates(plan, inventory, registry)
+        mat._check_preconditions(plan, self.repo_root, resolved)
+        fingerprint = mat._capture_preflight_fingerprint(self.repo_root)
+        transaction = tempfile.TemporaryDirectory()
+        self.addCleanup(transaction.cleanup)
+        transaction_dir = Path(transaction.name)
+        result = mat._execute_pass(
+            plan,
+            resolved,
+            self.extensions_root,
+            self.repo_root,
+            transaction_dir,
+        )
+        return plan, fingerprint, transaction_dir, result
+
+    def _snapshot_update_state(self, plan=None):
+        if plan is None:
+            plan = mat._parse_plan(self.plan_path)
+        return {
+            relative_path: (self.repo_root / relative_path).read_bytes()
+            for relative_path in mat._update_current_state_paths(plan)
+        }
+
+    def _snapshot_tree(self):
+        return {
+            path.relative_to(self.repo_root).as_posix(): path.read_bytes()
+            for path in sorted(self.repo_root.rglob("*"))
+            if path.is_file()
+        }
+
+    def _assert_exact_update_state(self, expected):
+        actual = {
+            relative_path: (self.repo_root / relative_path).read_bytes()
+            for relative_path in expected
+        }
+        self.assertEqual(actual, expected)
+        artifact_payloads = [
+            payload
+            for relative_path, payload in actual.items()
+            if relative_path not in {"sources_registry.json"}
+        ]
+        self.assertFalse(any(b'"1.0.1"' in payload for payload in artifact_payloads))
+        self.assertFalse(
+            any(
+                path.is_file() and path.name.endswith(".tmp")
+                for path in self.repo_root.rglob("*")
+            )
+        )
+
+    def _assert_precondition_error(self, expected_message):
+        plan = mat._parse_plan(self.plan_path)
+        resolved = {
+            candidate["sourceId"]: candidate
+            for candidate in self.valid_inventory["candidates"]
+        }
+        with self.assertRaisesRegex(mat.MaterializationError, expected_message):
+            mat._check_preconditions(plan, self.repo_root, resolved)
+
+    def _assert_fault_rollback(self, mock_dispatch, injected_replace):
+        plan, fingerprint, transaction_dir, result = self._prepare_update_transaction(
+            mock_dispatch
+        )
+        before = self._snapshot_update_state(plan)
+        with patch.object(
+            mat, "_replace_prepared_sibling", side_effect=injected_replace
+        ):
+            with self.assertRaisesRegex(
+                mat.MaterializationError, "rollback successful"
+            ):
+                mat._promote_transaction(
+                    self.repo_root,
+                    transaction_dir,
+                    plan,
+                    fingerprint,
+                    result["targets"],
+                )
+        self._assert_exact_update_state(before)
+
+    def _assert_reviewed_state_change_rejected(self, mock_dispatch, relative_path):
+        result, report, stderr = self._run_update(mock_dispatch, "check")
+        self.assertEqual((result, stderr), (0, ""), msg=stderr)
+        live_path = self.repo_root / relative_path
+        live_path.write_bytes(live_path.read_bytes() + b"\n")
+        changed_state = self._snapshot_update_state()
+        result, _, stderr = self._run_update(
+            mock_dispatch, "write", report["transactionDigest"]
+        )
+        self.assertEqual(result, 1)
+        self.assertIn("expected digest", stderr)
+        self._assert_exact_update_state(changed_state)
+
+    def test_update_version_accepts_exact_next_patch(self):
+        parsed = mat._parse_plan(self.plan_path)
+        self.assertEqual(parsed["artifacts"][0]["newLocalVersion"], "1.0.1")
+
+    def test_update_version_accepts_patch_carry_without_minor_change(self):
+        self.update_plan["artifacts"][0]["expectedCurrentLocalVersion"] = "1.0.9"
+        self.update_plan["artifacts"][0]["newLocalVersion"] = "1.0.10"
+        self.write_json(self.plan_path, self.update_plan)
+        parsed = mat._parse_plan(self.plan_path)
+        self.assertEqual(parsed["artifacts"][0]["newLocalVersion"], "1.0.10")
+
+    def test_update_version_rejects_same_version(self):
+        self.update_plan["artifacts"][0]["newLocalVersion"] = "1.0.0"
+        self.write_json(self.plan_path, self.update_plan)
+        with self.assertRaisesRegex(mat.MaterializationError, "exactly the next patch"):
+            mat._parse_plan(self.plan_path)
+
+    def test_update_version_rejects_decrease(self):
+        self.update_plan["artifacts"][0]["expectedCurrentLocalVersion"] = "1.0.1"
+        self.update_plan["artifacts"][0]["newLocalVersion"] = "1.0.0"
+        self.write_json(self.plan_path, self.update_plan)
+        with self.assertRaisesRegex(mat.MaterializationError, "exactly the next patch"):
+            mat._parse_plan(self.plan_path)
+
+    def test_update_version_rejects_minor_change(self):
+        self.update_plan["artifacts"][0]["newLocalVersion"] = "1.1.0"
+        self.write_json(self.plan_path, self.update_plan)
+        with self.assertRaisesRegex(mat.MaterializationError, "exactly the next patch"):
+            mat._parse_plan(self.plan_path)
+
+    def test_update_version_rejects_major_change(self):
+        self.update_plan["artifacts"][0]["newLocalVersion"] = "2.0.0"
+        self.write_json(self.plan_path, self.update_plan)
+        with self.assertRaisesRegex(mat.MaterializationError, "exactly the next patch"):
+            mat._parse_plan(self.plan_path)
+
+    def test_update_version_rejects_skipped_patch(self):
+        self.update_plan["artifacts"][0]["newLocalVersion"] = "1.0.2"
+        self.write_json(self.plan_path, self.update_plan)
+        with self.assertRaisesRegex(mat.MaterializationError, "exactly the next patch"):
+            mat._parse_plan(self.plan_path)
+
+    def test_update_version_rejects_non_release_semver(self):
+        rejected = ("1.0", "1.0.1-alpha", "1.0.1+build", "01.0.1")
+        for version in rejected:
+            with self.subTest(version=version):
+                plan = copy.deepcopy(self.update_plan)
+                plan["artifacts"][0]["newLocalVersion"] = version
+                self.write_json(self.plan_path, plan)
+                with self.assertRaisesRegex(
+                    mat.MaterializationError, "Invalid newLocalVersion"
+                ):
+                    mat._parse_plan(self.plan_path)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_check_target_manifest_is_publication_minimal(
+        self, mock_dispatch
+    ):
+        result, report, stderr = self._run_update(mock_dispatch, "check")
+        self.assertEqual((result, stderr), (0, ""), msg=stderr)
+        self.assertEqual(
+            [target["relativePath"] for target in report["targets"]],
+            [
+                "sources_ir/test_artifact.json",
+                "sources_generated/test_artifact.base.js",
+                "test_artifact.js",
+                "index.json",
+            ],
+        )
+        self.assertNotIn(
+            "sources_registry.json",
+            {target["relativePath"] for target in report["targets"]},
+        )
+        self.assertFalse(
+            any(
+                "sources_patches/" in target["relativePath"]
+                for target in report["targets"]
+            )
+        )
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_multi_artifact_update_check_has_exactly_seven_targets(
+        self, mock_dispatch
+    ):
+        self._add_second_artifact(include_in_plan=True)
+        result, report, stderr = self._run_update(mock_dispatch, "check")
+        self.assertEqual((result, stderr), (0, ""), msg=stderr)
+        self.assertEqual(
+            [target["relativePath"] for target in report["targets"]],
+            [
+                "sources_ir/test_artifact.json",
+                "sources_generated/test_artifact.base.js",
+                "test_artifact.js",
+                "sources_ir/test_artifact_two.json",
+                "sources_generated/test_artifact_two.base.js",
+                "test_artifact_two.js",
+                "index.json",
+            ],
+        )
+        self.assertEqual(len(report["targets"]), 7)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_successful_update_never_publishes_registry(self, mock_dispatch):
+        result, report, stderr = self._run_update(mock_dispatch, "check")
+        self.assertEqual((result, stderr), (0, ""), msg=stderr)
+        registry_before = self.registry_path.read_bytes()
+        registry_hash_before = hashlib.sha256(registry_before).hexdigest()
+        registry_mtime_before = self.registry_path.stat().st_mtime_ns
+        original_replace = mat._replace_prepared_sibling
+        destinations = []
+
+        def record_publication(source, destination):
+            destinations.append(Path(destination))
+            return original_replace(source, destination)
+
+        with patch.object(
+            mat, "_replace_prepared_sibling", side_effect=record_publication
+        ):
+            result, write_report, stderr = self._run_update(
+                mock_dispatch, "write", report["transactionDigest"]
+            )
+        self.assertEqual((result, stderr), (0, ""), msg=stderr)
+        self.assertEqual(report["targets"], write_report["targets"])
+        self.assertEqual(
+            destinations,
+            [
+                self.ir_path,
+                self.base_js_path,
+                self.final_js_path,
+                self.repo_root / "index.json",
+            ],
+        )
+        registry_after = self.registry_path.read_bytes()
+        self.assertEqual(registry_after, registry_before)
+        self.assertEqual(
+            hashlib.sha256(registry_after).hexdigest(), registry_hash_before
+        )
+        self.assertEqual(
+            self.registry_path.stat().st_mtime_ns, registry_mtime_before
+        )
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_digest_binds_root_js(self, mock_dispatch):
+        self._assert_reviewed_state_change_rejected(
+            mock_dispatch, f"{self.artifact_id}.js"
+        )
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_digest_binds_generated_base_js(self, mock_dispatch):
+        self._assert_reviewed_state_change_rejected(
+            mock_dispatch,
+            f"sources_generated/{self.artifact_id}.base.js",
+        )
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_digest_binds_ir(self, mock_dispatch):
+        self._assert_reviewed_state_change_rejected(
+            mock_dispatch, f"sources_ir/{self.artifact_id}.json"
+        )
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_digest_binds_index(self, mock_dispatch):
+        self._assert_reviewed_state_change_rejected(mock_dispatch, "index.json")
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_digest_binds_registry(self, mock_dispatch):
+        result, report, stderr = self._run_update(mock_dispatch, "check")
+        self.assertEqual((result, stderr), (0, ""), msg=stderr)
+        self.registry_path.write_bytes(self.registry_path.read_bytes() + b"\n")
+        changed_state = self._snapshot_update_state()
+        with patch.object(
+            mat, "_replace_prepared_sibling", wraps=mat._replace_prepared_sibling
+        ) as publication:
+            result, _, stderr = self._run_update(
+                mock_dispatch, "write", report["transactionDigest"]
+            )
+        self.assertEqual(result, 1)
+        self.assertIn("expected digest", stderr)
+        publication.assert_not_called()
+        self._assert_exact_update_state(changed_state)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_check_is_deterministic_and_zero_write(self, mock_dispatch):
+        before = self._snapshot_tree()
+        result1, report1, stderr1 = self._run_update(mock_dispatch, "check")
+        middle = self._snapshot_tree()
+        result2, report2, stderr2 = self._run_update(mock_dispatch, "check")
+        after = self._snapshot_tree()
+        self.assertEqual((result1, stderr1), (0, ""), msg=stderr1)
+        self.assertEqual((result2, stderr2), (0, ""), msg=stderr2)
+        self.assertEqual(before, middle)
+        self.assertEqual(middle, after)
+        self.assertEqual(report1["targets"], report2["targets"])
+        self.assertEqual(report1["currentState"], report2["currentState"])
+        self.assertEqual(
+            report1["transactionDigest"], report2["transactionDigest"]
+        )
+        expected_paths = mat._update_current_state_paths(
+            mat._parse_plan(self.plan_path)
+        )
+        self.assertEqual(
+            [entry["relativePath"] for entry in report1["currentState"]],
+            expected_paths,
+        )
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_check_write_byte_identity(self, mock_dispatch):
+        result, report, stderr = self._run_update(mock_dispatch, "check")
+        self.assertEqual((result, stderr), (0, ""), msg=stderr)
+        _, _, transaction_dir, prepared = self._prepare_update_transaction(
+            mock_dispatch
+        )
+        proposed_bytes = {
+            target["relativePath"]: (
+                transaction_dir / target["relativePath"]
+            ).read_bytes()
+            for target in prepared["targets"]
+        }
+        result, write_report, stderr = self._run_update(
+            mock_dispatch, "write", report["transactionDigest"]
+        )
+        self.assertEqual((result, stderr), (0, ""), msg=stderr)
+        self.assertEqual(report["targets"], write_report["targets"])
+        for relative_path, proposed in proposed_bytes.items():
+            self.assertEqual((self.repo_root / relative_path).read_bytes(), proposed)
+
+    def test_legacy_create_digest_matches_committed_head(self):
+        head_source = subprocess.check_output(
+            [
+                "git",
+                "show",
+                "HEAD:tools/source_conversion/materializer/materialize.py",
+            ],
+            cwd=REPO_ROOT,
+            text=True,
+            encoding="utf-8",
+        )
+        namespace = {
+            "__file__": str(
+                REPO_ROOT
+                / "tools"
+                / "source_conversion"
+                / "materializer"
+                / "materialize.py"
+            ),
+            "__name__": "committed_head_materializer",
+        }
+        exec(compile(head_source, namespace["__file__"], "exec"), namespace)
+        plan = copy.deepcopy(self.valid_plan)
+        targets = [
+            {
+                "relativePath": "test_artifact.js",
+                "sha256": "a" * 64,
+                "byteLength": 123,
+                "sourcePath": Path("C:/machine-specific/check/test_artifact.js"),
+            }
+        ]
+        self.assertNotIn("operation", plan)
+        self.assertEqual(
+            namespace["_compute_digest"](plan, targets),
+            mat._compute_digest(plan, targets),
+        )
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_succeeds_for_existing_generated_artifact(self, mock_dispatch):
+        mock_dispatch.return_value = self.valid_ir_update
+
+        import sys
+        from io import StringIO
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            ret = mat.main(["--mode", "check", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root)])
+            self.assertEqual(ret, 0)
+            out = mock_stdout.getvalue()
+
+        digest = None
+        for line in out.splitlines():
+            if '"transactionDigest"' in line:
+                digest = line.split('"')[3]
+                break
+        self.assertIsNotNone(digest)
+
+        ret = mat.main(["--mode", "write", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root), "--expected-digest", digest])
+        self.assertEqual(ret, 0)
+
+        reg = self.read_json(self.registry_path)
+        self.assertEqual(len(reg["artifacts"]), 1)
+        self.assertEqual(reg["artifacts"][0]["upstream"]["version"], "1.2.3")
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_rejects_nonexistent_artifact(self, mock_dispatch):
+        self.registry["artifacts"][0]["artifactId"] = "other_id"
+        self.write_json(self.registry_path, self.registry)
+        self._assert_precondition_error("artifactId test_artifact not in registry")
+
+    def test_update_rejects_missing_registry_file(self):
+        self.registry_path.unlink()
+        self._assert_precondition_error("sources_registry.json missing")
+
+    def test_update_rejects_missing_registry_entry(self):
+        self.registry["artifacts"] = []
+        self.write_json(self.registry_path, self.registry)
+        self._assert_precondition_error("artifactId test_artifact not in registry")
+
+    def test_update_rejects_missing_root_js(self):
+        self.final_js_path.unlink()
+        self._assert_precondition_error("test_artifact.js missing")
+
+    def test_update_rejects_missing_generated_base_js(self):
+        self.base_js_path.unlink()
+        self._assert_precondition_error(
+            "sources_generated/test_artifact.base.js missing"
+        )
+
+    def test_update_rejects_missing_ir(self):
+        self.ir_path.unlink()
+        self._assert_precondition_error("sources_ir/test_artifact.json missing")
+
+    def test_update_rejects_missing_index_file(self):
+        (self.repo_root / "index.json").unlink()
+        self._assert_precondition_error("index.json missing")
+
+    def test_update_rejects_missing_index_entry(self):
+        self.write_json(self.repo_root / "index.json", [])
+        self._assert_precondition_error("test_artifact.js not in index")
+
+    def test_update_rejects_non_generated_registry_record(self):
+        self.registry["artifacts"][0]["implementation"]["producer"] = "manual"
+        self.write_json(self.registry_path, self.registry)
+        self._assert_precondition_error("artifact is not generated")
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_rejects_stale_expected_version(self, mock_dispatch):
+        self.old_ir["version"] = "1.0.5"
+        self.write_json(self.ir_path, self.old_ir)
+        self._assert_precondition_error("stale expectedCurrentLocalVersion")
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_rejects_same_or_lower_new_version(self, mock_dispatch):
+        plan = copy.deepcopy(self.update_plan)
+        plan["artifacts"][0]["newLocalVersion"] = "1.0.0"
+        self.write_json(self.plan_path, plan)
+        ret = mat.main(["--mode", "check", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root)])
+        self.assertEqual(ret, 1)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_rejects_provider_id_mismatch(self, mock_dispatch):
+        self.registry["artifacts"][0]["providerId"] = "other_provider"
+        self.write_json(self.registry_path, self.registry)
+        self._assert_precondition_error("providerId mismatch")
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_rejects_upstream_project_mismatch(self, mock_dispatch):
+        self.registry["artifacts"][0]["upstream"]["project"] = "other/project"
+        self.write_json(self.registry_path, self.registry)
+        self._assert_precondition_error("upstream project mismatch")
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_rejects_patch_backed_artifact(self, mock_dispatch):
+        (self.repo_root / "sources_patches").mkdir()
+        (self.repo_root / "sources_patches" / f"{self.artifact_id}.patch.js").write_text("")
+        self._assert_precondition_error("patch-backed artifact not supported")
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_check_is_zero_write(self, mock_dispatch):
+        mock_dispatch.return_value = self.valid_ir_update
+        before = mat._capture_preflight_fingerprint(self.repo_root)
+        ret = mat.main(["--mode", "check", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root)])
+        self.assertEqual(ret, 0)
+        after = mat._capture_preflight_fingerprint(self.repo_root)
+        self.assertEqual(before, after)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_write_wrong_digest_fails(self, mock_dispatch):
+        mock_dispatch.return_value = self.valid_ir_update
+        before = self._snapshot_update_state()
+        ret = mat.main(["--mode", "write", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root), "--expected-digest", "wrong"])
+        self.assertEqual(ret, 1)
+        self._assert_exact_update_state(before)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_fault_before_first_replacement_rolls_back(self, mock_dispatch):
+        def fail_before_first(source, destination):
+            raise OSError("fault before first replacement")
+
+        self._assert_fault_rollback(mock_dispatch, fail_before_first)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_fault_after_first_replacement_rolls_back(self, mock_dispatch):
+        original_replace = mat._replace_prepared_sibling
+        replacements = 0
+
+        def fail_after_first(source, destination):
+            nonlocal replacements
+            replacements += 1
+            if replacements == 2:
+                raise OSError("fault after first replacement")
+            return original_replace(source, destination)
+
+        self._assert_fault_rollback(mock_dispatch, fail_after_first)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_fault_after_root_js_replacement_rolls_back(self, mock_dispatch):
+        original_replace = mat._replace_prepared_sibling
+        index_path = self.repo_root / "index.json"
+
+        def fail_after_root(source, destination):
+            if Path(destination) == index_path:
+                raise OSError("fault after root JS replacement")
+            return original_replace(source, destination)
+
+        self._assert_fault_rollback(mock_dispatch, fail_after_root)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_fault_after_generated_base_replacement_rolls_back(self, mock_dispatch):
+        original_replace = mat._replace_prepared_sibling
+
+        def fail_after_base(source, destination):
+            if Path(destination) == self.final_js_path:
+                raise OSError("fault after generated base replacement")
+            return original_replace(source, destination)
+
+        self._assert_fault_rollback(mock_dispatch, fail_after_base)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_fault_after_ir_replacement_rolls_back(self, mock_dispatch):
+        original_replace = mat._replace_prepared_sibling
+
+        def fail_after_ir(source, destination):
+            if Path(destination) == self.base_js_path:
+                raise OSError("fault after IR replacement")
+            return original_replace(source, destination)
+
+        self._assert_fault_rollback(mock_dispatch, fail_after_ir)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_fault_immediately_before_index_replacement_rolls_back(
+        self, mock_dispatch
+    ):
+        original_replace = mat._replace_prepared_sibling
+        index_path = self.repo_root / "index.json"
+
+        def fail_before_index(source, destination):
+            if Path(destination) == index_path:
+                raise OSError("fault immediately before index replacement")
+            return original_replace(source, destination)
+
+        self._assert_fault_rollback(mock_dispatch, fail_before_index)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_fault_during_index_replacement_rolls_back(self, mock_dispatch):
+        plan, fingerprint, transaction_dir, result = self._prepare_update_transaction(
+            mock_dispatch
+        )
+        before = self._snapshot_update_state(plan)
+        original_os_replace = mat.os.replace
+        index_path = self.repo_root / "index.json"
+
+        def fail_during_index(source, destination):
+            if Path(destination) == index_path:
+                raise OSError("fault during index replacement")
+            return original_os_replace(source, destination)
+
+        with patch.object(mat.os, "replace", side_effect=fail_during_index):
+            with self.assertRaisesRegex(
+                mat.MaterializationError, "rollback successful"
+            ):
+                mat._promote_transaction(
+                    self.repo_root,
+                    transaction_dir,
+                    plan,
+                    fingerprint,
+                    result["targets"],
+                )
+        self._assert_exact_update_state(before)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_final_guard_rejects_changed_index_before_publication(
+        self, mock_dispatch
+    ):
+        plan, fingerprint, transaction_dir, result = self._prepare_update_transaction(
+            mock_dispatch
+        )
+        index_path = self.repo_root / "index.json"
+        index_path.write_bytes(index_path.read_bytes() + b"\n")
+        changed_state = self._snapshot_update_state(plan)
+        with self.assertRaisesRegex(mat.MaterializationError, "Stale-state guard"):
+            mat._promote_transaction(
+                self.repo_root,
+                transaction_dir,
+                plan,
+                fingerprint,
+                result["targets"],
+            )
+        self._assert_exact_update_state(changed_state)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_final_guard_rejects_changed_registry_before_publication(
+        self, mock_dispatch
+    ):
+        plan, fingerprint, transaction_dir, result = self._prepare_update_transaction(
+            mock_dispatch
+        )
+        self.registry_path.write_bytes(self.registry_path.read_bytes() + b"\n")
+        changed_state = self._snapshot_update_state(plan)
+        with patch.object(
+            mat, "_replace_prepared_sibling", wraps=mat._replace_prepared_sibling
+        ) as publication:
+            with self.assertRaisesRegex(mat.MaterializationError, "Stale-state guard"):
+                mat._promote_transaction(
+                    self.repo_root,
+                    transaction_dir,
+                    plan,
+                    fingerprint,
+                    result["targets"],
+                )
+        publication.assert_not_called()
+        self._assert_exact_update_state(changed_state)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_rollback(self, mock_dispatch):
+        original_replace = mat._replace_prepared_sibling
+        index_path = self.repo_root / "index.json"
+
+        def fail_index_publication(source, destination):
+            if Path(destination) == index_path:
+                raise OSError("mock failure during live index replacement")
+            return original_replace(source, destination)
+
+        self._assert_fault_rollback(mock_dispatch, fail_index_publication)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_rejects_modified_file_after_check(self, mock_dispatch):
+        mock_dispatch.return_value = self.valid_ir_update
+
+        import sys
+        from io import StringIO
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            mat.main(["--mode", "check", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root)])
+            out = mock_stdout.getvalue()
+
+        digest = None
+        for line in out.splitlines():
+            if '"transactionDigest"' in line:
+                digest = line.split('"')[3]
+                break
+
+        self.final_js_path.write_text(self.final_js_path.read_text(encoding="utf-8") + "// change", encoding="utf-8")
+
+        ret = mat.main(["--mode", "write", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root), "--expected-digest", digest])
+        self.assertEqual(ret, 1)
+
+
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_rejects_runtimeKey_mismatch(self, mock_dispatch):
+        mismatched_ir = copy.deepcopy(self.valid_ir_update)
+        mismatched_ir["id"] = "wrong_key"
+        mock_dispatch.return_value = mismatched_ir
+        ret = mat.main(["--mode", "check", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root)])
+        self.assertEqual(ret, 1)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_rejects_upstream_module_mismatch(self, mock_dispatch):
+        self.registry["artifacts"][0]["upstream"]["module"] = "other.module"
+        self.write_json(self.registry_path, self.registry)
+        self._assert_precondition_error("upstream module mismatch")
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_rejects_upstream_sourceId_mismatch(self, mock_dispatch):
+        self.registry["artifacts"][0]["upstream"]["sourceId"] = "9999"
+        self.write_json(self.registry_path, self.registry)
+        self._assert_precondition_error("upstream sourceId mismatch")
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_rejects_upstream_commit_mismatch(self, mock_dispatch):
+        self.registry["artifacts"][0]["upstream"]["commit"] = "0" * 40
+        self.write_json(self.registry_path, self.registry)
+        self._assert_precondition_error("upstream commit mismatch")
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_rejects_manualPatchRequired_true(self, mock_dispatch):
+        self.old_ir["manualPatchRequired"] = True
+        self.write_json(self.ir_path, self.old_ir)
+        self._assert_precondition_error("manualPatchRequired is true")
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_multi_artifact_rollback_restores_all_artifacts(self, mock_dispatch):
+        self._add_second_artifact(include_in_plan=True)
+        original_replace = mat._replace_prepared_sibling
+        second_ir_path = self.repo_root / "sources_ir" / "test_artifact_two.json"
+
+        def fail_after_first_artifact(source, destination):
+            if Path(destination) == second_ir_path:
+                raise OSError("fault after first artifact was replaced")
+            return original_replace(source, destination)
+
+        self._assert_fault_rollback(mock_dispatch, fail_after_first_artifact)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_shared_runtime_key_artifacts_cannot_cross_update(self, mock_dispatch):
+        self._add_second_artifact(
+            shared_runtime_key=True,
+            include_in_plan=False,
+        )
+        sibling_paths = (
+            "test_artifact_two.js",
+            "sources_generated/test_artifact_two.base.js",
+            "sources_ir/test_artifact_two.json",
+        )
+        sibling_before = {
+            path: (self.repo_root / path).read_bytes() for path in sibling_paths
+        }
+        registry_before = self.read_json(self.registry_path)
+        sibling_record_before = next(
+            item
+            for item in registry_before["artifacts"]
+            if item["artifactId"] == "test_artifact_two"
+        )
+        index_before = self.read_json(self.repo_root / "index.json")
+        sibling_index_before = next(
+            item
+            for item in index_before
+            if item["fileName"] == "test_artifact_two.js"
+        )
+
+        result, report, stderr = self._run_update(mock_dispatch, "check")
+        self.assertEqual((result, stderr), (0, ""), msg=stderr)
+        result, _, stderr = self._run_update(
+            mock_dispatch, "write", report["transactionDigest"]
+        )
+        self.assertEqual((result, stderr), (0, ""), msg=stderr)
+
+        for path, payload in sibling_before.items():
+            self.assertEqual((self.repo_root / path).read_bytes(), payload)
+        registry_after = self.read_json(self.registry_path)
+        by_id = {item["artifactId"]: item for item in registry_after["artifacts"]}
+        self.assertEqual(by_id["test_artifact_two"], sibling_record_before)
+        self.assertEqual(
+            by_id["test_artifact"]["compatibility"],
+            {"sharedRuntimeKeyGroup": "en_test_artifact"},
+        )
+        self.assertEqual(
+            by_id["test_artifact"]["runtimeKey"],
+            by_id["test_artifact_two"]["runtimeKey"],
+        )
+        index_after = self.read_json(self.repo_root / "index.json")
+        sibling_index_after = next(
+            item
+            for item in index_after
+            if item["fileName"] == "test_artifact_two.js"
+        )
+        self.assertEqual(sibling_index_after, sibling_index_before)
+        self.assertIn(b'version = "1.0.1"', self.final_js_path.read_bytes())
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_shared_runtime_key_mixed_sibling_metadata_is_rejected(
+        self, mock_dispatch
+    ):
+        self._add_second_artifact(
+            shared_runtime_key=True,
+            include_in_plan=False,
+        )
+        mixed_plan = copy.deepcopy(self.update_plan)
+        mixed_plan["artifacts"][0]["sourceId"] = "5678"
+        self.write_json(self.plan_path, mixed_plan)
+        before = self._snapshot_tree()
+        result, _, stderr = self._run_update(mock_dispatch, "check")
+        self.assertEqual(result, 1)
+        self.assertIn("upstream module mismatch", stderr)
+        self.assertEqual(self._snapshot_tree(), before)

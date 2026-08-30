@@ -339,19 +339,27 @@ python tools/source_conversion/generator/js_generator.py --input sources_ir/webt
 The `materialize.py` script transforms a reviewed local identity plan, canonical inventory, and a pinned upstream checkout into a deterministic repository transaction.
 
 ### Scope and Limitations
-P2C v0.1 supports **generated / NO-PATCH CREATE only**.
+P2C v0.1 supports **generated / NO-PATCH CREATE** plus a deliberately narrow
+**generated / NO-PATCH UPDATE v0.1**. UPDATE is implementation-only
+regeneration of an existing artifact; it is not an upstream refresh. The
+existing upstream `project`, `module`, `sourceId`, and `commit` must match the
+reviewed plan and current registry exactly.
 Candidate readiness is not stored as a `"COMPATIBLE"` inventory sentinel. The
 materializer calls the canonical eligibility planner over the validated
-inventory and live registry, accepts only planner routes `E1`, `E2`, and `E3`,
-and rejects `E0`, `E4`, `E5`, and `E6`. An explicit planner patch state of
-`required` is rejected before extraction; otherwise the extracted IR must still
-prove that no manual patch is required before final JS can be proposed.
+inventory and live registry. CREATE accepts planner routes `E1`, `E2`, and
+`E3`; UPDATE additionally accepts `E0` for the exact existing artifact. Routes
+`E4`, `E5`, and `E6` are rejected. An explicit planner patch state of `required`
+is rejected before extraction; otherwise the extracted IR must still prove that
+no manual patch is required before final JS can be proposed.
 
 The following are **unsupported**:
-- updates, renames, migrations, or deletions
-- sources requiring manual patches (`manualPatchRequired: true` or `PATCH_REQUIRED`)
+- patch-backed UPDATE and sources requiring manual patches
+  (`manualPatchRequired: true` or `PATCH_REQUIRED`)
+- upstream refresh, upstream commit migration, or upstream source migration
+- renames, migrations, or deletions
+- UPDATE major/minor changes or skipped patch versions
 - mass discover-and-write (transactions must be explicitly planned)
-- automatic version bumping
+- automatic version calculation or bumping
 
 ### Identity and Metadata
 - **`artifactId`**: The local generated filename stem (e.g., `test_source`). Distinct from the opaque runtime ID.
@@ -359,6 +367,10 @@ The following are **unsupported**:
 - **`localVersion`**: The explicit local version (e.g., `1.0.0`), separate from the `upstreamVersion` provided by the original extension.
 - **`sourceId`**: The inventory-resolved upstream source identity used to locate the candidate.
 - **`moduleAssert`**: An optional exact assertion over the inventory module locator. Inventory modules remain dot-separated; the materializer translates that locator to a source-tree path and delegates all source-family selection to `extract.py::dispatch_extraction`.
+
+- **`expectedCurrentLocalVersion`**: The explicit current local version (required for UPDATE).
+- **`newLocalVersion`**: The explicit next patch version (required for UPDATE). UPDATE requires the same major and minor components and exactly `current.patch + 1`.
+- **`operation`**: Optional top-level field `create` (default) or `update`.
 
 ### Explicit Plan Contract
 The materializer requires a strict, explicit local plan in JSON format.
@@ -389,23 +401,26 @@ The materializer requires a strict, explicit local plan in JSON format.
 ### Safety Guards
 - **Upstream Provenance**: Reuses the planner checkout attestation to verify the supplied root is the Git top-level, its actual `HEAD` equals the inventory/plan pin, and its tracked and untracked state is clean before extraction.
 - **Canonical Eligibility**: Reuses `eligibility_planner.build_plan`; the materializer does not reinterpret structured `compatibility` fields or duplicate E0-E6 derivation rules.
-- **Stale-State Guard**: Preflight fingerprints cover the registry, index, root final JS files, and converted IR files consumed by proposal preparation. The complete fingerprint and all new-target absence checks are repeated immediately before publication. Any drift aborts before a transaction target is published.
+- **Stale-State Guard**: Preflight fingerprints cover the registry, index, root final JS files, generated base JS files, and converted IR files consumed by proposal preparation. The complete fingerprint is repeated immediately before publication. CREATE also repeats all new-target absence checks. Any drift aborts before a transaction target is published.
 - **Collision Rejection**: Artifacts and files already existing in the repository abort the transaction.
 - **Two-Pass Determinism**: Executes extraction and generation twice in separate temporary directories, asserting byte-identical results and identical SHAs.
-- **Transaction Digest**: Normalized hash over the reviewed inputs (schemaVersion, upstream project/commit, generatedTimestamp, artifact inputs) and the resulting target file SHAs.
+- **Transaction Digest**: Normalized hash over the reviewed inputs (schemaVersion, upstream project/commit, generatedTimestamp, artifact inputs) and the resulting target file SHAs. For UPDATE, it additionally binds stable repository-relative paths and exact current SHA-256 values for every updated root JS, generated base JS, and IR file, plus global `index.json` and `sources_registry.json`. Legacy CREATE digest serialization is unchanged.
 - **Complete Proposal Validation**: Each pass builds a temporary overlay containing existing and proposed final JS/IR plus the complete proposed registry. The canonical registry validator checks schema, runtime identity, IR linkage, and index relationships before publication.
 - **Canonical Index Bytes**: Proposed `index.json` bytes are produced by `validate_registry.py`'s canonical `write_index` implementation, including its ordering, formatting, UTF-8 encoding, and trailing newline.
 
 ### Promotion and Rollback (Per-Target Same-Filesystem Atomicity)
 For every target file, an exclusive random temporary sibling is created on the
 same filesystem and recorded before copying begins. A partial or failed copy is
-therefore transaction-owned and removable. New artifact files are published by
-an atomic hard-link create that cannot overwrite a concurrently appearing
-destination. Shared registry/index files are atomically replaced with
-`os.replace` only after all new artifacts have been published.
+therefore transaction-owned and removable. CREATE artifact files use an atomic
+hard-link create that cannot overwrite a concurrently appearing destination.
+UPDATE artifact files use sequential same-filesystem `os.replace` operations;
+`index.json` is replaced only after all UPDATE artifact files have been
+published. UPDATE reads and validates `sources_registry.json`, binds its exact
+bytes into the reviewed digest and stale-state guard, but does not include it in
+the output target manifest or rewrite it.
 
-- **Promotion Order**: New artifact files are promoted first, followed by shared registry and index files last.
-- **Rollback Guarantees**: Any failure during copy or promotion triggers a transaction-owned rollback. Shared files are restored, created temporary siblings and final paths are unlinked, and empty transaction-created directories are cleaned. Unrelated files are untouched. No partial files are ever exposed.
+- **Promotion Order**: CREATE promotes artifact files, registry, then index. UPDATE promotes IR, generated base JS, and root JS for each artifact, followed only by `index.json`.
+- **Rollback Guarantees**: Any failure during copy or promotion triggers a transaction-owned rollback. UPDATE restores every replaced artifact and `index.json` to its exact prior bytes; its registry is never a publication or rollback target. CREATE removes transaction-created outputs. Temporary siblings and empty transaction-created directories are cleaned, and unrelated files are untouched.
 - **Atomicity Boundary**: Individual target publication is atomic, and detected failures are rolled back byte-for-byte. The materializer does not claim impossible whole-filesystem global atomicity across all targets.
 
 ### Modes
@@ -422,12 +437,16 @@ python tools/source_conversion/materializer/materialize.py \
 ```
 
 #### WRITE Mode
-Executes the same verified prepared transaction as CHECK mode. Upon passing the stale-state revalidation, the prepared temporary transaction is atomically promoted to the live repository.
+Executes the same verified prepared transaction as CHECK mode. Upon passing the
+stale-state revalidation, the prepared temporary transaction is promoted to the
+live repository. UPDATE requires the digest printed by a reviewed CHECK via
+`--expected-digest`; stale CHECK output cannot authorize a WRITE.
 
 ```bash
 python tools/source_conversion/materializer/materialize.py \
   --mode write \
   --plan plan.json \
   --repo-root . \
-  --extensions-root ../extensions-source
+  --extensions-root ../extensions-source \
+  --expected-digest <reviewed-update-digest>
 ```
