@@ -225,10 +225,10 @@ def extract(
         "pages": {
             "url": "chapter.url",
             "method": "GET",
-            "selector": "div.js-pages-container > div.text-center > img.js-page",
+            "selector": "img[data-src]",
             "manualPatchRequired": False,
             "fields": {
-                "imageUrl": "@abs:data-src || @abs:src"
+                "imageUrl": "@abs:data-src"
             }
         },
         "provenance": {

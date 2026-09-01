@@ -14,7 +14,7 @@
 class EnReadjujutsukaisenmangaonlineSource extends ComicSource {
     name = "Read Jujutsu Kaisen Manga Online"
     key = "en_readjujutsukaisenmangaonline"
-    version = "1.0.0"
+    version = "1.0.1"
     minAppVersion = "1.6.0"
 
     static baseUrl = "https://ww6.readjujutsukaisen.com"
@@ -189,8 +189,8 @@ class EnReadjujutsukaisenmangaonlineSource extends ComicSource {
                 throw new Error(`Failed to load episode, status: ${res.status}`);
             }
             let doc = new HtmlDocument(res.body);
-            let imgElements = doc.querySelectorAll("div.js-pages-container > div.text-center > img.js-page");
-            let images = imgElements.map(el => EnReadjujutsukaisenmangaonlineSource.resolveAbsoluteUrl((el.attributes['data-src'] || ''), url) || EnReadjujutsukaisenmangaonlineSource.resolveAbsoluteUrl((el.attributes['src'] || ''), url)).filter(Boolean);
+            let imgElements = doc.querySelectorAll("img[data-src]");
+            let images = imgElements.map(el => EnReadjujutsukaisenmangaonlineSource.resolveAbsoluteUrl((el.attributes['data-src'] || ''), url)).filter(Boolean);
             doc.dispose();
 
             // Hook for custom page transformations (e.g. MotionToon / AuthorNotes)

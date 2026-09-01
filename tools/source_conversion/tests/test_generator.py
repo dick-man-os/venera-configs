@@ -348,17 +348,5 @@ class TestGenerator(unittest.TestCase):
         self.assertIn("let res = await Network.get(url, TestSrcSource.headers);", js)
         self.assertIn("TestSrcSource.resolveAbsoluteUrl", js)
 
-    def test_fallback_operator(self):
-        ir = self.get_base_ir()
-        ir["pages"].update({
-            "selector": "img.js-page",
-            "fields": {"imageUrl": "@abs:data-src || @abs:src"},
-        })
-        js = generate_venera_js(ir)
-        self.assertIn(
-            "let images = imgElements.map(el => TestSrcSource.resolveAbsoluteUrl((el.attributes['data-src'] || ''), url) || TestSrcSource.resolveAbsoluteUrl((el.attributes['src'] || ''), url)).filter(Boolean);",
-            js
-        )
-
 if __name__ == "__main__":
     unittest.main()

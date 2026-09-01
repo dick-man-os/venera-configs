@@ -484,13 +484,13 @@ class TestMangaCatalogExtraction(unittest.TestCase):
 
             self.assertEqual(thumbnail, "div.flex > img@abs:src")
             self.assertEqual(chapter_url, ".col-span-4 > a@abs:href")
-            self.assertEqual(image_url, "@abs:data-src || @abs:src")
+            self.assertEqual(image_url, "@abs:data-src")
 
             # 4. Feed through generator
             js_code = js_generator.generate_venera_js(ir_data)
 
             # 5. Must NOT contain malformed expressions
-            self.assertNotIn("attributes['@abs:data-src || @abs:src']", js_code)
+            self.assertNotIn("attributes['.col-span-4 > a@abs:href']", js_code)
             self.assertNotIn("attributes['div.flex > img@abs:src']", js_code)
             self.assertNotIn("attributes['@abs:data-src']", js_code)
 
@@ -506,7 +506,7 @@ class TestMangaCatalogExtraction(unittest.TestCase):
             self.assertIn(chapter_fragment, js_code)
 
             # Page generated assertion
-            page_fragment = "let images = imgElements.map(el => EnSyntheticSource.resolveAbsoluteUrl((el.attributes['data-src'] || ''), url) || EnSyntheticSource.resolveAbsoluteUrl((el.attributes['src'] || ''), url)).filter(Boolean);"
+            page_fragment = "let images = imgElements.map(el => EnSyntheticSource.resolveAbsoluteUrl((el.attributes['data-src'] || ''), url)).filter(Boolean);"
             self.assertIn(page_fragment, js_code)
             self.assertEqual(js_code.count("static resolveAbsoluteUrl ="), 1)
             self.assertNotRegex(js_code, r"""attributes\[['"]abs:""")

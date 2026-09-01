@@ -79,10 +79,10 @@
   "pages": {
     "url": "chapter.url",
     "method": "GET",
-    "selector": "div.js-pages-container > div.text-center > img.js-page",
+    "selector": "img[data-src]",
     "manualPatchRequired": false,
     "fields": {
-      "imageUrl": "@abs:data-src || @abs:src"
+      "imageUrl": "@abs:data-src"
     }
   },
   "provenance": {
@@ -94,6 +94,8 @@
     "upstreamVersion": "1.4.10",
     "upstreamLicense": "Apache-2.0",
     "converterVersion": "0.1.0",
-    "generatedTimestamp": "2026-09-01T16:13:59Z"
-  }
+    "generatedTimestamp": "2026-08-30T00:00:00Z"
+  },
+  "artifactId": "readjujutsukaisenmangaonline",
+  "version": "1.0.1"
 }

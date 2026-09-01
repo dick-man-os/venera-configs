@@ -51,11 +51,6 @@ def parse_field_extractor(
     request_url_expr: Optional[str] = None,
     resolver_expr: Optional[str] = None,
 ) -> str:
-    if "||" in grammar_expr:
-        parts = [p.strip() for p in grammar_expr.split("||")]
-        parsed_parts = [parse_field_extractor(field_name, p, var_name, request_url_expr, resolver_expr) for p in parts]
-        return " || ".join(parsed_parts)
-
     grammar_expr = grammar_expr.strip()
     if not grammar_expr:
         return '""'
@@ -511,7 +506,7 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
             pages_images_js = f"            let images = imgElements.map(el => {pages_image_extractor}).filter(Boolean);"
         else:
             pages_images_js = f'''            let images = imgElements.map(el => el.attributes["{pages_img_attr}"]).filter(Boolean);'''
-        pages_body = f"""            let url = (epId && epId.startsWith("http")) ? epId : `${{{base_url_ref}}}${{epId || ''}}`;
+        pages_body = f"""            let url = epId.startsWith("http") ? epId : `${{{base_url_ref}}}${{epId}}`;
             let res = await Network.get(url, {class_name}.headers);
             if (res.status !== 200) {{
                 throw new Error(`Failed to load episode, status: ${{res.status}}`);
