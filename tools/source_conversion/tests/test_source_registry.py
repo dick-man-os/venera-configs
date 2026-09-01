@@ -513,7 +513,6 @@ class TestSourceRegistry(unittest.TestCase):
         E4B_GENERATED_NO_PATCH = {
             "readblackclovermangaonline",
             "readfairytailedenszeromangaonline",
-            "readjujutsukaisenmangaonline",
             "readkingdommangaonline",
             "readnanatsunotaizai7deadlysinsmangaonline",
             "readonepiecemangaonline",
