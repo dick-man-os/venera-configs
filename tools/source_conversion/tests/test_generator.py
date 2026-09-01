@@ -1,7 +1,10 @@
+import json
 import os
 import sys
 import unittest
 import tempfile
+
+import quickjs
 
 # Add generator and validator to path
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -211,6 +214,139 @@ class TestGenerator(unittest.TestCase):
         self.assertIn('throw new Error("MANUAL PATCH REQUIRED: onImageLoadCustom must be implemented in patch layer.");', js)
         # Should not have duplicate definitions
         self.assertEqual(js.count("onImageLoad: (url, comicId, epId)"), 1)
+
+    def test_absolute_url_resolution_semantic_matrix(self):
+        ir = self.get_base_ir()
+        ir["details"]["fields"] = {"thumbnail": "img@abs:src"}
+        js = generate_venera_js(ir)
+
+        context = quickjs.Context()
+        context.eval("class ComicSource {}\n" + js)
+        request_url = "https://example.com/manga/black-clover/"
+        cases = [
+            ("https", json.dumps("https://absolute.example/a"), "https://absolute.example/a"),
+            ("http", json.dumps("http://absolute.example/a"), "http://absolute.example/a"),
+            ("protocol-relative", json.dumps("//cdn.example/a"), "https://cdn.example/a"),
+            ("root-relative", json.dumps("/root/a"), "https://example.com/root/a"),
+            (
+                "path-relative",
+                json.dumps("relative/a"),
+                "https://example.com/manga/black-clover/relative/a",
+            ),
+            ("parent-relative", json.dumps("../a"), "https://example.com/manga/a"),
+            ("empty", json.dumps(""), ""),
+            ("missing", "undefined", ""),
+            ("null", "null", ""),
+            (
+                "query-only",
+                json.dumps("?page=2"),
+                "https://example.com/manga/black-clover/?page=2",
+            ),
+            (
+                "fragment-only",
+                json.dumps("#section"),
+                "https://example.com/manga/black-clover/#section",
+            ),
+        ]
+
+        for label, raw_expression, expected in cases:
+            with self.subTest(label=label):
+                actual = context.eval(
+                    f"TestSrcSource.resolveAbsoluteUrl({raw_expression}, {json.dumps(request_url)})"
+                )
+                self.assertEqual(actual, expected)
+
+    def test_absolute_attribute_generation_uses_literal_attributes_and_request_urls(self):
+        ir = self.get_base_ir()
+        ir["details"]["fields"] = {"thumbnail": "img@abs:src"}
+        ir["chapters"].update({
+            "isJson": False,
+            "selector": "div.chapter",
+            "fields": {"url": "a@abs:href", "name": "text"},
+        })
+        ir["pages"].update({
+            "selector": "img[data-src]",
+            "fields": {"imageUrl": "@abs:data-src"},
+        })
+
+        js = generate_venera_js(ir)
+
+        self.assertEqual(js.count("static resolveAbsoluteUrl ="), 1)
+        self.assertIn(
+            "let cover = TestSrcSource.resolveAbsoluteUrl((doc.querySelector('img') ? "
+            "(doc.querySelector('img').attributes['src'] || '') : ''), url);",
+            js,
+        )
+        self.assertIn(
+            "id: TestSrcSource.resolveAbsoluteUrl((el.querySelector('a') ? "
+            "(el.querySelector('a').attributes['href'] || '') : ''), url),",
+            js,
+        )
+        self.assertIn(
+            "let images = imgElements.map(el => "
+            "TestSrcSource.resolveAbsoluteUrl((el.attributes['data-src'] || ''), url))"
+            ".filter(Boolean);",
+            js,
+        )
+        self.assertNotRegex(js, r"""attributes\[['"]abs:""")
+
+    def test_absolute_attribute_grammar_is_generic(self):
+        ir = self.get_base_ir()
+        ir["details"]["fields"] = {"thumbnail": "img@abs:data-original"}
+
+        js = generate_venera_js(ir)
+
+        self.assertIn("attributes['data-original']", js)
+        self.assertNotIn("attributes['abs:data-original']", js)
+
+    def test_non_absolute_attribute_generation_remains_literal(self):
+        ir = self.get_base_ir()
+        ir["details"]["fields"] = {"thumbnail": "img@src"}
+        ir["chapters"].update({
+            "isJson": False,
+            "selector": "div.chapter",
+            "fields": {"url": "a@href", "name": "text"},
+        })
+        ir["pages"].update({
+            "selector": "img[data-src]",
+            "fields": {"imageUrl": "@data-src"},
+        })
+
+        js = generate_venera_js(ir)
+
+        self.assertIn(
+            "let cover = (doc.querySelector('img') ? "
+            "(doc.querySelector('img').attributes['src'] || '') : '');",
+            js,
+        )
+        self.assertIn(
+            "id: (el.querySelector('a') ? "
+            "(el.querySelector('a').attributes['href'] || '') : ''),",
+            js,
+        )
+        self.assertIn(
+            'let images = imgElements.map(el => el.attributes["data-src"]).filter(Boolean);',
+            js,
+        )
+        self.assertNotIn("resolveAbsoluteUrl", js)
+
+    def test_explore_absolute_attributes_use_explore_request_url(self):
+        ir = self.get_base_ir()
+        ir["explore"]["popular"] = {
+            "url": "{{baseUrl}}/popular/{{page}}",
+            "selector": "article",
+            "fields": {
+                "url": "a@abs:href",
+                "title": "h2",
+                "thumbnail": "img@abs:src",
+            },
+        }
+
+        js = generate_venera_js(ir)
+
+        self.assertIn("let url = `${TestSrcSource.baseUrl}/popular/${page}`;", js)
+        self.assertIn("let res = await Network.get(url, TestSrcSource.headers);", js)
+        self.assertIn("TestSrcSource.resolveAbsoluteUrl", js)
 
 if __name__ == "__main__":
     unittest.main()

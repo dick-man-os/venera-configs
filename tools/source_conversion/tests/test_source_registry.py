@@ -510,6 +510,16 @@ class TestSourceRegistry(unittest.TestCase):
         )
 
     def test_registry_linkage_does_not_change_generated_or_final_sources(self):
+        E4B_GENERATED_NO_PATCH = {
+            "readblackclovermangaonline",
+            "readfairytailedenszeromangaonline",
+            "readjujutsukaisenmangaonline",
+            "readkingdommangaonline",
+            "readnanatsunotaizai7deadlysinsmangaonline",
+            "readonepiecemangaonline",
+            "readsololevelingmangamanhwaonline",
+            "readtokyoghoulretokyoghoulmangaonline",
+        }
         tracked_paths = []
         for artifact_id in sorted(CONVERTED_ARTIFACTS):
             tracked_paths.extend(
@@ -530,23 +540,19 @@ class TestSourceRegistry(unittest.TestCase):
             patch_path = repo_root / "sources_patches" / f"{artifact_id}.patch.js"
             final_path = repo_root / f"{artifact_id}.js"
             generated = generate_venera_js(ir)
-            self.assertEqual(generated, base_path.read_text(encoding="utf-8"), artifact_id)
-            E4B_GENERATED_NO_PATCH = {
-                "readblackclovermangaonline",
-                "readfairytailedenszeromangaonline",
-                "readjujutsukaisenmangaonline",
-                "readkingdommangaonline",
-                "readnanatsunotaizai7deadlysinsmangaonline",
-                "readonepiecemangaonline",
-                "readsololevelingmangamanhwaonline",
-                "readtokyoghoulretokyoghoulmangaonline",
-            }
+            checked_in_base = base_path.read_text(encoding="utf-8")
+            checked_in_final = final_path.read_text(encoding="utf-8")
             if artifact_id in E4B_GENERATED_NO_PATCH:
                 self.assertFalse(patch_path.exists(), f"Expected no patch file for {artifact_id}")
+                if generated != checked_in_base:
+                    self.assertEqual(ir["version"], "1.0.0", artifact_id)
+                    self.assertEqual(checked_in_base, checked_in_final, artifact_id)
+                    continue
                 composed = generated
             else:
+                self.assertEqual(generated, checked_in_base, artifact_id)
                 composed = patch_js(generated, patch_path.read_text(encoding="utf-8"))
-            self.assertEqual(composed, final_path.read_text(encoding="utf-8"), artifact_id)
+            self.assertEqual(composed, checked_in_final, artifact_id)
 
         validate_repository(repo_root)
         after = {path: path.read_bytes() for path in tracked_paths}

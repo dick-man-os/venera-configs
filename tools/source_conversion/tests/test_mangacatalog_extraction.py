@@ -497,17 +497,19 @@ class TestMangaCatalogExtraction(unittest.TestCase):
             # 6. Positively prove semantic behavior uses generator's canonical selector + attribute
 
             # Cover generated assertion
-            cover_fragment = "let cover = (doc.querySelector('div.flex > img') ? (doc.querySelector('div.flex > img').attributes['abs:src'] || '') : '');"
+            cover_fragment = "let cover = EnSyntheticSource.resolveAbsoluteUrl((doc.querySelector('div.flex > img') ? (doc.querySelector('div.flex > img').attributes['src'] || '') : ''), url);"
             self.assertIn(cover_fragment, js_code)
             self.assertNotIn(".detail_header .thmb img", js_code)
 
             # Chapter generated assertion
-            chapter_fragment = "id: (el.querySelector('.col-span-4 > a') ? (el.querySelector('.col-span-4 > a').attributes['abs:href'] || '') : ''),"
+            chapter_fragment = "id: EnSyntheticSource.resolveAbsoluteUrl((el.querySelector('.col-span-4 > a') ? (el.querySelector('.col-span-4 > a').attributes['href'] || '') : ''), url),"
             self.assertIn(chapter_fragment, js_code)
 
             # Page generated assertion
-            page_fragment = 'let images = imgElements.map(el => el.attributes["abs:data-src"]).filter(Boolean);'
+            page_fragment = "let images = imgElements.map(el => EnSyntheticSource.resolveAbsoluteUrl((el.attributes['data-src'] || ''), url)).filter(Boolean);"
             self.assertIn(page_fragment, js_code)
+            self.assertEqual(js_code.count("static resolveAbsoluteUrl ="), 1)
+            self.assertNotRegex(js_code, r"""attributes\[['"]abs:""")
 
     def test_resolved_version_extracted_exactly(self):
         kt_content = """

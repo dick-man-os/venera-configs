@@ -26,15 +26,52 @@ except ImportError as e:
 
 import re
 
-def parse_field_extractor(field_name: str, grammar_expr: str, var_name: str = "el") -> str:
+
+def _is_absolute_attribute_grammar(value: Any) -> bool:
+    if not isinstance(value, str):
+        return False
+    grammar_expr = value.strip()
+    return grammar_expr.startswith("@abs:") or "@abs:" in grammar_expr
+
+
+def _contains_absolute_attribute_grammar(value: Any) -> bool:
+    if _is_absolute_attribute_grammar(value):
+        return True
+    if isinstance(value, dict):
+        return any(_contains_absolute_attribute_grammar(item) for item in value.values())
+    if isinstance(value, list):
+        return any(_contains_absolute_attribute_grammar(item) for item in value)
+    return False
+
+
+def parse_field_extractor(
+    field_name: str,
+    grammar_expr: str,
+    var_name: str = "el",
+    request_url_expr: Optional[str] = None,
+    resolver_expr: Optional[str] = None,
+) -> str:
     grammar_expr = grammar_expr.strip()
     if not grammar_expr:
         return '""'
     if grammar_expr.startswith("@"):
         attr = grammar_expr[1:]
+        if attr.startswith("abs:"):
+            literal_attr = attr[len("abs:"):]
+            if not literal_attr or not request_url_expr or not resolver_expr:
+                raise ValueError(f"Invalid absolute attribute grammar for {field_name}: {grammar_expr}")
+            literal_lookup = f"({var_name}.attributes['{literal_attr}'] || '')"
+            return f"{resolver_expr}({literal_lookup}, {request_url_expr})"
         return f"({var_name}.attributes['{attr}'] || '')"
     elif "@" in grammar_expr:
         child_sel, attr = grammar_expr.split("@", 1)
+        if attr.startswith("abs:"):
+            literal_attr = attr[len("abs:"):]
+            if not literal_attr or not request_url_expr or not resolver_expr:
+                raise ValueError(f"Invalid absolute attribute grammar for {field_name}: {grammar_expr}")
+            child_lookup = f"{var_name}.querySelector('{child_sel}')"
+            literal_lookup = f"({child_lookup} ? ({child_lookup}.attributes['{literal_attr}'] || '') : '')"
+            return f"{resolver_expr}({literal_lookup}, {request_url_expr})"
         return f"({var_name}.querySelector('{child_sel}') ? ({var_name}.querySelector('{child_sel}').attributes['{attr}'] || '') : '')"
     elif grammar_expr == "text":
         return f"({var_name}.text || '')"
@@ -58,6 +95,8 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     class_name = "".join(c for c in class_name_raw if c.isalnum()) + "Source"
     base_url = ir_data.get("baseUrl", "https://www.webtoons.com")
     mobile_url = ir_data.get("mobileUrl", "https://m.webtoons.com")
+    uses_absolute_attributes = _contains_absolute_attribute_grammar(ir_data)
+    absolute_url_resolver = f"{class_name}.resolveAbsoluteUrl"
 
     prov = ir_data.get("provenance", {})
     upstream_project = prov.get("upstreamProject", "keiyoushi")
@@ -159,9 +198,18 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
         js_url_expr = js_url_expr.replace("{{page}}", "${page}")
         js_url_expr = js_url_expr.replace("{{day}}", "${day}")
 
-        id_expr = parse_field_extractor("id", tab_fields.get("url", "@href"), "el")
-        title_expr = parse_field_extractor("title", tab_fields.get("title", ".title"), "el")
-        cover_expr = parse_field_extractor("cover", tab_fields.get("thumbnail", "img@src"), "el")
+        tab_uses_absolute_attributes = any(
+            _is_absolute_attribute_grammar(value) for value in tab_fields.values()
+        )
+        id_expr = parse_field_extractor(
+            "id", tab_fields.get("url", "@href"), "el", "url", absolute_url_resolver
+        )
+        title_expr = parse_field_extractor(
+            "title", tab_fields.get("title", ".title"), "el", "url", absolute_url_resolver
+        )
+        cover_expr = parse_field_extractor(
+            "cover", tab_fields.get("thumbnail", "img@src"), "el", "url", absolute_url_resolver
+        )
 
         pagination = tab_def.get("pagination")
         if pagination and pagination.get("hasNextStrategy") == "compareAttributes":
@@ -207,7 +255,12 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
         elif fail_closed:
             explore_body = f"                {fail_closed}"
         else:
-            explore_body = f"""{day_calc}                let res = await Network.get({js_url_expr}, {class_name}.headers);
+            if tab_uses_absolute_attributes:
+                network_request_js = f"""                let url = {js_url_expr};
+                let res = await Network.get(url, {class_name}.headers);"""
+            else:
+                network_request_js = f"""                let res = await Network.get({js_url_expr}, {class_name}.headers);"""
+            explore_body = f"""{day_calc}{network_request_js}
                 if (res.status !== 200) {{
                     throw new Error(`Failed to load {tab_title.lower()} comics, status: ${{res.status}}`);
                 }}
@@ -254,9 +307,15 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     search_url_expr = search_url_expr.replace("{{query}}", "${encodeURIComponent(keyword)}")
     search_url_expr = search_url_expr.replace("{{page}}", "${page}")
 
-    search_id_expr = parse_field_extractor("id", search_fields.get("url", "@href"), "el")
-    search_title_expr = parse_field_extractor("title", search_fields.get("title", ".title"), "el")
-    search_cover_expr = parse_field_extractor("cover", search_fields.get("thumbnail", "img@src"), "el")
+    search_id_expr = parse_field_extractor(
+        "id", search_fields.get("url", "@href"), "el", "url", absolute_url_resolver
+    )
+    search_title_expr = parse_field_extractor(
+        "title", search_fields.get("title", ".title"), "el", "url", absolute_url_resolver
+    )
+    search_cover_expr = parse_field_extractor(
+        "cover", search_fields.get("thumbnail", "img@src"), "el", "url", absolute_url_resolver
+    )
 
     pagination = search_dict.get("pagination")
     if pagination and pagination.get("hasNextStrategy") == "compareAttributes":
@@ -330,7 +389,9 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     desc_sel = details_fields.get("description", "#_asideDetail p.summary")
     thumb_sel = details_fields.get("thumbnail", ".detail_header .thmb img@src")
 
-    thumb_extractor = parse_field_extractor("cover", thumb_sel, "doc")
+    thumb_extractor = parse_field_extractor(
+        "cover", thumb_sel, "doc", "url", absolute_url_resolver
+    )
 
     if details_fail_closed:
         details_body = f"            {details_fail_closed}"
@@ -379,7 +440,16 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     pages_dict = ir_data.get("pages", {})
     pages_selector = pages_dict.get("selector", "div#_imageList > img")
     pages_fields = pages_dict.get("fields", {})
-    pages_img_attr = pages_fields.get("imageUrl", "@data-url").lstrip("@")
+    pages_image_field = pages_fields.get("imageUrl", "@data-url")
+    pages_img_attr = pages_image_field.lstrip("@")
+    pages_uses_absolute_attribute = _is_absolute_attribute_grammar(pages_image_field)
+    pages_image_extractor = (
+        parse_field_extractor(
+            "imageUrl", pages_image_field, "el", "url", absolute_url_resolver
+        )
+        if pages_uses_absolute_attribute
+        else None
+    )
     pages_manual = pages_dict.get("manualPatchRequired", False)
     pages_image_load_patch_required = pages_dict.get("imageLoadPatchRequired", False)
 
@@ -432,6 +502,10 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
         pages_custom_hook = ""
     else:
         pages_custom_hook = ""
+        if pages_uses_absolute_attribute:
+            pages_images_js = f"            let images = imgElements.map(el => {pages_image_extractor}).filter(Boolean);"
+        else:
+            pages_images_js = f'''            let images = imgElements.map(el => el.attributes["{pages_img_attr}"]).filter(Boolean);'''
         pages_body = f"""            let url = epId.startsWith("http") ? epId : `${{{base_url_ref}}}${{epId}}`;
             let res = await Network.get(url, {class_name}.headers);
             if (res.status !== 200) {{
@@ -439,7 +513,7 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
             }}
             let doc = new HtmlDocument(res.body);
             let imgElements = doc.querySelectorAll("{pages_selector}");
-            let images = imgElements.map(el => el.attributes["{pages_img_attr}"]).filter(Boolean);
+{pages_images_js}
             doc.dispose();
 
             // Hook for custom page transformations (e.g. MotionToon / AuthorNotes)
@@ -456,8 +530,12 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
         chap_title_field = chapters_dict.get("fields", {}).get("name", "text")
         chap_reverse = chapters_dict.get("reverse", False)
 
-        url_extractor = parse_field_extractor("url", chap_url_field, "el")
-        title_extractor = parse_field_extractor("name", chap_title_field, "el")
+        url_extractor = parse_field_extractor(
+            "url", chap_url_field, "el", "url", absolute_url_resolver
+        )
+        title_extractor = parse_field_extractor(
+            "name", chap_title_field, "el", "url", absolute_url_resolver
+        )
 
         reverse_js = "        chaptersList.reverse();\n" if chap_reverse else ""
 
@@ -533,6 +611,65 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
         ]);
     }}"""
 
+    absolute_url_helper = ""
+    if uses_absolute_attributes:
+        absolute_url_helper = r'''
+
+    static resolveAbsoluteUrl = (rawValue, requestUrl) => {
+        if (rawValue === null || rawValue === undefined || rawValue === "") {
+            return "";
+        }
+
+        let raw = String(rawValue);
+        if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(raw)) {
+            return raw;
+        }
+
+        let baseMatch = String(requestUrl || "").match(/^([A-Za-z][A-Za-z0-9+.-]*:)\/\/([^/?#]+)([^?#]*)(\?[^#]*)?(?:#.*)?$/);
+        if (!baseMatch) {
+            return raw;
+        }
+
+        let origin = baseMatch[1] + "//" + baseMatch[2];
+        let basePath = baseMatch[3] || "/";
+        let baseQuery = baseMatch[4] || "";
+
+        if (raw.startsWith("//")) {
+            return baseMatch[1] + raw;
+        }
+        if (raw.startsWith("#")) {
+            return origin + basePath + baseQuery + raw;
+        }
+        if (raw.startsWith("?")) {
+            return origin + basePath + raw;
+        }
+
+        let suffixAt = raw.search(/[?#]/);
+        let suffix = suffixAt === -1 ? "" : raw.slice(suffixAt);
+        let rawPath = suffixAt === -1 ? raw : raw.slice(0, suffixAt);
+        let path = rawPath.startsWith("/")
+            ? rawPath
+            : basePath.slice(0, basePath.lastIndexOf("/") + 1) + rawPath;
+        let trailingSlash = path.endsWith("/") || path.endsWith("/.") || path.endsWith("/..");
+        let segments = [];
+        for (let segment of path.split("/")) {
+            if (!segment || segment === ".") {
+                continue;
+            }
+            if (segment === "..") {
+                segments.pop();
+            } else {
+                segments.push(segment);
+            }
+        }
+
+        let normalizedPath = "/" + segments.join("/");
+        if (trailingSlash && normalizedPath !== "/") {
+            normalizedPath += "/";
+        }
+        return origin + normalizedPath + suffix;
+    }'''
+
 
     # 8. Assemble full JavaScript source
     js_code = f"""/**
@@ -557,7 +694,7 @@ class {class_name} extends ComicSource {{
 
     static headers = {{
 {headers_code}
-    }}{settings_code}{cookies_init}
+    }}{settings_code}{cookies_init}{absolute_url_helper}
 {static_catalog_code}
     // Explore / Discovery Sections
     explore = [
