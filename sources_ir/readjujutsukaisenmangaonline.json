@@ -94,8 +94,8 @@
     "upstreamVersion": "1.4.10",
     "upstreamLicense": "Apache-2.0",
     "converterVersion": "0.1.0",
-    "generatedTimestamp": "2026-08-28T16:32:00Z"
+    "generatedTimestamp": "2026-08-30T00:00:00Z"
   },
   "artifactId": "readjujutsukaisenmangaonline",
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

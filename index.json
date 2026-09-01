@@ -236,48 +236,48 @@
         "name": "Read Black Clover Manga Online",
         "fileName": "readblackclovermangaonline.js",
         "key": "en_readblackclovermangaonline",
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     {
         "name": "Read Fairy Tail & Edens Zero Manga Online",
         "fileName": "readfairytailedenszeromangaonline.js",
         "key": "en_readfairytailedenszeromangaonline",
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     {
         "name": "Read Jujutsu Kaisen Manga Online",
         "fileName": "readjujutsukaisenmangaonline.js",
         "key": "en_readjujutsukaisenmangaonline",
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     {
         "name": "Read Kingdom Manga Online",
         "fileName": "readkingdommangaonline.js",
         "key": "en_readkingdommangaonline",
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     {
         "name": "Read Nanatsu no Taizai 7 Deadly Sins Manga Online",
         "fileName": "readnanatsunotaizai7deadlysinsmangaonline.js",
         "key": "en_readnanatsunotaizai7deadlysinsmangaonline",
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     {
         "name": "Read One Piece Manga Online",
         "fileName": "readonepiecemangaonline.js",
         "key": "en_readonepiecemangaonline",
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     {
         "name": "Read Solo Leveling Manga Manhwa Online",
         "fileName": "readsololevelingmangamanhwaonline.js",
         "key": "en_readsololevelingmangamanhwaonline",
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     {
         "name": "Read Tokyo Ghoul Re & Tokyo Ghoul Manga Online",
         "fileName": "readtokyoghoulretokyoghoulmangaonline.js",
         "key": "en_readtokyoghoulretokyoghoulmangaonline",
-        "version": "1.0.0"
+        "version": "1.0.1"
     }
 ]

@@ -14,7 +14,7 @@
 class EnReadkingdommangaonlineSource extends ComicSource {
     name = "Read Kingdom Manga Online"
     key = "en_readkingdommangaonline"
-    version = "1.0.0"
+    version = "1.0.1"
     minAppVersion = "1.6.0"
 
     static baseUrl = "https://ww6.readkingdom.com"
@@ -22,6 +22,61 @@ class EnReadkingdommangaonlineSource extends ComicSource {
 
     static headers = {
 
+    }
+
+    static resolveAbsoluteUrl = (rawValue, requestUrl) => {
+        if (rawValue === null || rawValue === undefined || rawValue === "") {
+            return "";
+        }
+
+        let raw = String(rawValue);
+        if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(raw)) {
+            return raw;
+        }
+
+        let baseMatch = String(requestUrl || "").match(/^([A-Za-z][A-Za-z0-9+.-]*:)\/\/([^/?#]+)([^?#]*)(\?[^#]*)?(?:#.*)?$/);
+        if (!baseMatch) {
+            return raw;
+        }
+
+        let origin = baseMatch[1] + "//" + baseMatch[2];
+        let basePath = baseMatch[3] || "/";
+        let baseQuery = baseMatch[4] || "";
+
+        if (raw.startsWith("//")) {
+            return baseMatch[1] + raw;
+        }
+        if (raw.startsWith("#")) {
+            return origin + basePath + baseQuery + raw;
+        }
+        if (raw.startsWith("?")) {
+            return origin + basePath + raw;
+        }
+
+        let suffixAt = raw.search(/[?#]/);
+        let suffix = suffixAt === -1 ? "" : raw.slice(suffixAt);
+        let rawPath = suffixAt === -1 ? raw : raw.slice(0, suffixAt);
+        let path = rawPath.startsWith("/")
+            ? rawPath
+            : basePath.slice(0, basePath.lastIndexOf("/") + 1) + rawPath;
+        let trailingSlash = path.endsWith("/") || path.endsWith("/.") || path.endsWith("/..");
+        let segments = [];
+        for (let segment of path.split("/")) {
+            if (!segment || segment === ".") {
+                continue;
+            }
+            if (segment === "..") {
+                segments.pop();
+            } else {
+                segments.push(segment);
+            }
+        }
+
+        let normalizedPath = "/" + segments.join("/");
+        if (trailingSlash && normalizedPath !== "/") {
+            normalizedPath += "/";
+        }
+        return origin + normalizedPath + suffix;
     }
     // Static Catalog Array
     staticCatalog = [
@@ -95,7 +150,7 @@ class EnReadkingdommangaonlineSource extends ComicSource {
             let title = titleEl ? titleEl.text : "";
             let author = authorEl ? authorEl.text : "";
             let description = descEl ? descEl.text : "";
-            let cover = (doc.querySelector('div.flex > img') ? (doc.querySelector('div.flex > img').attributes['abs:src'] || '') : '');
+            let cover = EnReadkingdommangaonlineSource.resolveAbsoluteUrl((doc.querySelector('div.flex > img') ? (doc.querySelector('div.flex > img').attributes['src'] || '') : ''), url);
             doc.dispose();
 
             let chapters = await this.loadChapters(id);
@@ -119,7 +174,7 @@ class EnReadkingdommangaonlineSource extends ComicSource {
             }
             let doc = new HtmlDocument(res.body);
             let imgElements = doc.querySelectorAll("img[data-src]");
-            let images = imgElements.map(el => el.attributes["abs:data-src"]).filter(Boolean);
+            let images = imgElements.map(el => EnReadkingdommangaonlineSource.resolveAbsoluteUrl((el.attributes['data-src'] || ''), url)).filter(Boolean);
             doc.dispose();
 
             // Hook for custom page transformations (e.g. MotionToon / AuthorNotes)
@@ -161,7 +216,7 @@ class EnReadkingdommangaonlineSource extends ComicSource {
         let elements = doc.querySelectorAll("div.w-full > div.bg-bg-secondary > div.grid");
 
         let chaptersList = elements.map(el => ({
-            id: (el.querySelector('.col-span-4 > a') ? (el.querySelector('.col-span-4 > a').attributes['abs:href'] || '') : ''),
+            id: EnReadkingdommangaonlineSource.resolveAbsoluteUrl((el.querySelector('.col-span-4 > a') ? (el.querySelector('.col-span-4 > a').attributes['href'] || '') : ''), url),
             title: (el.querySelector('.col-span-4 > a') ? el.querySelector('.col-span-4 > a').text : ''),
         }));
 
