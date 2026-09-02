@@ -14,7 +14,7 @@
 class EnReadjujutsukaisenmangaonlineSource extends ComicSource {
     name = "Read Jujutsu Kaisen Manga Online"
     key = "en_readjujutsukaisenmangaonline"
-    version = "1.0.2"
+    version = "1.0.3"
     minAppVersion = "1.6.0"
 
     static baseUrl = "https://ww6.readjujutsukaisen.com"

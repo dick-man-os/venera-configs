@@ -124,5 +124,78 @@ process.stdout.write(JSON.stringify(source.parsePagesCustom(input.fallbackImages
         res = self.run_parser(mock_images)
         self.assertEqual(res, ["https://ww6.readjujutsukaisen.com/relative/path.jpeg"])
 
+    def test_case7_load_chapters(self):
+        node = os.environ.get("NODE") or shutil.which("node")
+        if not node:
+            self.skipTest("Node.js is required for regression")
+
+        harness = r"""
+const fs = require('fs');
+const vm = require('vm');
+const input = JSON.parse(fs.readFileSync(0, 'utf8'));
+
+globalThis.ComicSource = class ComicSource {};
+globalThis.HtmlDocument = class HtmlDocument {
+    constructor(html) {
+        this.html = html;
+    }
+    querySelectorAll(sel) {
+        if (sel === 'div.w-full > div.bg-bg-secondary > div.grid') {
+            return input.mockElements.map(el => ({
+                querySelector: (q) => {
+                    if (q === '.col-span-4 > a') {
+                        return {
+                            attributes: { 'href': el.url },
+                            text: el.title
+                        };
+                    }
+                    return null;
+                }
+            }));
+        }
+        return [];
+    }
+    dispose() {}
+};
+globalThis.Network = class Network {
+    static async get(url, headers) {
+        return { status: 200, body: '<html></html>' };
+    }
+};
+
+const sourcePath = process.argv[1];
+const code = fs.readFileSync(sourcePath, 'utf8') + '\n;globalThis.__Source = EnReadjujutsukaisenmangaonlineSource;';
+vm.runInThisContext(code, { filename: sourcePath });
+const source = new globalThis.__Source();
+
+source.loadChapters('https://example.com/').then(chapters => {
+    process.stdout.write(JSON.stringify(chapters));
+}).catch(err => {
+    console.error(err);
+    process.exit(1);
+});
+"""
+
+        mock_elements = [
+            {'url': '/manga/jujutsu-kaisen-0/chapter-1/', 'title': 'Chapter 1'},
+            {'url': '/manga/jujutsu-kaisen-0/chapter-2/', 'title': 'Chapter 2'}
+        ]
+
+        import subprocess
+        result = subprocess.run(
+            [node, "-e", harness, str(self.final_js_path)],
+            input=json.dumps({"mockElements": mock_elements}),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        res = json.loads(result.stdout)
+        self.assertEqual(res, {
+            "https://example.com/manga/jujutsu-kaisen-0/chapter-1/": "Chapter 1",
+            "https://example.com/manga/jujutsu-kaisen-0/chapter-2/": "Chapter 2"
+        })
+
 if __name__ == "__main__":
+
     unittest.main()

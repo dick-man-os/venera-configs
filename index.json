@@ -1,283 +1,283 @@
 [
-    {
-        "name": "拷贝漫画",
-        "fileName": "copy_manga.js",
-        "key": "copy_manga",
-        "version": "1.4.1"
-    },
-    {
-        "name": "拷贝漫画(多账号)",
-        "fileName": "copy_manga_multi_accounts.js",
-        "key": "copy_manga",
-        "version": "1.4.1"
-    },
-    {
-        "name": "Komiic",
-        "fileName": "komiic.js",
-        "key": "Komiic",
-        "version": "1.0.3"
-    },
-    {
-        "name": "包子漫画",
-        "fileName": "baozi.js",
-        "key": "baozi",
-        "version": "1.1.6"
-    },
-    {
-        "name": "Picacg",
-        "fileName": "picacg.js",
-        "key": "picacg",
-        "version": "1.0.6"
-    },
-    {
-        "name": "nhentai",
-        "fileName": "nhentai.js",
-        "key": "nhentai",
-        "version": "1.1.0"
-    },
-    {
-        "name": "紳士漫畫",
-        "fileName": "wnacg.js",
-        "key": "wnacg",
-        "version": "1.0.5",
-        "description": "紳士漫畫漫畫源, 不能使用時請嘗試更換URL"
-    },
-    {
-        "name": "ehentai",
-        "fileName": "ehentai.js",
-        "key": "ehentai",
-        "version": "1.2.0"
-    },
-    {
-        "name": "禁漫天堂",
-        "fileName": "jm.js",
-        "key": "jm",
-        "version": "1.4.0",
-        "description": "禁漫天堂漫畫源, 不能使用時請嘗試切換分流"
-    },
-    {
-        "name": "MangaDex",
-        "fileName": "manga_dex.js",
-        "key": "manga_dex",
-        "version": "1.1.1",
-        "description": "Account feature is not supported yet."
-    },
-    {
-        "name": "爱看漫",
-        "fileName": "ikmmh.js",
-        "key": "ikmmh",
-        "version": "1.0.5"
-    },
-    {
-        "name": "少年ジャンプ＋",
-        "fileName": "shonen_jump_plus.js",
-        "key": "shonen_jump_plus",
-        "version": "1.1.1"
-    },
-    {
-        "name": "hitomi.la",
-        "fileName": "hitomi.js",
-        "key": "hitomi",
-        "version": "1.1.2"
-    },
-    {
-        "name": "comick",
-        "fileName": "comick.js",
-        "key": "comick",
-        "version": "1.2.0"
-    },
-    {
-        "name": "优酷漫画",
-        "fileName": "ykmh.js",
-        "key": "ykmh",
-        "version": "1.0.0"
-    },
-    {
-        "name": "再漫画",
-        "fileName": "zaimanhua.js",
-        "key": "zaimanhua",
-        "version": "1.0.2"
-    },
-    {
-        "name": "漫画柜",
-        "fileName": "manhuagui.js",
-        "key": "ManHuaGui",
-        "version": "1.2.1"
-    },
-    {
-        "name": "漫蛙吧",
-        "fileName": "manwaba.js",
-        "key": "manwaba",
-        "version": "1.0.3"
-    },
-    {
-        "name": "Lanraragi",
-        "fileName": "lanraragi.js",
-        "key": "lanraragi",
-        "version": "1.2.0"
-    },
-    {
-        "name": "Komga",
-        "fileName": "komga.js",
-        "key": "komga",
-        "version": "1.0.0"
-    },
-    {
-        "name": "カドコミ",
-        "fileName": "comic_walker.js",
-        "key": "comic_walker",
-        "version": "1.0.0"
-    },
-    {
-        "name": "漫画1234",
-        "fileName": "mh1234.js",
-        "key": "mh1234",
-        "version": "1.0.0"
-    },
-    {
-        "name": "CCC追漫台",
-        "fileName": "ccc.js",
-        "key": "ccc",
-        "version": "1.0.1"
-    },
-    {
-        "name": "GoDa漫画",
-        "fileName": "goda.js",
-        "key": "goda",
-        "version": "1.2.1"
-    },
-    {
-        "name": "18漫画",
-        "fileName": "mh18.js",
-        "key": "mh18",
-        "version": "1.0.0"
-    },
-    {
-        "name": "漫小肆",
-        "fileName": "mxs.js",
-        "key": "mxs",
-        "version": "1.0.0"
-    },
-    {
-        "name": "漫画人",
-        "fileName": "manhuaren.js",
-        "key": "manhuaren",
-        "version": "1.0.0"
-    },
-    {
-        "name": "H-Comic",
-        "fileName": "hcomic.js",
-        "key": "hcomic",
-        "version": "1.0.0"
-    },
-    {
-        "name": "jcomic.net",
-        "fileName": "jcomic.js",
-        "key": "jcomic",
-        "version": "1.0.0"
-    },
-    {
-        "name": "热辣漫画",
-        "fileName": "hot_manga.js",
-        "key": "hot_manga",
-        "version": "1.0.0"
-    },
-    {
-        "name": "Kavita",
-        "fileName": "kavita.js",
-        "key": "kavita",
-        "version": "1.0.0"
-    },
-    {
-        "name": "嗨皮漫画",
-        "fileName": "happy.js",
-        "key": "happy",
-        "version": "1.0.0",
-        "description": "中国大陆及日韩IP无法访问，遇到403可以尝试切换其他地区网络"
-    },
-    {
-        "name": "MYCOMIC",
-        "fileName": "mycomic.js",
-        "key": "mycomic",
-        "version": "1.1.0",
-        "description": "mycomic.com漫画源, 遇到Cloudflare验证请在源设置中登录"
-    },
-    {
-        "name": "Webtoons",
-        "fileName": "webtoons.js",
-        "key": "en_webtoons",
-        "version": "1.0.1"
-    },
-    {
-        "name": "Webtoons 繁體中文",
-        "fileName": "webtoons_zh_hant.js",
-        "key": "zh_Hant_webtoons",
-        "version": "1.0.0"
-    },
-    {
-        "name": "Manhuashe",
-        "fileName": "manhuashe.js",
-        "key": "zh_Hans_manhuashe",
-        "version": "1.0.1"
-    },
-    {
-        "name": "無限動漫",
-        "fileName": "comicabc.js",
-        "key": "zh_Hant_comicabc",
-        "version": "1.0.3"
-    },
-    {
-        "name": "Flame Comics",
-        "fileName": "flamecomics.js",
-        "key": "en_flamecomics",
-        "version": "1.0.2"
-    },
-    {
-        "name": "Read Black Clover Manga Online",
-        "fileName": "readblackclovermangaonline.js",
-        "key": "en_readblackclovermangaonline",
-        "version": "1.0.1"
-    },
-    {
-        "name": "Read Fairy Tail & Edens Zero Manga Online",
-        "fileName": "readfairytailedenszeromangaonline.js",
-        "key": "en_readfairytailedenszeromangaonline",
-        "version": "1.0.1"
-    },
-    {
-        "name": "Read Jujutsu Kaisen Manga Online",
-        "fileName": "readjujutsukaisenmangaonline.js",
-        "key": "en_readjujutsukaisenmangaonline",
-        "version": "1.0.2"
-    },
-    {
-        "name": "Read Kingdom Manga Online",
-        "fileName": "readkingdommangaonline.js",
-        "key": "en_readkingdommangaonline",
-        "version": "1.0.1"
-    },
-    {
-        "name": "Read Nanatsu no Taizai 7 Deadly Sins Manga Online",
-        "fileName": "readnanatsunotaizai7deadlysinsmangaonline.js",
-        "key": "en_readnanatsunotaizai7deadlysinsmangaonline",
-        "version": "1.0.1"
-    },
-    {
-        "name": "Read One Piece Manga Online",
-        "fileName": "readonepiecemangaonline.js",
-        "key": "en_readonepiecemangaonline",
-        "version": "1.0.1"
-    },
-    {
-        "name": "Read Solo Leveling Manga Manhwa Online",
-        "fileName": "readsololevelingmangamanhwaonline.js",
-        "key": "en_readsololevelingmangamanhwaonline",
-        "version": "1.0.1"
-    },
-    {
-        "name": "Read Tokyo Ghoul Re & Tokyo Ghoul Manga Online",
-        "fileName": "readtokyoghoulretokyoghoulmangaonline.js",
-        "key": "en_readtokyoghoulretokyoghoulmangaonline",
-        "version": "1.0.1"
-    }
+  {
+    "name": "\u62f7\u8d1d\u6f2b\u753b",
+    "fileName": "copy_manga.js",
+    "key": "copy_manga",
+    "version": "1.4.1"
+  },
+  {
+    "name": "\u62f7\u8d1d\u6f2b\u753b(\u591a\u8d26\u53f7)",
+    "fileName": "copy_manga_multi_accounts.js",
+    "key": "copy_manga",
+    "version": "1.4.1"
+  },
+  {
+    "name": "Komiic",
+    "fileName": "komiic.js",
+    "key": "Komiic",
+    "version": "1.0.3"
+  },
+  {
+    "name": "\u5305\u5b50\u6f2b\u753b",
+    "fileName": "baozi.js",
+    "key": "baozi",
+    "version": "1.1.6"
+  },
+  {
+    "name": "Picacg",
+    "fileName": "picacg.js",
+    "key": "picacg",
+    "version": "1.0.6"
+  },
+  {
+    "name": "nhentai",
+    "fileName": "nhentai.js",
+    "key": "nhentai",
+    "version": "1.1.0"
+  },
+  {
+    "name": "\u7d33\u58eb\u6f2b\u756b",
+    "fileName": "wnacg.js",
+    "key": "wnacg",
+    "version": "1.0.5",
+    "description": "\u7d33\u58eb\u6f2b\u756b\u6f2b\u756b\u6e90, \u4e0d\u80fd\u4f7f\u7528\u6642\u8acb\u5617\u8a66\u66f4\u63dbURL"
+  },
+  {
+    "name": "ehentai",
+    "fileName": "ehentai.js",
+    "key": "ehentai",
+    "version": "1.2.0"
+  },
+  {
+    "name": "\u7981\u6f2b\u5929\u5802",
+    "fileName": "jm.js",
+    "key": "jm",
+    "version": "1.4.0",
+    "description": "\u7981\u6f2b\u5929\u5802\u6f2b\u756b\u6e90, \u4e0d\u80fd\u4f7f\u7528\u6642\u8acb\u5617\u8a66\u5207\u63db\u5206\u6d41"
+  },
+  {
+    "name": "MangaDex",
+    "fileName": "manga_dex.js",
+    "key": "manga_dex",
+    "version": "1.1.1",
+    "description": "Account feature is not supported yet."
+  },
+  {
+    "name": "\u7231\u770b\u6f2b",
+    "fileName": "ikmmh.js",
+    "key": "ikmmh",
+    "version": "1.0.5"
+  },
+  {
+    "name": "\u5c11\u5e74\u30b8\u30e3\u30f3\u30d7\uff0b",
+    "fileName": "shonen_jump_plus.js",
+    "key": "shonen_jump_plus",
+    "version": "1.1.1"
+  },
+  {
+    "name": "hitomi.la",
+    "fileName": "hitomi.js",
+    "key": "hitomi",
+    "version": "1.1.2"
+  },
+  {
+    "name": "comick",
+    "fileName": "comick.js",
+    "key": "comick",
+    "version": "1.2.0"
+  },
+  {
+    "name": "\u4f18\u9177\u6f2b\u753b",
+    "fileName": "ykmh.js",
+    "key": "ykmh",
+    "version": "1.0.0"
+  },
+  {
+    "name": "\u518d\u6f2b\u753b",
+    "fileName": "zaimanhua.js",
+    "key": "zaimanhua",
+    "version": "1.0.2"
+  },
+  {
+    "name": "\u6f2b\u753b\u67dc",
+    "fileName": "manhuagui.js",
+    "key": "ManHuaGui",
+    "version": "1.2.1"
+  },
+  {
+    "name": "\u6f2b\u86d9\u5427",
+    "fileName": "manwaba.js",
+    "key": "manwaba",
+    "version": "1.0.3"
+  },
+  {
+    "name": "Lanraragi",
+    "fileName": "lanraragi.js",
+    "key": "lanraragi",
+    "version": "1.2.0"
+  },
+  {
+    "name": "Komga",
+    "fileName": "komga.js",
+    "key": "komga",
+    "version": "1.0.0"
+  },
+  {
+    "name": "\u30ab\u30c9\u30b3\u30df",
+    "fileName": "comic_walker.js",
+    "key": "comic_walker",
+    "version": "1.0.0"
+  },
+  {
+    "name": "\u6f2b\u753b1234",
+    "fileName": "mh1234.js",
+    "key": "mh1234",
+    "version": "1.0.0"
+  },
+  {
+    "name": "CCC\u8ffd\u6f2b\u53f0",
+    "fileName": "ccc.js",
+    "key": "ccc",
+    "version": "1.0.1"
+  },
+  {
+    "name": "GoDa\u6f2b\u753b",
+    "fileName": "goda.js",
+    "key": "goda",
+    "version": "1.2.1"
+  },
+  {
+    "name": "18\u6f2b\u753b",
+    "fileName": "mh18.js",
+    "key": "mh18",
+    "version": "1.0.0"
+  },
+  {
+    "name": "\u6f2b\u5c0f\u8086",
+    "fileName": "mxs.js",
+    "key": "mxs",
+    "version": "1.0.0"
+  },
+  {
+    "name": "\u6f2b\u753b\u4eba",
+    "fileName": "manhuaren.js",
+    "key": "manhuaren",
+    "version": "1.0.0"
+  },
+  {
+    "name": "H-Comic",
+    "fileName": "hcomic.js",
+    "key": "hcomic",
+    "version": "1.0.0"
+  },
+  {
+    "name": "jcomic.net",
+    "fileName": "jcomic.js",
+    "key": "jcomic",
+    "version": "1.0.0"
+  },
+  {
+    "name": "\u70ed\u8fa3\u6f2b\u753b",
+    "fileName": "hot_manga.js",
+    "key": "hot_manga",
+    "version": "1.0.0"
+  },
+  {
+    "name": "Kavita",
+    "fileName": "kavita.js",
+    "key": "kavita",
+    "version": "1.0.0"
+  },
+  {
+    "name": "\u55e8\u76ae\u6f2b\u753b",
+    "fileName": "happy.js",
+    "key": "happy",
+    "version": "1.0.0",
+    "description": "\u4e2d\u56fd\u5927\u9646\u53ca\u65e5\u97e9IP\u65e0\u6cd5\u8bbf\u95ee\uff0c\u9047\u5230403\u53ef\u4ee5\u5c1d\u8bd5\u5207\u6362\u5176\u4ed6\u5730\u533a\u7f51\u7edc"
+  },
+  {
+    "name": "MYCOMIC",
+    "fileName": "mycomic.js",
+    "key": "mycomic",
+    "version": "1.1.0",
+    "description": "mycomic.com\u6f2b\u753b\u6e90, \u9047\u5230Cloudflare\u9a8c\u8bc1\u8bf7\u5728\u6e90\u8bbe\u7f6e\u4e2d\u767b\u5f55"
+  },
+  {
+    "name": "Webtoons",
+    "fileName": "webtoons.js",
+    "key": "en_webtoons",
+    "version": "1.0.1"
+  },
+  {
+    "name": "Webtoons \u7e41\u9ad4\u4e2d\u6587",
+    "fileName": "webtoons_zh_hant.js",
+    "key": "zh_Hant_webtoons",
+    "version": "1.0.0"
+  },
+  {
+    "name": "Manhuashe",
+    "fileName": "manhuashe.js",
+    "key": "zh_Hans_manhuashe",
+    "version": "1.0.1"
+  },
+  {
+    "name": "\u7121\u9650\u52d5\u6f2b",
+    "fileName": "comicabc.js",
+    "key": "zh_Hant_comicabc",
+    "version": "1.0.3"
+  },
+  {
+    "name": "Flame Comics",
+    "fileName": "flamecomics.js",
+    "key": "en_flamecomics",
+    "version": "1.0.2"
+  },
+  {
+    "name": "Read Black Clover Manga Online",
+    "fileName": "readblackclovermangaonline.js",
+    "key": "en_readblackclovermangaonline",
+    "version": "1.0.1"
+  },
+  {
+    "name": "Read Fairy Tail & Edens Zero Manga Online",
+    "fileName": "readfairytailedenszeromangaonline.js",
+    "key": "en_readfairytailedenszeromangaonline",
+    "version": "1.0.1"
+  },
+  {
+    "name": "Read Jujutsu Kaisen Manga Online",
+    "fileName": "readjujutsukaisenmangaonline.js",
+    "key": "en_readjujutsukaisenmangaonline",
+    "version": "1.0.3"
+  },
+  {
+    "name": "Read Kingdom Manga Online",
+    "fileName": "readkingdommangaonline.js",
+    "key": "en_readkingdommangaonline",
+    "version": "1.0.1"
+  },
+  {
+    "name": "Read Nanatsu no Taizai 7 Deadly Sins Manga Online",
+    "fileName": "readnanatsunotaizai7deadlysinsmangaonline.js",
+    "key": "en_readnanatsunotaizai7deadlysinsmangaonline",
+    "version": "1.0.1"
+  },
+  {
+    "name": "Read One Piece Manga Online",
+    "fileName": "readonepiecemangaonline.js",
+    "key": "en_readonepiecemangaonline",
+    "version": "1.0.1"
+  },
+  {
+    "name": "Read Solo Leveling Manga Manhwa Online",
+    "fileName": "readsololevelingmangamanhwaonline.js",
+    "key": "en_readsololevelingmangamanhwaonline",
+    "version": "1.0.1"
+  },
+  {
+    "name": "Read Tokyo Ghoul Re & Tokyo Ghoul Manga Online",
+    "fileName": "readtokyoghoulretokyoghoulmangaonline.js",
+    "key": "en_readtokyoghoulretokyoghoulmangaonline",
+    "version": "1.0.1"
+  }
 ]
