@@ -65,6 +65,38 @@ process.stdout.write(JSON.stringify(source.parsePagesCustom(input.fallbackImages
         self.assertEqual(result.returncode, 0, result.stderr)
         return json.loads(result.stdout)
 
+    def run_image_config(self, url, comic_id="comic", ep_id="chapter"):
+        node = os.environ.get("NODE") or shutil.which("node")
+        if not node:
+            self.skipTest("Node.js is required for regression")
+
+        harness = r"""
+const fs = require("fs");
+const vm = require("vm");
+const input = JSON.parse(fs.readFileSync(0, "utf8"));
+globalThis.ComicSource = class ComicSource {};
+globalThis.HtmlDocument = class HtmlDocument {};
+globalThis.Network = class Network {};
+
+const sourcePath = process.argv[1];
+const code = fs.readFileSync(sourcePath, "utf8") +
+    "\n;globalThis.__Source = EnReadjujutsukaisenmangaonlineSource;";
+vm.runInThisContext(code, { filename: sourcePath });
+const source = new globalThis.__Source();
+process.stdout.write(JSON.stringify(
+    source.comic.onImageLoad(input.url, input.comicId, input.epId)
+));
+"""
+        result = subprocess.run(
+            [node, "-e", harness, str(self.final_js_path)],
+            input=json.dumps({"url": url, "comicId": comic_id, "epId": ep_id}),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return json.loads(result.stdout)
+
     def test_case1_page1(self):
         # src = real HTTPS image, data-src absent
         mock_images = [
@@ -123,6 +155,78 @@ process.stdout.write(JSON.stringify(source.parsePagesCustom(input.fallbackImages
         ]
         res = self.run_parser(mock_images)
         self.assertEqual(res, ["https://ww6.readjujutsukaisen.com/relative/path.jpeg"])
+
+    def test_live_chapter_shapes_preserve_first_middle_last(self):
+        fixtures = {
+            "272.5": ([
+                "https://cdn.readjujutsukaisen.com/file/mangap/2085/10271500/0197848f-614d-7deb-9012-fc1f1554165b/1.jpeg",
+                "https://cdn.readjujutsukaisen.com/file/mangap/2085/10271500/0197848f-614d-7deb-9012-fc1f1554165b/12.jpeg",
+                "https://cdn.readjujutsukaisen.com/file/mangap/2085/10271500/0197848f-614d-7deb-9012-fc1f1554165b/22.jpeg",
+            ], True),
+            "271": ([
+                "https://cdn.readjujutsukaisen.com/file/mangap/2085/10271000/1.jpeg?t=1727680641",
+                "https://cdn.readjujutsukaisen.com/file/mangap/2085/10271000/11.jpeg?t=1727680641",
+                "https://cdn.readjujutsukaisen.com/file/mangap/2085/10271000/21.jpeg?t=1727680641",
+            ], True),
+            "111": ([
+                "https://cdn.readjujutsukaisen.com/file/mangap/2085/10111000/1.jpeg",
+                "https://cdn.readjujutsukaisen.com/file/mangap/2085/10111000/11.jpeg",
+                "https://cdn.readjujutsukaisen.com/file/mangap/2085/10111000/21.jpeg",
+            ], False),
+            "0.1": ([
+                "https://cdn.readjujutsukaisen.com/file/mangap/5162/10001000/1.jpeg",
+                "https://cdn.readjujutsukaisen.com/file/mangap/5162/10001000/30.jpeg",
+                "https://cdn.readjujutsukaisen.com/file/mangap/5162/10001000/58.jpeg",
+            ], False),
+            "1": ([
+                "https://cdn.readjujutsukaisen.com/file/mangap/2085/10001000/1.jpeg?t=1660901592",
+                "https://cdn.readjujutsukaisen.com/file/mangap/2085/10001000/30.jpeg?t=1660901592",
+                "https://cdn.readjujutsukaisen.com/file/mangap/2085/10001000/58.jpeg?t=1660901592",
+            ], False),
+        }
+
+        for chapter, (urls, has_trailing_cr) in fixtures.items():
+            with self.subTest(chapter=chapter):
+                trailing_cr = "\r" if has_trailing_cr else ""
+                mock_images = [
+                    {"attributes": {"src": urls[0] + trailing_cr}},
+                    {
+                        "attributes": {
+                            "src": "data:image/gif;base64,R0lGODlhAQ...",
+                            "data-src": urls[1] + trailing_cr,
+                        }
+                    },
+                    {
+                        "attributes": {
+                            "src": "data:image/gif;base64,R0lGODlhAQ...",
+                            "data-src": urls[2],
+                        }
+                    },
+                ]
+                self.assertEqual(self.run_parser(mock_images), urls)
+
+    def test_whitespace_is_removed_before_deduplication(self):
+        clean = "https://cdn.readjujutsukaisen.com/file/mangap/2085/10271500/0197848f-614d-7deb-9012-fc1f1554165b/12.jpeg"
+        mock_images = [
+            {
+                "attributes": {
+                    "src": "data:image/gif;base64,R0lGODlhAQ...",
+                    "data-src": clean + "\r",
+                }
+            },
+            {"attributes": {"src": clean}},
+        ]
+        self.assertEqual(self.run_parser(mock_images), [clean])
+
+    def test_image_hook_preserves_url_and_base_referer(self):
+        url = "https://cdn.readjujutsukaisen.com/file/mangap/2085/10111000/1.jpeg"
+        self.assertEqual(
+            self.run_image_config(url),
+            {
+                "url": url,
+                "headers": {"Referer": "https://ww6.readjujutsukaisen.com/"},
+            },
+        )
 
     def test_case7_load_chapters(self):
         node = os.environ.get("NODE") or shutil.which("node")

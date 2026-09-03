@@ -51,9 +51,9 @@
         let seen = new Set();
 
         for (let el of imgElements) {
-            let dataSrc = el.attributes['data-src'];
-            let src = el.attributes['src'];
-            let url = dataSrc ? dataSrc : src;
+            let dataSrc = String(el.attributes['data-src'] || '').trim();
+            let src = String(el.attributes['src'] || '').trim();
+            let url = dataSrc || src;
 
             if (url) {
                 url = EnReadjujutsukaisenmangaonlineSource.resolveAbsoluteUrl(url, EnReadjujutsukaisenmangaonlineSource.baseUrl);
