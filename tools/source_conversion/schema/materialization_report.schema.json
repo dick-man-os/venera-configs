@@ -1,0 +1,273 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Reviewed materializer CHECK/WRITE report v1.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "mode",
+    "schemaVersion",
+    "digestVersion",
+    "reviewState",
+    "registryDelta",
+    "indexDelta",
+    "operation",
+    "upstreamProject",
+    "upstreamCommit",
+    "generatedTimestamp",
+    "transactionDigest",
+    "artifacts",
+    "targets",
+    "validation",
+    "determinism"
+  ],
+  "properties": {
+    "mode": {
+      "enum": [
+        "check",
+        "write"
+      ]
+    },
+    "schemaVersion": {
+      "const": "1.1"
+    },
+    "digestVersion": {
+      "const": "2"
+    },
+    "reviewState": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "relativePath",
+          "sha256"
+        ],
+        "properties": {
+          "relativePath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "registryDelta": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identity",
+          "before",
+          "after"
+        ],
+        "properties": {
+          "identity": {
+            "type": "string",
+            "minLength": 1
+          },
+          "before": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "after": {
+            "type": [
+              "object",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "indexDelta": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identity",
+          "before",
+          "after"
+        ],
+        "properties": {
+          "identity": {
+            "type": "string",
+            "minLength": 1
+          },
+          "before": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "after": {
+            "type": [
+              "object",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "operation": {
+      "enum": [
+        "create",
+        "update"
+      ]
+    },
+    "upstreamProject": {
+      "type": "string",
+      "minLength": 1
+    },
+    "upstreamCommit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generatedTimestamp": {
+      "type": "string",
+      "minLength": 1
+    },
+    "transactionDigest": {
+      "type": "string",
+      "minLength": 64
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sourceId",
+              "artifactId",
+              "providerId",
+              "localVersion"
+            ],
+            "properties": {
+              "sourceId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "artifactId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "providerId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "localVersion": {
+                "type": "string",
+                "minLength": 1
+              },
+              "moduleAssert": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sourceId",
+              "artifactId",
+              "providerId",
+              "expectedCurrentLocalVersion",
+              "newLocalVersion"
+            ],
+            "properties": {
+              "sourceId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "artifactId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "providerId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "expectedCurrentLocalVersion": {
+                "type": "string",
+                "minLength": 1
+              },
+              "newLocalVersion": {
+                "type": "string",
+                "minLength": 1
+              },
+              "moduleAssert": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        ]
+      }
+    },
+    "targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "relativePath",
+          "sha256",
+          "byteLength"
+        ],
+        "properties": {
+          "relativePath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "minLength": 64
+          },
+          "byteLength": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "validation": {
+      "const": "PASS"
+    },
+    "determinism": {
+      "const": "PASS"
+    },
+    "currentState": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "relativePath",
+          "sha256"
+        ],
+        "properties": {
+          "relativePath": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

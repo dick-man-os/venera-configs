@@ -13,6 +13,7 @@ from typing import Dict, Any
 from common import gradle_parser
 from common import kotlin_parser
 from common import selector_analyzer
+from common.dispatch_rules import MODULE_ADAPTERS, THEME_ADAPTERS
 
 def resolve_source_dir(extensions_root: str, source_path: str) -> str:
     """Resolve the source directory deterministically."""
@@ -54,6 +55,7 @@ def extract_generic(
 
     # Heuristic: the file with the same name as the source
     source_name = os.path.basename(source_dir).lower()
+    kt_files.sort(key=lambda path: os.path.relpath(path, source_dir).replace("\\", "/"))
     main_kt = kt_files[0]
     for kt_file in kt_files:
         if os.path.basename(kt_file).lower() == f"{source_name}.kt":
@@ -65,7 +67,7 @@ def extract_generic(
 
     import generic_html_extractor
 
-    lang = source_path.split("/")[0] if "/" in source_path else "en"
+    lang = source_path.replace("\\", "/").split("/")[0]
     ir_data = generic_html_extractor.extract(
         main_kt,
         gradle_meta,
@@ -87,6 +89,7 @@ def extract_generic(
 
     return ir_data
 
+
 def dispatch_extraction(
     extensions_root: str,
     source_path: str,
@@ -95,15 +98,16 @@ def dispatch_extraction(
     source_id: str = None,
 ) -> Dict[str, Any]:
     """Canonical dispatch function for Keiyoushi source extraction."""
-    if source_path == "all/webtoons":
+    module_adapter = MODULE_ADAPTERS.get(source_path.replace("\\", "/").replace("/", "."))
+    if module_adapter == "webtoons":
         print("[*] Dispatching to Webtoons adapter...")
         from source_adapters import webtoons
         return webtoons.extract(extensions_root, timestamp=timestamp)
-    elif source_path == "zh/comicabc":
+    elif module_adapter == "comicabc":
         print("[*] Dispatching to Comicabc adapter...")
         from source_adapters import comicabc
         return comicabc.extract(extensions_root, timestamp=timestamp)
-    elif source_path == "en/flamecomics":
+    elif module_adapter == "flamecomics":
         print("[*] Dispatching to Flame Comics adapter...")
         from source_adapters import flamecomics
         return flamecomics.extract(extensions_root, timestamp=timestamp)
@@ -118,7 +122,7 @@ def dispatch_extraction(
             gradle_meta = gradle_parser.parse_gradle_metadata(build_gradle_path, extensions_root=extensions_root)
             theme = gradle_meta.get("theme")
 
-        if theme == "mangacatalog":
+        if THEME_ADAPTERS.get(theme) == "mangacatalog":
             print("[*] Dispatching to MangaCatalog adapter...")
             from source_adapters import mangacatalog
             return mangacatalog.extract(

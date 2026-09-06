@@ -158,7 +158,10 @@ def extract(
 
     name = gradle_meta.get("name", "")
     content_warning = gradle_meta.get("contentWarning", "SAFE")
-    lang = primary_source.get("lang", "en")
+    lang = primary_source.get("lang")
+    from common.locales import normalize_locale
+    if normalize_locale(language_override or lang) is None:
+        raise ValueError("Source language is unresolved")
     source_id_val = primary_source.get("sourceId", primary_source.get("id"))
 
     pkg_match = re.search(r"package\s+([a-zA-Z0-9_.]+)", kt_content)
@@ -170,7 +173,7 @@ def extract(
     if not timestamp:
         timestamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    lang_mapped = language_override if language_override else lang
+    lang_mapped = normalize_locale(language_override or lang)
 
     normalized_path = source_path.replace("\\", "/")
     parts = normalized_path.split("/")

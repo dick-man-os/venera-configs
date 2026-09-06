@@ -236,13 +236,16 @@ def _signals_in_text(text: str) -> set[str]:
 
 
 def _scan_units(
-    common_root: Path, unit_roots: Mapping[tuple[str, str], Path]
+    common_root: Path, unit_roots: Mapping[tuple[str, str], Path], errors=None
 ) -> dict[tuple[str, str], tuple[str, ...]]:
     """Scan a source tree once and attribute files to explicit unit roots."""
     roots_by_path: dict[Path, tuple[str, str]] = {}
     for key, unit_root in unit_roots.items():
         resolved = unit_root.resolve()
         if not resolved.is_dir():
+            if errors is not None:
+                errors[key] = ("upstream-source-missing",)
+                continue
             raise PlannerError(
                 "UPSTREAM_SOURCE_MISSING",
                 f"Expected upstream source directory is missing: {resolved}",
@@ -274,6 +277,9 @@ def _scan_units(
         try:
             text = path.read_text(encoding="utf-8")
         except (OSError, UnicodeError) as exc:
+            if errors is not None:
+                errors[unit] = ("upstream-source-read-failed",)
+                continue
             raise PlannerError("UPSTREAM_SOURCE_READ_FAILED", str(exc)) from exc
         signals_by_unit[unit].update(_signals_in_text(text))
     return {
@@ -286,6 +292,7 @@ def scan_upstream_capabilities(
     extensions_root: Path,
     inventory: Mapping[str, Any],
     project: str,
+    *, errors=None,
 ) -> tuple[
     dict[tuple[str, str], tuple[str, ...]],
     dict[tuple[str, str], tuple[str, ...]],
@@ -307,6 +314,7 @@ def scan_upstream_capabilities(
         }
     )
 
+    module_errors, theme_errors = {}, {}
     module_signals = _scan_units(
         root / "src",
         {
@@ -315,6 +323,7 @@ def scan_upstream_capabilities(
             / Path(*module.split("."))
             for module in modules
         },
+        module_errors if errors is not None else None,
     )
     theme_signals = _scan_units(
         root / "lib-multisrc",
@@ -322,7 +331,11 @@ def scan_upstream_capabilities(
             (project, theme): root / "lib-multisrc" / theme
             for theme in themes
         },
+        theme_errors if errors is not None else None,
     )
+    if errors is not None:
+        errors.update({("module", *key): value for key, value in module_errors.items()})
+        errors.update({("theme", *key): value for key, value in theme_errors.items()})
     return module_signals, theme_signals
 
 
@@ -772,20 +785,29 @@ def generate_plan(
     registry_path: Path,
     extensions_root: Path,
     project: str,
+    *, batch=False, locales=(), eligibility=(), source_ids=(), include_unresolved_locales=False, repo_root=None,
 ) -> dict[str, Any]:
     inventory = _load_json(inventory_path)
     registry = _load_json(registry_path)
     _validate_inputs(inventory, registry)
     validate_upstream_checkout(extensions_root, inventory, project)
+    scan_errors = {}
+    scan_options = {"errors": scan_errors} if batch else {}
     module_signals, theme_signals = scan_upstream_capabilities(
-        extensions_root, inventory, project
+        extensions_root, inventory, project, **scan_options
     )
-    return build_plan(
+    plan = build_plan(
         inventory,
         registry,
         module_signals=module_signals,
         theme_signals=theme_signals,
     )
+    if batch:
+        from tools.source_conversion.planner.batch_reporting import add_batch_report
+        plan = add_batch_report(plan, inventory, registry, locales=locales, eligibility=eligibility,
+            source_ids=source_ids, include_unresolved_locales=include_unresolved_locales,
+            repo_root=repo_root, scan_errors=scan_errors)
+    return plan
 
 
 def _write_stdout(value: str) -> None:
@@ -812,11 +834,21 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Clean pinned extensions-source Git top-level.",
     )
     parser.add_argument("--project", default=CANONICAL_PROJECT)
+    parser.add_argument("--batch", action="store_true", help="Add the versioned mass-planning selection view.")
+    parser.add_argument("--locale", action="append", default=[])
+    parser.add_argument("--eligibility", action="append", choices=ELIGIBILITY_ROUTES, default=[])
+    parser.add_argument("--source-id", action="append", default=[])
+    parser.add_argument("--include-unresolved-locales", action="store_true")
+    parser.add_argument("--repo-root", type=Path, help="Local artifact evidence root (defaults to registry directory).")
     args = parser.parse_args(argv)
 
     try:
         plan = generate_plan(
-            args.inventory, args.registry, args.extensions_root, args.project
+            args.inventory, args.registry, args.extensions_root, args.project,
+            batch=bool(args.batch or args.locale or args.eligibility or args.source_id or args.include_unresolved_locales),
+            locales=args.locale, eligibility=args.eligibility, source_ids=args.source_id,
+            include_unresolved_locales=args.include_unresolved_locales,
+            repo_root=args.repo_root or args.registry.parent,
         )
     except PlannerError as exc:
         print(f"[ERROR] {exc.code}: {exc}", file=sys.stderr)

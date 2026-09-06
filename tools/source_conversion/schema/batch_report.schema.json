@@ -1,0 +1,644 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Canonical eligibility report batch extension v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "selection",
+    "candidates",
+    "unresolvedLocales",
+    "unresolvedModules",
+    "existingArtifacts",
+    "sharedRuntimeKeyGroups",
+    "summary",
+    "publication"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0"
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "locales",
+        "eligibility",
+        "sourceIds",
+        "includeUnresolvedLocales"
+      ],
+      "properties": {
+        "locales": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "eligibility": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "E0",
+              "E1",
+              "E2",
+              "E3",
+              "E4",
+              "E5",
+              "E6"
+            ]
+          }
+        },
+        "sourceIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "includeUnresolvedLocales": {
+          "type": "boolean"
+        }
+      }
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "locale",
+          "artifactId",
+          "runtimeKey",
+          "providerId",
+          "fileName",
+          "catalogName",
+          "contentWarning",
+          "currentLocalVersion",
+          "currentUpstreamVersion",
+          "proposedUpstreamVersion",
+          "proposedLocalVersion",
+          "patchPath",
+          "sharedRuntimeKeyGroup",
+          "project",
+          "sourceId",
+          "module",
+          "name",
+          "upstreamLang",
+          "eligibility",
+          "state",
+          "adapter",
+          "family",
+          "action",
+          "versionRelation",
+          "patchStatus",
+          "health",
+          "imported",
+          "authReview",
+          "jsHeavyReview",
+          "authRequired",
+          "reasonCodes",
+          "warnings"
+        ],
+        "properties": {
+          "locale": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "artifactId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "runtimeKey": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "providerId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fileName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "catalogName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "contentWarning": {
+            "enum": [
+              "SAFE",
+              "MIXED",
+              "NSFW",
+              null
+            ]
+          },
+          "currentLocalVersion": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "currentUpstreamVersion": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "proposedUpstreamVersion": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "proposedLocalVersion": {
+            "type": "null"
+          },
+          "patchPath": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sharedRuntimeKeyGroup": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "project": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sourceId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "module": {
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "upstreamLang": {
+            "type": "string",
+            "minLength": 1
+          },
+          "eligibility": {
+            "enum": [
+              "E0",
+              "E1",
+              "E2",
+              "E3",
+              "E4",
+              "E5",
+              "E6"
+            ]
+          },
+          "state": {
+            "enum": [
+              "ELIGIBLE",
+              "ALREADY_IMPORTED",
+              "UPDATE_AVAILABLE",
+              "UNSUPPORTED_ADAPTER",
+              "UNRESOLVED_METADATA",
+              "PATCH_REQUIRED",
+              "BLOCKED",
+              "ERROR"
+            ]
+          },
+          "adapter": {
+            "type": "string",
+            "minLength": 1
+          },
+          "family": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "enum": [
+              "review-create",
+              "review-update",
+              "skip"
+            ]
+          },
+          "versionRelation": {
+            "enum": [
+              "same",
+              "newer",
+              "older",
+              "unknown"
+            ]
+          },
+          "patchStatus": {
+            "enum": [
+              "PATCH_EXISTS",
+              "PATCH_REQUIRED",
+              "NO_PATCH",
+              "unknown"
+            ]
+          },
+          "health": {
+            "const": "unknown"
+          },
+          "imported": {
+            "type": "boolean"
+          },
+          "authReview": {
+            "type": "boolean"
+          },
+          "jsHeavyReview": {
+            "type": "boolean"
+          },
+          "authRequired": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "reasonCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "unresolvedLocales": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "project",
+          "sourceId",
+          "module",
+          "upstreamLang",
+          "locale"
+        ],
+        "properties": {
+          "project": {
+            "type": "string"
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "module": {
+            "type": "string"
+          },
+          "upstreamLang": {
+            "type": "string"
+          },
+          "locale": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "unresolvedModules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "project",
+          "module",
+          "reason"
+        ],
+        "properties": {
+          "project": {
+            "type": "string"
+          },
+          "module": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "existingArtifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "catalogName",
+          "catalogDescription",
+          "supportStatus",
+          "currentLocalVersion",
+          "currentUpstreamVersion",
+          "sharedRuntimeKeyGroup",
+          "patchPath",
+          "artifactId",
+          "runtimeKey",
+          "providerId",
+          "fileName",
+          "producer",
+          "patchStatus",
+          "locales",
+          "requiresAuth",
+          "requiresWebView",
+          "errors",
+          "upstreamIdentity"
+        ],
+        "properties": {
+          "catalogName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "catalogDescription": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "supportStatus": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "currentLocalVersion": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "currentUpstreamVersion": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sharedRuntimeKeyGroup": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "patchPath": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "artifactId": {
+            "type": "string"
+          },
+          "runtimeKey": {
+            "type": "string"
+          },
+          "providerId": {
+            "type": "string"
+          },
+          "fileName": {
+            "type": "string"
+          },
+          "producer": {
+            "type": "string"
+          },
+          "patchStatus": {
+            "type": "string"
+          },
+          "locales": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "requiresAuth": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "requiresWebView": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "upstreamIdentity": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "project",
+                  "sourceId",
+                  "module"
+                ],
+                "properties": {
+                  "project": {
+                    "type": "string"
+                  },
+                  "sourceId": {
+                    "type": "string"
+                  },
+                  "module": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "sharedRuntimeKeyGroups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "group",
+          "artifactIds",
+          "runtimeKey"
+        ],
+        "properties": {
+          "group": {
+            "type": "string"
+          },
+          "artifactIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "runtimeKey": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidates",
+        "states",
+        "adapters",
+        "locales",
+        "imported",
+        "authReview",
+        "jsHeavyReview",
+        "sharedRuntimeKey"
+      ],
+      "properties": {
+        "candidates": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "states": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ELIGIBLE",
+            "ALREADY_IMPORTED",
+            "UPDATE_AVAILABLE",
+            "UNSUPPORTED_ADAPTER",
+            "UNRESOLVED_METADATA",
+            "PATCH_REQUIRED",
+            "BLOCKED",
+            "ERROR"
+          ],
+          "properties": {
+            "ELIGIBLE": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "ALREADY_IMPORTED": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "UPDATE_AVAILABLE": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "UNSUPPORTED_ADAPTER": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "UNRESOLVED_METADATA": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "PATCH_REQUIRED": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "BLOCKED": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "ERROR": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "adapters": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "locales": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "imported": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "authReview": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "jsHeavyReview": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sharedRuntimeKey": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "manifest",
+        "registryDelta",
+        "indexDelta"
+      ],
+      "properties": {
+        "mode": {
+          "const": "read-only"
+        },
+        "manifest": {
+          "const": []
+        },
+        "registryDelta": {
+          "const": []
+        },
+        "indexDelta": {
+          "const": []
+        }
+      }
+    }
+  }
+}

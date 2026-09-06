@@ -124,7 +124,7 @@ fun getPageList(): String {
 
     def test_map_language(self):
         from generic_html_extractor import _map_language
-        self.assertEqual(_map_language("zh"), ["zh-Hans"])
+        self.assertEqual(_map_language("zh"), ["zh"])
         self.assertEqual(_map_language("en"), ["en"])
 
     def test_multiple_sources_use_unique_language_rule(self):

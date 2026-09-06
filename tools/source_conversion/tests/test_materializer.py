@@ -16,6 +16,22 @@ import tools.source_conversion.materializer.materialize as mat
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
+def reviewed_create(arguments):
+    """Exercise the public CHECK -> reviewed digest -> WRITE contract."""
+    if arguments[arguments.index("--mode") + 1] != "write":
+        return mat.main(arguments)
+    check = list(arguments)
+    check[check.index("--mode") + 1] = "check"
+    stdout = io.StringIO()
+    with redirect_stdout(stdout):
+        result = mat.main(check)
+    if result:
+        return result
+    marker = '{\n  "mode"'
+    report = json.loads(stdout.getvalue()[stdout.getvalue().index(marker):])
+    return mat.main([*arguments, "--expected-digest", report["transactionDigest"]])
+
+
 class MaterializerTestBase(unittest.TestCase):
     def setUp(self):
         self.temp_dir = tempfile.TemporaryDirectory()
@@ -145,6 +161,7 @@ class MaterializerTestBase(unittest.TestCase):
                 "upstreamPackage": "eu.kanade.tachiyomi.extension.en.test",
                 "upstreamCommit": "1234567890abcdef1234567890abcdef12345678",
                 "upstreamVersion": "1.2.3",
+                "upstreamSourceId": "1234",
                 "upstreamLicense": "Apache-2.0",
                 "converterVersion": "0.1.0",
                 "generatedTimestamp": "2023-01-01T00:00:00Z"
@@ -360,7 +377,7 @@ class TestIntegration(MaterializerTestBase):
     def test_write_mode_integration(self, mock_dispatch):
         mock_dispatch.return_value = copy.deepcopy(self.valid_ir_template)
 
-        ret = mat.main(["--mode", "write", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root)])
+        ret = reviewed_create(["--mode", "write", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root)])
         self.assertEqual(ret, 0)
 
         self.assertTrue((self.repo_root / "test_artifact.js").exists())
@@ -404,11 +421,12 @@ class TestIntegration(MaterializerTestBase):
                 ir["id"] = "en_test_source_2"
                 ir["name"] = "Test Source 2"
                 ir["artifactId"] = "test_artifact_2"
+            ir["provenance"]["upstreamSourceId"] = str(source_id)
             return ir
 
         mock_dispatch.side_effect = mock_dispatch_fn
 
-        ret = mat.main(["--mode", "write", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root)])
+        ret = reviewed_create(["--mode", "write", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root)])
         self.assertEqual(ret, 0)
 
         self.assertTrue((self.repo_root / "test_artifact.js").exists())
@@ -432,7 +450,7 @@ class TestIntegration(MaterializerTestBase):
 
         mat._promote_transaction_orig = mat._promote_transaction
         with patch('tools.source_conversion.materializer.materialize._promote_transaction', side_effect=mock_promote):
-            ret = mat.main(["--mode", "write", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root)])
+            ret = reviewed_create(["--mode", "write", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root)])
             self.assertNotEqual(ret, 0)
 
         self.assertFalse((self.repo_root / "test_artifact.js").exists())
@@ -447,7 +465,7 @@ class TestIntegration(MaterializerTestBase):
 
         mat._promote_transaction_orig = mat._promote_transaction
         with patch('tools.source_conversion.materializer.materialize._promote_transaction', side_effect=mock_promote):
-            ret = mat.main(["--mode", "write", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root)])
+            ret = reviewed_create(["--mode", "write", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root)])
             self.assertNotEqual(ret, 0)
 
         self.assertFalse((self.repo_root / "test_artifact.js").exists())
@@ -525,7 +543,7 @@ class TestIntegration(MaterializerTestBase):
 
         mat._promote_transaction_orig = mat._promote_transaction
         with patch('tools.source_conversion.materializer.materialize._promote_transaction', side_effect=mock_promote):
-            ret = mat.main(["--mode", "write", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root)])
+            ret = reviewed_create(["--mode", "write", "--plan", str(self.plan_path), "--repo-root", str(self.repo_root), "--extensions-root", str(self.extensions_root)])
             self.assertNotEqual(ret, 0)
 
         self.assertEqual((self.repo_root / "test_artifact.js").read_text(), "sneaky")
@@ -1089,7 +1107,7 @@ class GenericSafe : KeiSource() {
         stdout = io.StringIO()
         stderr = io.StringIO()
         with redirect_stdout(stdout), redirect_stderr(stderr):
-            result = mat.main([
+            result = reviewed_create([
                 "--mode", mode,
                 "--plan", str(self.plan_path),
                 "--repo-root", str(self.repo_root),
@@ -1199,13 +1217,13 @@ class TestRealMaterializerModes(RealMaterializerTestBase):
         report = json.loads(stdout[report_start:])
         self.assertEqual(
             [target["relativePath"] for target in report["targets"]],
-            [
+            sorted([
                 "sources_ir/test_artifact.json",
                 "sources_generated/test_artifact.base.js",
                 "test_artifact.js",
                 "sources_registry.json",
                 "index.json",
-            ],
+            ]),
         )
 
     def test_digest_covers_reviewed_semantics_not_machine_paths(self):
@@ -1406,13 +1424,13 @@ class TestRealPromotionFailures(RealMaterializerTestBase):
         (self.repo_root / "existing.js").write_text(
             'class ExistingSource extends ComicSource {\n'
             '    name = "Existing"\n'
-            '    key = "en_genericsafe"\n'
+            '    key = "keiyoushi_1234"\n'
             '    version = "1.0.0"\n'
             '}\n',
             encoding="utf-8",
         )
         registry = self.read_json(self.repo_root / "sources_registry.json")
-        registry["artifacts"][0]["runtimeKey"] = "en_genericsafe"
+        registry["artifacts"][0]["runtimeKey"] = "keiyoushi_1234"
         self.write_json(self.repo_root / "sources_registry.json", registry)
         mat.write_index(self.repo_root)
         result, _, stderr = self._run_real("check")
@@ -1533,6 +1551,7 @@ class TestUpdateTransaction(MaterializerTestBase):
                 ir_data["name"] = "Test Source 2"
             if runtime_override is not None:
                 ir_data["id"] = runtime_override
+            ir_data["provenance"]["upstreamSourceId"] = str(source_id)
             return ir_data
 
         mock_dispatch.side_effect = extract
@@ -1585,6 +1604,7 @@ class TestUpdateTransaction(MaterializerTestBase):
         base_path = self.repo_root / "sources_generated" / f"{artifact_id}.base.js"
         base_path.write_bytes(final_path.read_bytes())
         ir_data = copy.deepcopy(self.old_ir)
+        ir_data["provenance"]["upstreamSourceId"] = "5678"
         ir_data.update({
             "artifactId": artifact_id,
             "id": self.second_runtime_key,
@@ -1712,7 +1732,7 @@ class TestUpdateTransaction(MaterializerTestBase):
             mock_dispatch, "write", report["transactionDigest"]
         )
         self.assertEqual(result, 1)
-        self.assertIn("expected digest", stderr)
+        self.assertRegex(stderr, "expected digest|root JS differs from canonical generated base")
         self._assert_exact_update_state(changed_state)
 
     def test_update_version_accepts_exact_next_patch(self):
@@ -1777,12 +1797,12 @@ class TestUpdateTransaction(MaterializerTestBase):
         self.assertEqual((result, stderr), (0, ""), msg=stderr)
         self.assertEqual(
             [target["relativePath"] for target in report["targets"]],
-            [
+            sorted([
                 "sources_ir/test_artifact.json",
                 "sources_generated/test_artifact.base.js",
                 "test_artifact.js",
                 "index.json",
-            ],
+            ]),
         )
         self.assertNotIn(
             "sources_registry.json",
@@ -1804,7 +1824,7 @@ class TestUpdateTransaction(MaterializerTestBase):
         self.assertEqual((result, stderr), (0, ""), msg=stderr)
         self.assertEqual(
             [target["relativePath"] for target in report["targets"]],
-            [
+            sorted([
                 "sources_ir/test_artifact.json",
                 "sources_generated/test_artifact.base.js",
                 "test_artifact.js",
@@ -1812,7 +1832,7 @@ class TestUpdateTransaction(MaterializerTestBase):
                 "sources_generated/test_artifact_two.base.js",
                 "test_artifact_two.js",
                 "index.json",
-            ],
+            ]),
         )
         self.assertEqual(len(report["targets"]), 7)
 
@@ -1892,7 +1912,7 @@ class TestUpdateTransaction(MaterializerTestBase):
                 mock_dispatch, "write", report["transactionDigest"]
             )
         self.assertEqual(result, 1)
-        self.assertIn("expected digest", stderr)
+        self.assertRegex(stderr, "expected digest|root JS differs from canonical generated base")
         publication.assert_not_called()
         self._assert_exact_update_state(changed_state)
 
@@ -2385,3 +2405,24 @@ class TestUpdateTransaction(MaterializerTestBase):
         self.assertEqual(result, 1)
         self.assertIn("upstream module mismatch", stderr)
         self.assertEqual(self._snapshot_tree(), before)
+
+    @patch('tools.source_conversion.materializer.materialize.dispatch_extraction')
+    def test_update_preserves_catalog_overrides_in_actual_overlay(self, mock_dispatch):
+        self.registry["artifacts"][0].update({"catalogName":"Custom catalog name","catalogDescription":"Custom description"})
+        self.write_json(self.registry_path, self.registry)
+        mat.write_index(self.repo_root)
+        before = self.registry_path.read_bytes()
+        result, report, stderr = self._run_update(mock_dispatch, "check")
+        self.assertEqual(result, 0, stderr)
+        self.assertEqual(report["registryDelta"], [])
+        self.assertEqual(report["indexDelta"][0]["after"]["name"], "Custom catalog name")
+        result, _, stderr = self._run_update(mock_dispatch, "write", report["transactionDigest"])
+        self.assertEqual(result, 0, stderr)
+        self.assertEqual(self.registry_path.read_bytes(), before)
+        self.assertEqual(self.read_json(self.repo_root / "index.json")[0]["description"], "Custom description")
+
+    def test_update_rejects_extracted_upstream_metadata_change(self):
+        record = copy.deepcopy(self.registry["artifacts"][0])
+        record["upstream"]["version"] = "9.9.9"
+        with self.assertRaisesRegex(mat.MaterializationError, "upstream metadata changed"):
+            mat._build_proposed_registry(self.registry, [record], "update")

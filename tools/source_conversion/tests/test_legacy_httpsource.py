@@ -152,7 +152,7 @@ class TestLegacyHttpSourceExtractor(unittest.TestCase):
         }
 
         ir = generic_html_extractor.extract(path, gradle_meta, "timestamp", "zh")
-        self.assertEqual(ir["languages"], ["zh-Hans"])
+        self.assertEqual(ir["languages"], ["zh"])
 
     def test_custom_chapter_url_manipulation_manual_patch(self):
         kt = """

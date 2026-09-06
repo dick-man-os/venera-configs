@@ -31,6 +31,26 @@ class TestGenerator(unittest.TestCase):
             "pages": {"url": "https://example.com/api/pages/{{id}}", "method": "GET"}
         }
 
+    def test_missing_metadata_never_defaults_to_english_or_webtoons(self):
+        for field in ("name", "id", "languages", "baseUrl"):
+            ir = self.get_base_ir()
+            del ir[field]
+            with self.subTest(field=field), self.assertRaises(KeyError):
+                generate_venera_js(ir)
+        ir = self.get_base_ir()
+        ir["languages"] = []
+        with self.assertRaises(ValueError):
+            generate_venera_js(ir)
+
+    def test_explicit_mobile_url_supports_any_locale(self):
+        ir = self.get_base_ir()
+        ir["mobileUrl"] = ir["baseUrl"]
+        for locale in ("zh-Hant", "zh-Hans", "en", "fr"):
+            ir["languages"] = [locale]
+            js = generate_venera_js(ir)
+            self.assertIn('static mobileUrl = "https://example.com"', js)
+            self.assertNotIn("m.webtoons.com", js)
+
     def test_static_base_url(self):
         ir = self.get_base_ir()
         js = generate_venera_js(ir)

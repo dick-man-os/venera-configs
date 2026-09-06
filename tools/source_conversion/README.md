@@ -10,18 +10,17 @@ Intermediate Representation (IR JSON)
 Venera-Compatible JavaScript Source
 ```
 
-## Milestone 1 Foundation
-This directory currently contains the **foundational specifications and validator** created in Milestone 1:
-- `schema/ir_v0_1.schema.json`: JSON Schema specification for IR v0.1.
-- `validator/validate_ir.py`: Deterministic validator for IR definitions (Python standard library only).
-- `tests/fixtures/`: Valid and invalid structural test fixtures.
+## Existing pipeline
 
-### Future Milestones
-Subsequent milestones will introduce:
-- `extractor/`: Deterministic parser mapping Keiyoushi Kotlin extensions to IR JSON.
-- `generator/`: Code generator emitting Venera `class extends ComicSource` JavaScript using native `HtmlDocument` and `Network` APIs.
-- `patcher/`: Merge tool applying manual JS patches for complex or procedural logic.
-- `Webtoons Pilot`: The first end-to-end verified source conversion.
+Pinned static inventory candidate `(project, sourceId)` and module locator
+→ canonical E0–E6 eligibility/family report → explicit reviewed local identity
+plan → canonical extraction dispatch → validated IR → generated base JS
+→ source patch where supported → final root JS → registry validation and
+canonical index derivation → reviewed materializer transaction.
+
+Inventory, registry, adapters, generator, patcher, and materializer remain the
+single existing pipeline. The batch report is a read-only view over it. It does
+not assign local identities or turn an eligibility observation into a write.
 
 ## Repository Roles
 - **`extensions-source`**: Strictly READ-ONLY reference and upstream input.
@@ -290,21 +289,117 @@ when all named candidates still resolve uniquely in the explicit theme and
 remain `E3`. It is labeled `review-only`, is selected by the bounded proposal
 rule rather than `contentWarning`, and does not create imports or artifacts.
 
-## Planned First Bulk-Conversion Policy
-When the converter pipeline is stabilized beyond the Webtoons pilot, future bulk conversion will follow this tiered policy:
+## 9A language-agnostic batch planning
 
-### Included in First Bulk Wave
-- **Simplified Chinese (`zh-Hans`)**
-- **Traditional Chinese (`zh-Hant`)**
-- **English SAFE (`en`, `contentWarning: SAFE`)**
+The existing planner accepts `--batch`, repeatable `--locale`, `--eligibility`,
+and `--source-id`. Any selection option enables the batch view. Output stays on
+stdout; there is no production write or automatic identity-plan creation.
+`schemaVersion: "1.1"` retains the original complete E0–E6 report and adds a
+`batch` extension (`schemaVersion: "1.0"`). Legacy calls without these options
+retain the original report format. `schema/batch_report.schema.json` describes
+the extension, and its standard-library validator checks schema and semantic
+counts, identity uniqueness/order, actions, and the empty publication delta.
 
-### Schema Supported Only (Deferred from First Wave)
-- **Korean (`ko`)** (targeted separately via native Strategy A architecture)
+The `batch.candidates` view contains candidate identity, raw language, normalized
+locale, family, actual dispatch adapter, E0–E6 eligibility, state, action,
+reason codes, warnings, imported artifact/provider/runtime identities, catalog
+name, current local and upstream versions, proposed upstream version, patch
+state/path, shared-key group, and auth/JS-heavy review evidence. The proposed
+local version remains null until explicitly supplied in a materializer plan.
+Unimported artifact IDs, runtime keys, providers, and filenames also remain null:
+they are local reviewed identities, not inferred from display names or locales.
 
-### Excluded from First Bulk Wave
-- **English MIXED (`en`, `contentWarning: MIXED`)**
-- **English NSFW (`en`, `contentWarning: NSFW`)**
-- Other languages
+Locales use the existing registry/inventory grammar: language, optional script,
+and optional region. Casing and underscores normalize deterministically.
+`canonicalLocale` evidence takes precedence; otherwise raw upstream language is
+normalized without changing inventory bytes. Bare `zh` stays `zh`. `all` and
+`other` remain unresolved. `zh-TW`, `zh-HK`, and `zh-MO` match a `zh-Hant` filter;
+`zh-CN` and `zh-SG` match `zh-Hans`, with the regional label retained in output.
+No name, URL, or module language is used to guess a Chinese script. Explicit
+script filters also include corresponding tags with a region suffix.
+
+All unresolved locales are retained in `batch.unresolvedLocales` even when a
+locale filter excludes them. All unresolved modules remain visible because
+their source languages and identities are unknown. `--include-unresolved-locales`
+also includes generic `zh` and unresolved-language rows in the selected view.
+This is an evidence boundary, not a claim that the static inventory captures
+every source in evaluated-only modules.
+
+The 9B read-only entry point (no 9B import is performed by 9A):
+
+```powershell
+$env:PYTHONDONTWRITEBYTECODE="1"
+python -B tools/source_conversion/planner/eligibility_planner.py `
+  --extensions-root ../extensions-source `
+  --batch --locale zh-Hant --locale zh-Hans
+```
+
+Add `--include-unresolved-locales` to include undecided source languages in the
+selected candidate rows; use `--locale en` or another concrete locale for the
+same contract. `--eligibility E1 --eligibility E2` filters existing eligibility
+routes; it does not assert that extraction or runtime validation has passed.
+`--repo-root` selects the local artifact evidence root and defaults to the
+registry file's directory. Reports contain no timestamps or absolute paths.
+Identical input produces identical UTF-8 JSON bytes, sorted selection options,
+candidates, warning/reason arrays, group membership, and summary counts.
+
+### Classification and failure isolation
+
+- `ELIGIBLE`: existing evidence permits a reviewed identity plan and CHECK.
+  It is not runtime acceptance or permission to publish.
+- `ALREADY_IMPORTED`: the exact registry join exists; action is `skip`.
+- `UPDATE_AVAILABLE`: a numeric upstream version is newer; action is review
+  only. Upstream refresh remains unsupported by the materializer.
+- `UNSUPPORTED_ADAPTER`: explicit unsupported core evidence or a theme with no
+  matching dedicated family adapter. No missing adapter is implemented here.
+- `PATCH_REQUIRED`: explicit patch/manual extraction evidence; no patch is
+  generated or overwritten.
+- `UNRESOLVED_METADATA`: locale or extraction evidence remains insufficient.
+- `BLOCKED`: explicit retired/needs-rescue registry state or backward upstream
+  version. No live dead/unreachable status is inferred.
+- `ERROR`: a source unit or local artifact could not be read/checked. Other
+  candidate classifications are retained; module errors affect only that module,
+  and theme errors affect only its explicit members.
+
+Malformed inventory/registry data, duplicate candidate identities, and ambiguous
+registry ownership still fail the whole input validation before reporting or
+publication. They are not silently deduplicated. Lexical credentials and
+WebView/QuickJS matches are orthogonal review flags; confirmed auth requirements
+are exposed only when local IR supplies evidence. Live anti-bot state, login
+state, cookies, and site reachability remain unknown without runtime evidence.
+NSFW/MIXED/SAFE metadata is retained for every locale; absence remains unknown.
+
+`existingArtifacts` also includes manual sources with no upstream join.
+`sharedRuntimeKeyGroups` exposes the complete explicit registry groups, including
+CopyManga standard/multi-account. Distinct artifact IDs are retained. Shared
+keys are never join keys, and unmodeled collisions remain publication errors.
+Patch-backed and manually customized existing sources remain protected. A changed
+generator or adapter does not automatically regenerate them; UPDATE always
+requires an explicit plan/version and a fresh CHECK.
+
+### Batch CHECK and publication boundary
+
+Select candidates → review explicit local identity plan → materializer CHECK
+→ review exact target hashes and index/registry deltas → WRITE with the CHECK
+digest. Existing multi-artifact identity plans are reused; mixed CREATE/UPDATE,
+patch-backed UPDATE, upstream refresh, renames, and deletions remain unsupported.
+The planner's publication manifest and deltas are empty because no local
+publication identities or outputs have been prepared there. The materializer's
+CHECK computes the exact concrete publication manifest and deltas.
+
+The materializer prepares every artifact in OS Temp and reports all per-artifact
+preparation failures before aborting the batch. Successful siblings are never
+partially published. Re-running the same valid plan produces the same prepared
+bytes. Registry/index validation and two-pass determinism are global batch gates.
+The existing transaction owns promotion, stale checks, and rollback; individual
+file promotion is atomic, while detected transaction failures restore prior
+bytes. Process termination/power loss is not a globally atomic filesystem commit.
+
+Planning scans module/theme source text once and loads inventory/registry once.
+Materializer candidate resolution uses a single identity map, and each transaction
+captures shared state rather than hashing the repository for every candidate.
+CHECK still intentionally runs two extraction/generation passes and validates the
+complete proposed registry/index overlay twice.
 
 ## Extraction Field Grammar (IR v0.1)
 The `fields` mapping in IR v0.1 definitions unambiguously distinguishes between element text extraction and attribute extraction:
@@ -404,7 +499,7 @@ The materializer requires a strict, explicit local plan in JSON format.
 - **Stale-State Guard**: Preflight fingerprints cover the registry, index, root final JS files, generated base JS files, and converted IR files consumed by proposal preparation. The complete fingerprint is repeated immediately before publication. CREATE also repeats all new-target absence checks. Any drift aborts before a transaction target is published.
 - **Collision Rejection**: Artifacts and files already existing in the repository abort the transaction.
 - **Two-Pass Determinism**: Executes extraction and generation twice in separate temporary directories, asserting byte-identical results and identical SHAs.
-- **Transaction Digest**: Normalized hash over the reviewed inputs (schemaVersion, upstream project/commit, generatedTimestamp, artifact inputs) and the resulting target file SHAs. For UPDATE, it additionally binds stable repository-relative paths and exact current SHA-256 values for every updated root JS, generated base JS, and IR file, plus global `index.json` and `sources_registry.json`. Legacy CREATE digest serialization is unchanged.
+- **Transaction Digest**: Normalized hash over the reviewed inputs (schemaVersion, upstream project/commit, generatedTimestamp, artifact inputs) and the resulting target file SHAs. For UPDATE, it additionally binds stable repository-relative paths and exact current SHA-256 values for every updated root JS, generated base JS, and IR file, plus global `index.json` and `sources_registry.json`. The low-level legacy digest remains stable, but public CHECK/WRITE now uses digest version 2 with complete review-state binding.
 - **Complete Proposal Validation**: Each pass builds a temporary overlay containing existing and proposed final JS/IR plus the complete proposed registry. The canonical registry validator checks schema, runtime identity, IR linkage, and index relationships before publication.
 - **Canonical Index Bytes**: Proposed `index.json` bytes are produced by `validate_registry.py`'s canonical `write_index` implementation, including its ordering, formatting, UTF-8 encoding, and trailing newline.
 
@@ -421,7 +516,7 @@ the output target manifest or rewrite it.
 
 - **Promotion Order**: CREATE promotes artifact files, registry, then index. UPDATE promotes IR, generated base JS, and root JS for each artifact, followed only by `index.json`.
 - **Rollback Guarantees**: Any failure during copy or promotion triggers a transaction-owned rollback. UPDATE restores every replaced artifact and `index.json` to its exact prior bytes; its registry is never a publication or rollback target. CREATE removes transaction-created outputs. Temporary siblings and empty transaction-created directories are cleaned, and unrelated files are untouched.
-- **Atomicity Boundary**: Individual target publication is atomic, and detected failures are rolled back byte-for-byte. The materializer does not claim impossible whole-filesystem global atomicity across all targets.
+- **Atomicity Boundary**: Individual target publication is atomic, and detected failures are rolled back byte-for-byte. The materializer does not claim whole-filesystem global atomicity across all targets.
 
 ### Modes
 
@@ -439,7 +534,7 @@ python tools/source_conversion/materializer/materialize.py \
 #### WRITE Mode
 Executes the same verified prepared transaction as CHECK mode. Upon passing the
 stale-state revalidation, the prepared temporary transaction is promoted to the
-live repository. UPDATE requires the digest printed by a reviewed CHECK via
+live repository. Both CREATE and UPDATE require the digest printed by a reviewed CHECK via
 `--expected-digest`; stale CHECK output cannot authorize a WRITE.
 
 ```bash
@@ -448,5 +543,48 @@ python tools/source_conversion/materializer/materialize.py \
   --plan plan.json \
   --repo-root . \
   --extensions-root ../extensions-source \
-  --expected-digest <reviewed-update-digest>
+  --expected-digest <reviewed-check-digest>
 ```
+
+### 9A transaction review binding
+
+CHECK/WRITE reports use `schemaVersion: "1.1"`, `digestVersion: "2"`. The legacy
+normalized transaction hash is wrapped with `reviewState`: sorted repository-
+relative paths and exact SHA-256 values for registry, index, root JS, IR,
+generated bases, patch files, canonical inventory, and the executing conversion
+Python/schema inputs. Missing global inputs are represented explicitly. This
+snapshot is captured before input loading and rechecked after preparation and
+immediately before promotion. The UPDATE `currentState` subset remains available
+for compatibility. Old public CHECK digests must be regenerated.
+
+`targets` is the exact sorted publication manifest with SHA-256 and byte length.
+`registryDelta` and `indexDelta` list sorted identity-keyed before/after records.
+UPDATE retains the exact registry overlay and emits an empty registry delta;
+intentional `catalogName`/`catalogDescription` overrides remain authoritative.
+A no-patch UPDATE rejects root JS that differs from its stored generated base.
+
+Generic extraction now uses the selected source declaration's language rather
+than its module directory. IR v0.1/v0.2 accept the existing canonical locale
+grammar instead of a four-language allowlist. With an authoritative source ID,
+a generic runtime ID is `keiyoushi_<sourceId>`, independent of display-name
+spelling or Unicode sanitization. Existing root/generated/IR artifacts are not
+regenerated. An existing runtime key that differs from newly extracted identity
+still fails UPDATE and requires separate reviewed migration. Legacy extraction
+without a source declaration retains its old ID behavior. Source-specific
+adapters keep their established identities, and generic Kotlin file fallback
+selection is now sorted by repository-relative path.
+
+Publication also requires an extracted `upstreamSourceId` matching the selected
+candidate, and an exact language match against canonical or normalized raw
+inventory evidence. Adapters missing that evidence fail CHECK; no ID or locale
+is supplied on their behalf. UPDATE rejects any extracted upstream metadata
+change, including version/library/theme changes, even if a local version bump
+was requested. Both public report schemas are checked before WRITE.
+
+CHECK stdout is a deterministic JSON document: internal extraction/validator
+progress messages containing temporary paths are suppressed. Generator calls
+require IR name, ID, languages, and base URL; missing values no longer silently
+select English/Webtoons defaults. New CREATE preparation explicitly supplies the source's own
+base URL as mobileUrl when absent. The generator retains its legacy mobile URL
+fallback solely for historical IR reproduction; existing generated bytes and
+production artifacts remain unchanged.

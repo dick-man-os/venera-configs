@@ -9,6 +9,8 @@ import argparse
 import copy
 import datetime
 import hashlib
+import io
+from contextlib import redirect_stdout
 import json
 import os
 import re
@@ -25,6 +27,7 @@ sys.path.insert(0, str(repo_root / "tools" / "source_conversion" / "generator"))
 sys.path.insert(0, str(repo_root / "tools" / "source_conversion" / "validator"))
 
 from tools.source_conversion.extractor.extract import dispatch_extraction
+from tools.source_conversion.extractor.common.locales import candidate_locale
 from tools.source_conversion.generator.js_generator import generate_venera_js
 from tools.source_conversion.planner import eligibility_planner
 from tools.source_conversion.validator.validate_ir import validate_ir_data
@@ -212,6 +215,7 @@ def _parse_plan(plan_path: Path) -> dict:
             raise MaterializationError(f"Duplicate sourceId in plan: {source_id}")
         seen_sources.add(source_id)
 
+    plan["artifacts"] = sorted(artifacts, key=lambda item: item["artifactId"])
     return plan
 
 def _resolve_candidates(
@@ -244,7 +248,8 @@ def _resolve_candidates(
             f"Inventory commit {upstreams[0]['commit']} does not match plan commit {upstream_commit}"
         )
 
-    candidates = inventory["candidates"]
+    candidates_by_identity = {(candidate["project"], candidate["sourceId"]): candidate
+                              for candidate in inventory["candidates"]}
     eligibility_by_identity = {
         (item["project"], item["sourceId"]): item
         for item in eligibility_report["candidates"]
@@ -253,19 +258,9 @@ def _resolve_candidates(
 
     for item in plan["artifacts"]:
         source_id = item["sourceId"]
-        matches = [
-            candidate
-            for candidate in candidates
-            if candidate["project"] == upstream_project
-            and candidate["sourceId"] == source_id
-        ]
-
-        if not matches:
+        match = candidates_by_identity.get((upstream_project, source_id))
+        if match is None:
             raise MaterializationError(f"No inventory candidate found for sourceId {source_id}")
-        if len(matches) > 1:
-            raise MaterializationError(f"Multiple inventory candidates found for sourceId {source_id}")
-
-        match = matches[0]
 
         planned = eligibility_by_identity.get((upstream_project, source_id))
         if planned is None:
@@ -359,6 +354,9 @@ def _check_preconditions(plan: dict, repo: Path, resolved: dict):
             if (repo / "sources_patches" / f"{aid}.patch.js").exists():
                 raise MaterializationError(f"UPDATE rejected: patch-backed artifact not supported")
 
+            if (repo / f"{aid}.js").read_bytes() != (repo / "sources_generated" / f"{aid}.base.js").read_bytes():
+                raise MaterializationError("UPDATE rejected: root JS differs from canonical generated base")
+
             if reg_art.get("providerId") != item["providerId"]:
                 raise MaterializationError("UPDATE rejected: providerId mismatch")
 
@@ -413,6 +411,8 @@ def _extract_to_temp(item: dict, candidate: dict, timestamp: str, extensions_roo
     if not isinstance(ir_data, dict):
         raise MaterializationError("Canonical extraction dispatch did not return an IR object")
 
+    if "localVersion" in item and "baseUrl" in ir_data:
+        ir_data.setdefault("mobileUrl", ir_data["baseUrl"])
     ir_data["artifactId"] = item["artifactId"]
     ir_data["version"] = item.get("newLocalVersion", item.get("localVersion"))
 
@@ -432,7 +432,7 @@ def _validate_extracted_identity(
             "Extracted IR upstreamCommit does not match the attested checkout commit"
         )
     source_id = provenance.get("upstreamSourceId")
-    if source_id is not None and str(source_id) != plan_item["sourceId"]:
+    if source_id is None or str(source_id) != plan_item["sourceId"]:
         raise MaterializationError(
             f"Extracted IR sourceId {source_id!r} does not match planned sourceId "
             f"{plan_item['sourceId']}"
@@ -452,10 +452,10 @@ def _validate_extracted_identity(
         raise MaterializationError(
             "Extracted contentWarning does not match canonical inventory evidence"
         )
-    candidate_locale = candidate.get("canonicalLocale")
-    if candidate_locale is not None and ir_data.get("languages") != [candidate_locale]:
+    locale = candidate_locale(candidate)
+    if locale is None or ir_data.get("languages") != [locale]:
         raise MaterializationError(
-            "Extracted languages do not match canonicalLocale inventory evidence"
+            "Extracted languages do not match canonicalLocale/upstreamLang inventory evidence"
         )
 
 def _validate_ir(ir_data: dict):
@@ -550,25 +550,16 @@ def _build_proposed_registry(existing_registry: dict, new_records: list, operati
     if "artifacts" not in proposed:
         proposed["artifacts"] = []
     if operation == "update":
-        replacements = {record["artifactId"]: record for record in new_records}
-        updated_artifacts = []
-        replaced_ids = set()
-        for existing in proposed["artifacts"]:
-            artifact_id = existing.get("artifactId")
-            replacement = replacements.get(artifact_id)
-            if replacement is None:
-                updated_artifacts.append(existing)
-                continue
-            merged = copy.deepcopy(existing)
-            merged.update(copy.deepcopy(replacement))
-            updated_artifacts.append(merged)
-            replaced_ids.add(artifact_id)
-        if replaced_ids != set(replacements):
-            missing = sorted(set(replacements) - replaced_ids)
-            raise MaterializationError(
-                f"UPDATE rejected: registry entries disappeared during preparation: {missing}"
-            )
-        proposed["artifacts"] = updated_artifacts
+        existing_ids = {record["artifactId"] for record in proposed["artifacts"]}
+        if not {record["artifactId"] for record in new_records} <= existing_ids:
+            raise MaterializationError("UPDATE rejected: registry entries disappeared during preparation")
+        existing_by_id = {record["artifactId"]: record for record in proposed["artifacts"]}
+        for record in new_records:
+            if record["upstream"] != existing_by_id[record["artifactId"]].get("upstream"):
+                raise MaterializationError("UPDATE rejected: extracted upstream metadata changed")
+        # UPDATE is implementation-only. The exact existing registry is also
+        # the proposal overlay; it is neither a publication nor rollback target.
+
     else:
         proposed["artifacts"].extend(new_records)
     return proposed
@@ -719,7 +710,36 @@ def _capture_preflight_fingerprint(repo: Path) -> dict:
         relative = path.relative_to(repo).as_posix()
         if path.is_file():
             fingerprint[relative] = hashlib.sha256(path.read_bytes()).hexdigest()
+    inventory = repo / "tools/source_conversion/inventory/upstream_inventory.json"
+    if inventory.is_file():
+        fingerprint["tools/source_conversion/inventory/upstream_inventory.json"] = hashlib.sha256(inventory.read_bytes()).hexdigest()
+    for path in sorted((repo / "sources_patches").glob("*.patch.js")):
+        fingerprint[path.relative_to(repo).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
+    # Bind the implementation actually executing, even when testing a Temp repo.
+    tool_root = repo_root / "tools/source_conversion"
+    for path in sorted(tool_root.rglob("*")):
+        relative = path.relative_to(repo_root).as_posix()
+        if path.is_file() and "tests" not in path.relative_to(tool_root).parts and path.suffix in {".py", ".json"}:
+            if "/inventory/" not in relative:
+                fingerprint[relative] = hashlib.sha256(path.read_bytes()).hexdigest()
     return fingerprint
+
+
+def _review_state(preflight):
+    return [{"relativePath": path, "sha256": digest} for path, digest in sorted(preflight.items())]
+
+
+def _review_digest(plan, targets, preflight):
+    payload = {"digestVersion": "2", "transaction": _compute_digest(plan, targets, preflight),
+               "reviewState": _review_state(preflight)}
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
+def _entry_delta(before, after, key):
+    old, new = {item[key]: item for item in before}, {item[key]: item for item in after}
+    return [{"identity": identity, "before": old.get(identity), "after": new.get(identity)}
+            for identity in sorted(old.keys() | new.keys()) if old.get(identity) != new.get(identity)]
+
 
 def _execute_pass(plan: dict, resolved: dict, extensions_root: Path, repo: Path, temp_dir: Path) -> dict:
     targets = []
@@ -736,69 +756,75 @@ def _execute_pass(plan: dict, resolved: dict, extensions_root: Path, repo: Path,
         if isinstance(artifact, dict)
     }
 
+    failures = []
     for item in plan["artifacts"]:
-        candidate = resolved[item["sourceId"]]
-        ir_data = _extract_to_temp(item, candidate, plan["generatedTimestamp"], extensions_root)
-        _validate_extracted_identity(item, candidate, ir_data, plan)
-        _validate_ir(ir_data)
+        try:
+            candidate = resolved[item["sourceId"]]
+            ir_data = _extract_to_temp(item, candidate, plan["generatedTimestamp"], extensions_root)
+            _validate_extracted_identity(item, candidate, ir_data, plan)
+            _validate_ir(ir_data)
 
-        ir_path = temp_dir / "sources_ir" / f"{item['artifactId']}.json"
-        ir_path.parent.mkdir(parents=True, exist_ok=True)
-        write_json(ir_path, ir_data, indent=2)
-        targets.append({
-            "relativePath": f"sources_ir/{item['artifactId']}.json",
-            "sourcePath": ir_path,
-            "sha256": hashlib.sha256(ir_path.read_bytes()).hexdigest(),
-            "byteLength": ir_path.stat().st_size
-        })
+            ir_path = temp_dir / "sources_ir" / f"{item['artifactId']}.json"
+            ir_path.parent.mkdir(parents=True, exist_ok=True)
+            write_json(ir_path, ir_data, indent=2)
+            targets.append({
+                "relativePath": f"sources_ir/{item['artifactId']}.json",
+                "sourcePath": ir_path,
+                "sha256": hashlib.sha256(ir_path.read_bytes()).hexdigest(),
+                "byteLength": ir_path.stat().st_size
+            })
 
-        base_js = _generate_base_js(ir_data)
-        base_js_path = temp_dir / "sources_generated" / f"{item['artifactId']}.base.js"
-        base_js_path.parent.mkdir(parents=True, exist_ok=True)
-        base_js_path.write_text(base_js, encoding="utf-8")
+            base_js = _generate_base_js(ir_data)
+            base_js_path = temp_dir / "sources_generated" / f"{item['artifactId']}.base.js"
+            base_js_path.parent.mkdir(parents=True, exist_ok=True)
+            base_js_path.write_text(base_js, encoding="utf-8")
 
-        if not validate_js_file(str(base_js_path), phase="base"):
-            raise MaterializationError(f"Base JS validation failed for {item['artifactId']}")
+            if not validate_js_file(str(base_js_path), phase="base"):
+                raise MaterializationError(f"Base JS validation failed for {item['artifactId']}")
 
-        targets.append({
-            "relativePath": f"sources_generated/{item['artifactId']}.base.js",
-            "sourcePath": base_js_path,
-            "sha256": hashlib.sha256(base_js_path.read_bytes()).hexdigest(),
-            "byteLength": base_js_path.stat().st_size
-        })
+            targets.append({
+                "relativePath": f"sources_generated/{item['artifactId']}.base.js",
+                "sourcePath": base_js_path,
+                "sha256": hashlib.sha256(base_js_path.read_bytes()).hexdigest(),
+                "byteLength": base_js_path.stat().st_size
+            })
 
-        final_js_bytes = _compose_final_js(ir_data, base_js_path.read_bytes())
-        final_js_path = temp_dir / f"{item['artifactId']}.js"
-        final_js_path.parent.mkdir(parents=True, exist_ok=True)
-        final_js_path.write_bytes(final_js_bytes)
+            final_js_bytes = _compose_final_js(ir_data, base_js_path.read_bytes())
+            final_js_path = temp_dir / f"{item['artifactId']}.js"
+            final_js_path.parent.mkdir(parents=True, exist_ok=True)
+            final_js_path.write_bytes(final_js_bytes)
 
-        if not validate_js_file(str(final_js_path), phase="final"):
-            raise MaterializationError(f"Final JS validation failed for {item['artifactId']}")
+            if not validate_js_file(str(final_js_path), phase="final"):
+                raise MaterializationError(f"Final JS validation failed for {item['artifactId']}")
 
-        targets.append({
-            "relativePath": f"{item['artifactId']}.js",
-            "sourcePath": final_js_path,
-            "sha256": hashlib.sha256(final_js_bytes).hexdigest(),
-            "byteLength": final_js_path.stat().st_size
-        })
+            targets.append({
+                "relativePath": f"{item['artifactId']}.js",
+                "sourcePath": final_js_path,
+                "sha256": hashlib.sha256(final_js_bytes).hexdigest(),
+                "byteLength": final_js_path.stat().st_size
+            })
 
-        final_js_metadata = inspect_final_js(final_js_path)
+            final_js_metadata = inspect_final_js(final_js_path)
 
-        existing_record = existing_by_artifact_id.get(item["artifactId"], {})
-        expected_runtime_key = (
-            existing_record.get("runtimeKey")
-            if operation == "update"
-            else None
-        )
-        record = _build_registry_record(
-            item,
-            candidate,
-            ir_data,
-            final_js_metadata,
-            plan,
-            expected_runtime_key,
-        )
-        new_records.append(record)
+            existing_record = existing_by_artifact_id.get(item["artifactId"], {})
+            expected_runtime_key = (
+                existing_record.get("runtimeKey")
+                if operation == "update"
+                else None
+            )
+            record = _build_registry_record(
+                item,
+                candidate,
+                ir_data,
+                final_js_metadata,
+                plan,
+                expected_runtime_key,
+            )
+            new_records.append(record)
+        except Exception as exc:
+            failures.append(f"{item['artifactId']} (sourceId={item['sourceId']}): {exc}")
+    if failures:
+        raise MaterializationError("Batch preparation failed; no publication: " + "; ".join(failures))
 
     proposed_registry = _build_proposed_registry(existing_registry, new_records, operation)
     registry_path = temp_dir / "sources_registry.json"
@@ -1047,11 +1073,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--plan", type=Path, required=True)
     parser.add_argument("--repo-root", type=Path, required=True)
     parser.add_argument("--extensions-root", type=Path, required=True)
-    parser.add_argument("--expected-digest", type=str, help="Expected transaction digest (required for UPDATE write)")
+    parser.add_argument("--expected-digest", type=str, help="Reviewed CHECK transaction digest (required for every write)")
 
     args = parser.parse_args(argv)
 
     try:
+        preflight_fingerprint = _capture_preflight_fingerprint(args.repo_root)
         plan = _parse_plan(args.plan)
         inventory_path = args.repo_root / "tools" / "source_conversion" / "inventory" / "upstream_inventory.json"
         inventory = load_json(inventory_path)
@@ -1066,18 +1093,19 @@ def main(argv: Sequence[str] | None = None) -> int:
             plan["upstream"]["commit"],
         )
         _check_preconditions(plan, args.repo_root, resolved)
-        preflight_fingerprint = _capture_preflight_fingerprint(args.repo_root)
 
         with tempfile.TemporaryDirectory() as td:
             # Determinism Pass 1
             pass1_dir = Path(td) / "pass1"
             pass1_dir.mkdir()
-            res1 = _execute_pass(plan, resolved, args.extensions_root, args.repo_root, pass1_dir)
+            with redirect_stdout(io.StringIO()):
+                res1 = _execute_pass(plan, resolved, args.extensions_root, args.repo_root, pass1_dir)
 
             # Determinism Pass 2
             pass2_dir = Path(td) / "pass2"
             pass2_dir.mkdir()
-            res2 = _execute_pass(plan, resolved, args.extensions_root, args.repo_root, pass2_dir)
+            with redirect_stdout(io.StringIO()):
+                res2 = _execute_pass(plan, resolved, args.extensions_root, args.repo_root, pass2_dir)
 
             # Verify determinism
             t1 = {t["relativePath"]: t for t in res1["targets"]}
@@ -1111,10 +1139,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                     "byteLength": t["byteLength"]
                 })
 
-            digest = _compute_digest(plan, targets_no_local_path, preflight_fingerprint)
+            targets_no_local_path.sort(key=lambda item: item["relativePath"])
+            digest = _review_digest(plan, targets_no_local_path, preflight_fingerprint)
 
             report = {
                 "mode": args.mode,
+                "schemaVersion": "1.1",
+                "digestVersion": "2",
+                "reviewState": _review_state(preflight_fingerprint),
+                "registryDelta": _entry_delta(registry["artifacts"], res1["proposed_registry"]["artifacts"], "artifactId"),
+                "indexDelta": _entry_delta(load_json(args.repo_root / "index.json"), res1["proposed_index"], "fileName"),
                 "operation": plan.get("operation", "create"),
                 "upstreamProject": plan["upstream"]["project"],
                 "upstreamCommit": plan["upstream"]["commit"],
@@ -1130,12 +1164,19 @@ def main(argv: Sequence[str] | None = None) -> int:
                     plan, preflight_fingerprint
                 )
 
+            from tools.source_conversion.validator.validate_batch_report import validate_materialization_report
+            report_errors = validate_materialization_report(report)
+            if report_errors:
+                raise MaterializationError("Invalid transaction report: " + "; ".join(report_errors))
+
+            if _capture_preflight_fingerprint(args.repo_root) != preflight_fingerprint:
+                raise MaterializationError("Stale-state guard failed: inputs changed before report/promotion")
+
             if args.mode == "write":
-                if plan.get("operation", "create") == "update":
-                    if not args.expected_digest:
-                        raise MaterializationError("UPDATE write mode requires --expected-digest")
-                    if args.expected_digest != digest:
-                        raise MaterializationError(f"UPDATE rejected: expected digest {args.expected_digest} does not match computed {digest}")
+                if not args.expected_digest:
+                    raise MaterializationError("WRITE mode requires --expected-digest from reviewed CHECK")
+                if args.expected_digest != digest:
+                    raise MaterializationError(f"WRITE rejected: expected digest {args.expected_digest} does not match computed {digest}")
 
                 _promote_transaction(
                     args.repo_root,

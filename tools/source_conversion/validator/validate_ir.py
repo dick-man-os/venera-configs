@@ -13,7 +13,7 @@ import re
 import sys
 from typing import Any, Dict, List, Optional
 
-ALLOWED_LANGUAGES = {"zh-Hans", "zh-Hant", "ko", "en"}
+LOCALE_RE = re.compile(r"^[a-z]{2,3}(?:-[A-Z][a-z]{3})?(?:-(?:[A-Z]{2}|[0-9]{3}))?$")
 ALLOWED_ORIGINS = {"KR", "CN", "JP"}
 ALLOWED_CONTENT_WARNINGS = {"SAFE", "MIXED", "NSFW"}
 ALLOWED_SOURCE_TYPES = {"api", "html", "hybrid"}
@@ -155,9 +155,9 @@ def validate_ir_data(data: Any) -> List[str]:
             for idx, lang in enumerate(langs):
                 if not isinstance(lang, str):
                     errors.append(f"Language at index {idx} must be a string.")
-                elif lang not in ALLOWED_LANGUAGES:
+                elif lang in {"all", "other"} or not LOCALE_RE.fullmatch(lang):
                     errors.append(
-                        f"Unsupported language code '{lang}' at index {idx}. Allowed: {sorted(ALLOWED_LANGUAGES)}"
+                        f"Unsupported language code '{lang}' at index {idx}; expected canonical locale spelling."
                     )
 
     # contentOrigins

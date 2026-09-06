@@ -82,9 +82,11 @@ def parse_field_extractor(
 def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     """Generates Venera JavaScript base source code from validated IR data."""
     # 1. Extract metadata & provenance
-    name = ir_data.get("name", "Webtoons")
-    source_id = ir_data.get("id", "en_webtoons")
-    languages = ir_data.get("languages") or ["en"]
+    name = ir_data["name"]
+    source_id = ir_data["id"]
+    languages = ir_data["languages"]
+    if not languages:
+        raise ValueError("IR languages must not be empty")
     route_language = str(languages[0]).lower()
 
     # Sanitize key for VeneraX runtime (only A-Z, a-z, 0-9, _)
@@ -93,7 +95,8 @@ def generate_venera_js(ir_data: Dict[str, Any]) -> str:
 
     class_name_raw = "".join(part.capitalize() for part in source_id.split("_"))
     class_name = "".join(c for c in class_name_raw if c.isalnum()) + "Source"
-    base_url = ir_data.get("baseUrl", "https://www.webtoons.com")
+    base_url = ir_data["baseUrl"]
+    # Preserve historical IR reproduction; new CREATE supplies its own mobileUrl.
     mobile_url = ir_data.get("mobileUrl", "https://m.webtoons.com")
     uses_absolute_attributes = _contains_absolute_attribute_grammar(ir_data)
     absolute_url_resolver = f"{class_name}.resolveAbsoluteUrl"

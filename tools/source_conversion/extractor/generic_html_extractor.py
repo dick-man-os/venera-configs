@@ -3,13 +3,13 @@ import os
 import re
 from typing import Any, Dict, List, Optional
 from common import kotlin_parser, selector_analyzer
+from common.locales import normalize_locale
 
 def _map_language(lang: str, language_override: Optional[str] = None) -> List[str]:
-    if language_override:
-        return [language_override]
-    if lang == "zh":
-        return ["zh-Hans"]
-    return [lang]
+    locale = normalize_locale(language_override or lang)
+    if locale is None:
+        raise ValueError("Source language is unresolved; explicit locale evidence is required")
+    return [locale]
 
 
 def _select_gradle_source(
@@ -406,7 +406,8 @@ def extract(
     )
     if not name:
         raise ValueError("Selected source name is unresolved")
-    languages = _map_language(raw_lang, language_override)
+    source_lang = selected_source.get("lang") if selected_source is not None else raw_lang
+    languages = _map_language(source_lang, language_override)
 
     mirrors = []
     if selected_source is not None:
@@ -439,7 +440,9 @@ def extract(
 
     ir = {
         "schemaVersion": "0.2",
-        "id": f"{languages[0]}_{name.lower()}",
+        "id": (f"keiyoushi_{selected_source['sourceId']}"
+               if selected_source is not None and selected_source.get("sourceId")
+               else f"{languages[0]}_{name.lower()}"),
         "name": name,
         "languages": languages,
         "contentOrigins": ["CN"] if raw_lang == "zh" else ["JP"],
