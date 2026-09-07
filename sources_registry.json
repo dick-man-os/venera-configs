@@ -601,6 +601,98 @@
         "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
         "theme": "mangacatalog"
       }
+    },
+    {
+      "artifactId": "dongmanmanhua_zh_hans",
+      "runtimeKey": "keiyoushi_4222375517460530289",
+      "catalogName": "Dongman Manhua",
+      "locales": [
+        "zh-Hans"
+      ],
+      "providerId": "dongmanmanhua",
+      "siteUrl": "https://www.dongmanmanhua.cn",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated",
+        "transport": "html"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "zh.dongmanmanhua",
+        "sourceId": "4222375517460530289",
+        "version": "1.4.6",
+        "extensionLib": "1.4",
+        "commit": "5a0261c718cd6d5ecf14963d837f29024c792398"
+      }
+    },
+    {
+      "artifactId": "globalcomix_zh_hans",
+      "runtimeKey": "keiyoushi_7151191693036508367",
+      "catalogName": "GlobalComix",
+      "locales": [
+        "zh-Hans"
+      ],
+      "providerId": "globalcomix",
+      "siteUrl": "https://globalcomix.com",
+      "contentWarning": "MIXED",
+      "implementation": {
+        "producer": "generated",
+        "transport": "api"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "all.globalcomix",
+        "sourceId": "7151191693036508367",
+        "version": "1.4.4",
+        "extensionLib": "1.4",
+        "commit": "5a0261c718cd6d5ecf14963d837f29024c792398"
+      }
+    },
+    {
+      "artifactId": "namicomi_zh_hans",
+      "runtimeKey": "keiyoushi_1163192659786040070",
+      "catalogName": "NamiComi",
+      "locales": [
+        "zh-Hans"
+      ],
+      "providerId": "namicomi",
+      "siteUrl": "https://namicomi.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated",
+        "transport": "api"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "all.namicomi",
+        "sourceId": "1163192659786040070",
+        "version": "1.4.6",
+        "extensionLib": "1.4",
+        "commit": "5a0261c718cd6d5ecf14963d837f29024c792398"
+      }
+    },
+    {
+      "artifactId": "namicomi_zh_hant",
+      "runtimeKey": "keiyoushi_7859611418350123856",
+      "catalogName": "NamiComi",
+      "locales": [
+        "zh-Hant"
+      ],
+      "providerId": "namicomi",
+      "siteUrl": "https://namicomi.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated",
+        "transport": "api"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "all.namicomi",
+        "sourceId": "7859611418350123856",
+        "version": "1.4.6",
+        "extensionLib": "1.4",
+        "commit": "5a0261c718cd6d5ecf14963d837f29024c792398"
+      }
     }
   ]
 }

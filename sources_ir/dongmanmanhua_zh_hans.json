@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "0.2",
+  "id": "keiyoushi_4222375517460530289",
+  "name": "Dongman Manhua",
+  "languages": [
+    "zh-Hans"
+  ],
+  "contentOrigins": [],
+  "contentWarning": "SAFE",
+  "sourceType": "html",
+  "baseUrl": "https://www.dongmanmanhua.cn",
+  "mobileUrl": "https://www.dongmanmanhua.cn",
+  "requiresAuth": false,
+  "requiresWebView": false,
+  "familyContract": "dongmanmanhua-v1",
+  "headers": {
+    "Referer": "https://www.dongmanmanhua.cn/",
+    "Origin": "https://www.dongmanmanhua.cn"
+  },
+  "explore": {
+    "popular": {
+      "url": "https://www.dongmanmanhua.cn/dailySchedule",
+      "method": "GET"
+    },
+    "latest": {
+      "url": "https://www.dongmanmanhua.cn/dailySchedule?sortOrder=UPDATE&webtoonCompleteType=ONGOING",
+      "method": "GET"
+    }
+  },
+  "search": {
+    "url": "https://www.dongmanmanhua.cn/search",
+    "method": "GET",
+    "selector": "#content > div.card_wrap.search ul:not(#filterLayer) li a",
+    "pagination": {
+      "nextSelector": "div.more_area, div.paginate a[onclick] + a"
+    }
+  },
+  "details": {
+    "url": "{comicId}",
+    "method": "GET",
+    "fields": {
+      "title": "h1.subj, h3.subj",
+      "description": "#_asideDetail p.summary"
+    }
+  },
+  "chapters": {
+    "url": "{comicId}",
+    "method": "GET",
+    "selector": "ul#_listUl li",
+    "pagination": {
+      "nextSelector": "div.paginate a[onclick] + a"
+    },
+    "order": "response"
+  },
+  "pages": {
+    "url": "{chapterId}",
+    "method": "GET",
+    "selector": "div#_imageList > img",
+    "fields": {
+      "imageUrl": "@data-url"
+    },
+    "order": "response"
+  },
+  "provenance": {
+    "type": "converted",
+    "upstreamProject": "keiyoushi",
+    "upstreamPackage": "eu.kanade.tachiyomi.extension.zh.dongmanmanhua",
+    "upstreamSourceId": "4222375517460530289",
+    "upstreamCommit": "5a0261c718cd6d5ecf14963d837f29024c792398",
+    "upstreamVersion": "1.4.6",
+    "upstreamLicense": "Apache-2.0",
+    "converterVersion": "0.1.0",
+    "generatedTimestamp": "2026-09-07T06:50:33Z"
+  },
+  "artifactId": "dongmanmanhua_zh_hans",
+  "version": "1.0.0"
+}

@@ -27,8 +27,10 @@ EXPECTED_RUNTIME_KEYS = {
     "comick": "comick",
     "copy_manga": "copy_manga",
     "copy_manga_multi_accounts": "copy_manga",
+    "dongmanmanhua_zh_hans": "keiyoushi_4222375517460530289",
     "ehentai": "ehentai",
     "flamecomics": "en_flamecomics",
+    "globalcomix_zh_hans": "keiyoushi_7151191693036508367",
     "goda": "goda",
     "happy": "happy",
     "hcomic": "hcomic",
@@ -50,6 +52,8 @@ EXPECTED_RUNTIME_KEYS = {
     "mh18": "mh18",
     "mxs": "mxs",
     "mycomic": "mycomic",
+    "namicomi_zh_hans": "keiyoushi_1163192659786040070",
+    "namicomi_zh_hant": "keiyoushi_7859611418350123856",
     "nhentai": "nhentai",
     "picacg": "picacg",
     "readblackclovermangaonline": "en_readblackclovermangaonline",
@@ -70,8 +74,12 @@ EXPECTED_RUNTIME_KEYS = {
 
 CONVERTED_ARTIFACTS = {
     "comicabc",
+    "dongmanmanhua_zh_hans",
     "flamecomics",
+    "globalcomix_zh_hans",
     "manhuashe",
+    "namicomi_zh_hans",
+    "namicomi_zh_hant",
     "webtoons",
     "webtoons_zh_hant",
     "readblackclovermangaonline",
@@ -85,6 +93,10 @@ CONVERTED_ARTIFACTS = {
 }
 
 EXPECTED_CONVERTED_UPSTREAM = {
+    "dongmanmanhua_zh_hans": ("4222375517460530289", "1.4.6", "1.4"),
+    "globalcomix_zh_hans": ("7151191693036508367", "1.4.4", "1.4"),
+    "namicomi_zh_hans": ("1163192659786040070", "1.4.6", "1.4"),
+    "namicomi_zh_hant": ("7859611418350123856", "1.4.6", "1.4"),
     "webtoons": ("2522335540328470744", "1.4.57", "1.4"),
     "webtoons_zh_hant": ("2959982438613576472", "1.4.57", "1.4"),
     "manhuashe": ("6230622879116184108", "1.6.1", "1.6"),
@@ -145,10 +157,10 @@ class TestSourceRegistry(unittest.TestCase):
             errors = validate_registry_data(invalid_empty).with_code("SCHEMA_FIELD_VALUE")
             self.assertTrue(any(field in error.message for error in errors), field)
 
-    def test_all_46_catalog_artifacts_are_registered(self):
+    def test_all_50_catalog_artifacts_are_registered(self):
         index = json.loads((repo_root / "index.json").read_text(encoding="utf-8"))
         indexed_ids = {Path(entry["fileName"]).stem for entry in index}
-        self.assertEqual(len(self.artifacts), 46)
+        self.assertEqual(len(self.artifacts), 50)
         self.assertEqual(set(self.by_id), indexed_ids)
 
     def test_artifact_ids_are_unique(self):
@@ -268,7 +280,7 @@ class TestSourceRegistry(unittest.TestCase):
 
     def test_upstream_source_ids_are_json_strings(self):
         upstream_records = [item["upstream"] for item in self.artifacts if "upstream" in item]
-        self.assertEqual(len(upstream_records), 13)
+        self.assertEqual(len(upstream_records), 17)
         self.assertTrue(all(isinstance(item["sourceId"], str) for item in upstream_records))
 
         invalid = copy.deepcopy(self.registry)
@@ -445,6 +457,10 @@ class TestSourceRegistry(unittest.TestCase):
         expected_names = {
             "comicabc": "無限動漫",
             "copy_manga_multi_accounts": "拷贝漫画(多账号)",
+            "dongmanmanhua_zh_hans": "Dongman Manhua",
+            "globalcomix_zh_hans": "GlobalComix",
+            "namicomi_zh_hans": "NamiComi",
+            "namicomi_zh_hant": "NamiComi",
             "readblackclovermangaonline": "Read Black Clover Manga Online",
             "readfairytailedenszeromangaonline": "Read Fairy Tail & Edens Zero Manga Online",
             "readjujutsukaisenmangaonline": "Read Jujutsu Kaisen Manga Online",
@@ -510,6 +526,12 @@ class TestSourceRegistry(unittest.TestCase):
         )
 
     def test_registry_linkage_does_not_change_generated_or_final_sources(self):
+        BATCH0_GENERATED_NO_PATCH = {
+            "dongmanmanhua_zh_hans",
+            "globalcomix_zh_hans",
+            "namicomi_zh_hans",
+            "namicomi_zh_hant",
+        }
         E4B_GENERATED_NO_PATCH = {
             "readblackclovermangaonline",
             "readfairytailedenszeromangaonline",
@@ -541,7 +563,11 @@ class TestSourceRegistry(unittest.TestCase):
             generated = generate_venera_js(ir)
             checked_in_base = base_path.read_text(encoding="utf-8")
             checked_in_final = final_path.read_text(encoding="utf-8")
-            if artifact_id in E4B_GENERATED_NO_PATCH:
+            if artifact_id in BATCH0_GENERATED_NO_PATCH:
+                self.assertFalse(patch_path.exists(), artifact_id)
+                self.assertEqual(generated, checked_in_base, artifact_id)
+                composed = generated
+            elif artifact_id in E4B_GENERATED_NO_PATCH:
                 self.assertFalse(patch_path.exists(), f"Expected no patch file for {artifact_id}")
                 if generated != checked_in_base:
                     self.assertEqual(ir["version"], "1.0.0", artifact_id)

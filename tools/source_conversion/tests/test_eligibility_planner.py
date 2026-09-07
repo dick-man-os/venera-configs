@@ -519,6 +519,9 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         overrides = {
             "2522335540328470744": "webtoons",
             "2959982438613576472": "webtoons_zh_hant",
+            "7151191693036508367": "globalcomix_zh_hans",
+            "1163192659786040070": "namicomi_zh_hans",
+            "7859611418350123856": "namicomi_zh_hant",
             "6485938153129890061": "readblackclovermangaonline",
             "1330793582354406642": "readfairytailedenszeromangaonline",
             "808850989053853006": "readjujutsukaisenmangaonline",
@@ -558,8 +561,7 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         }
         reviewed_shared = {
             (PROJECT, source_id) for source_id in (
-                "1163192659786040070", "7859611418350123856",
-                "3451257781273481191", "7151191693036508367",
+                "3451257781273481191",
                 "1493666528525752601", "5148895169070562838",
                 "170542391855030753", "4899554363948814001",
             )
@@ -580,15 +582,15 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         )
         self.assertEqual(
             counts["modules"],
-            {"E0": 11, "E1": 0, "E2": 2, "E3": 792, "E4": 0, "E5": 0, "E6": 591},
+            {"E0": 12, "E1": 0, "E2": 1, "E3": 792, "E4": 0, "E5": 0, "E6": 591},
         )
         self.assertEqual(
             counts["candidates"],
-            {"E0": 13, "E1": 0, "E2": 10, "E3": 1598, "E4": 0, "E5": 0, "E6": 591},
+            {"E0": 17, "E1": 0, "E2": 6, "E3": 1598, "E4": 0, "E5": 0, "E6": 591},
         )
         self.assertEqual(
             self.plan["summary"]["patchStateCounts"]["candidates"],
-            {"not-required": 10, "required": 0, "unknown": 2202},
+            {"not-required": 6, "required": 0, "unknown": 2206},
         )
 
     def test_complete_cli_scanner_is_byte_deterministic_and_non_writing(self):
@@ -641,10 +643,10 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
             second, second_summary = invoke()
             self.assertEqual(first, second)
             self.assertEqual(first_summary, second_summary)
-            self.assertEqual(len(first), 2316693)
+            self.assertEqual(len(first), 2316806)
             self.assertEqual(
                 hashlib.sha256(first).hexdigest(),
-                "b03bf28ae455f5d8f4a8d46fb4e7d05f0f7cd720fcfdec988ccdacf00e2ef484",
+                "e6c445f2d9df41db6bea2fe25c7ebcd57e5dfec8053e2fffab0de537df8b3614",
             )
             self.assertEqual(before, snapshot())
 
@@ -662,6 +664,10 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
                 "manhuashe",
                 "comicabc",
                 "flamecomics",
+                "dongmanmanhua_zh_hans",
+                "globalcomix_zh_hans",
+                "namicomi_zh_hans",
+                "namicomi_zh_hant",
                 "readblackclovermangaonline",
                 "readfairytailedenszeromangaonline",
                 "readjujutsukaisenmangaonline",
@@ -674,7 +680,7 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         )
         self.assertEqual(
             self.plan["summary"]["registryJoins"],
-            {"registeredCandidates": 13, "unregisteredCandidates": 2199},
+            {"registeredCandidates": 17, "unregisteredCandidates": 2195},
         )
 
     def test_mangacatalog_proposal_is_report_only(self):
