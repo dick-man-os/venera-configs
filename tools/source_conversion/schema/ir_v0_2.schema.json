@@ -461,6 +461,17 @@
         "additionalProperties": false
       },
       "minItems": 1
+    },
+    "familyContract": {
+      "type": "string",
+      "enum": [
+        "globalcomix-v1",
+        "namicomi-v1",
+        "dongmanmanhua-v1",
+        "iqiyi-v1",
+        "yellownote-v1",
+        "mangadex-v1"
+      ]
     }
   },
   "allOf": [

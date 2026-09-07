@@ -425,6 +425,7 @@ def _candidate_record(
     registry_joins: Mapping[tuple[str, str], tuple[str, ...]],
     module_signals: Mapping[tuple[str, str], Iterable[str]],
     theme_signals: Mapping[tuple[str, str], Iterable[str]],
+    reviewed_contract: str | None = None,
 ) -> dict[str, Any]:
     identity = (candidate["project"], candidate["sourceId"])
     artifact_ids = registry_joins.get(identity, ())
@@ -438,6 +439,10 @@ def _candidate_record(
         eligibility, eligibility_reason = EXTRACTION_ELIGIBILITY[
             compatibility["extraction"]
         ]
+    elif reviewed_contract:
+        eligibility = "E2"
+        eligibility_reason = "exact-pin-reviewed-family-contract"
+        patch_state, patch_reason = "not-required", "reviewed-family-no-patch"
     elif family_ids:
         eligibility = "E3"
         eligibility_reason = "explicit-shared-family"
@@ -462,7 +467,7 @@ def _candidate_record(
             "reasonCodes": sorted((eligibility_reason, patch_reason)),
             "staticEvidence": {
                 "metadataResolution": compatibility["metadataResolution"],
-                "extraction": compatibility["extraction"],
+                "extraction": "adapter" if reviewed_contract and eligibility == "E2" else compatibility["extraction"],
                 "capabilitySignals": list(
                     _candidate_signals(
                         candidate, module_signals, theme_signals
@@ -545,6 +550,8 @@ def build_plan(
     module_signals = module_signals or {}
     theme_signals = theme_signals or {}
     registry_joins = _registry_join_map(inventory, registry)
+    from tools.source_conversion.extractor.source_adapters.chinese_families import candidate_contract
+    pins = {item["project"]: item["commit"] for item in inventory["upstreams"]}
 
     raw_candidates = sorted(
         inventory["candidates"],
@@ -601,6 +608,7 @@ def build_plan(
             registry_joins,
             module_signals,
             theme_signals,
+            candidate_contract(candidate, pins.get(candidate["project"])),
         )
         for candidate in raw_candidates
     ]

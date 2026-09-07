@@ -98,7 +98,13 @@ def dispatch_extraction(
     source_id: str = None,
 ) -> Dict[str, Any]:
     """Canonical dispatch function for Keiyoushi source extraction."""
-    module_adapter = MODULE_ADAPTERS.get(source_path.replace("\\", "/").replace("/", "."))
+    from source_adapters import chinese_families
+    module = source_path.replace("\\", "/").replace("/", ".")
+    if module in chinese_families.ENABLED:
+        ids = {c["sourceId"] for c in chinese_families.MANIFEST["families"][module]["candidates"]}
+        if str(source_id) in ids:
+            return chinese_families.extract(extensions_root, source_path, timestamp, language_override, source_id)
+    module_adapter = MODULE_ADAPTERS.get(module)
     if module_adapter == "webtoons":
         print("[*] Dispatching to Webtoons adapter...")
         from source_adapters import webtoons

@@ -1,0 +1,238 @@
+{
+  "commit": "5a0261c718cd6d5ecf14963d837f29024c792398",
+  "families": {
+    "all.globalcomix": {
+      "files": {
+        "src/all/globalcomix/build.gradle.kts": "1c22dc87ade962500f75fe6af366c36b0c7c0f1c23bc522e64be4b7ae62b59e5",
+        "src/all/globalcomix/src/eu/kanade/tachiyomi/extension/all/globalcomix/dto/ArtistDto.kt": "08eb5a54e03830caa37f0409632a0d9589064312d0bdefb84763e545d0ec1b13",
+        "src/all/globalcomix/src/eu/kanade/tachiyomi/extension/all/globalcomix/dto/ChapterDto.kt": "e9cbc3df5bf10073e87708b1b4880eaabdad259e94dd4508987f979a06639ca1",
+        "src/all/globalcomix/src/eu/kanade/tachiyomi/extension/all/globalcomix/dto/EntityDto.kt": "424dd035bddc3a42aa1678f83d4f64954c47ef83e14c2238676b01cc0abd15d1",
+        "src/all/globalcomix/src/eu/kanade/tachiyomi/extension/all/globalcomix/dto/MangaDto.kt": "4d80e355b708735405d332761d39daa51395f84f6f0ea833a753982dc9a66fc5",
+        "src/all/globalcomix/src/eu/kanade/tachiyomi/extension/all/globalcomix/dto/PageDataDto.kt": "48e9f6fbded0d8b28651bb7de715120845e86b1062aa68d3e9ebc6e201ce58a0",
+        "src/all/globalcomix/src/eu/kanade/tachiyomi/extension/all/globalcomix/dto/PaginatedResponseDto.kt": "97a5afa10ed974d2fb4659bacb7ba7c6a9291251f40a6ced55aaf3a5f20fb267",
+        "src/all/globalcomix/src/eu/kanade/tachiyomi/extension/all/globalcomix/GlobalComix.kt": "15aee9108fe5b0a9c6c5322d47bf52418db7a6f903122e4fd3499f75bdcb03c8",
+        "src/all/globalcomix/src/eu/kanade/tachiyomi/extension/all/globalcomix/GlobalComixConstants.kt": "1862a14f362fd24bfedf8acdb521f7b44b874afbfc0b79bef567360fc87021bd"
+      },
+      "candidates": [
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "3451257781273481191",
+          "module": "all.globalcomix",
+          "name": "GlobalComix",
+          "upstreamLang": "zh-Hant",
+          "baseUrl": "https://globalcomix.com",
+          "contentWarning": "MIXED",
+          "version": "1.4.4",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        },
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "7151191693036508367",
+          "module": "all.globalcomix",
+          "name": "GlobalComix",
+          "upstreamLang": "zh-Hans",
+          "baseUrl": "https://globalcomix.com",
+          "contentWarning": "MIXED",
+          "version": "1.4.4",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        }
+      ]
+    },
+    "all.namicomi": {
+      "files": {
+        "src/all/namicomi/build.gradle.kts": "22305fc7983374f3125850a61335fb062430877bb30072ee00282671e93210c8",
+        "src/all/namicomi/src/eu/kanade/tachiyomi/extension/all/namicomi/dto/ChapterDto.kt": "2195bb7526158a019841d7c803126362ff076711a45736422c8e7c776b3e5612",
+        "src/all/namicomi/src/eu/kanade/tachiyomi/extension/all/namicomi/dto/CoverArtDto.kt": "fa5157951360951540e44037f0f3af436d71b779df3364efe51f85136fd518e0",
+        "src/all/namicomi/src/eu/kanade/tachiyomi/extension/all/namicomi/dto/EntityAccessMapDto.kt": "d76d6264bf8b9875f4b14ac039d34efa18b24b03091df4798887827f43f4b705",
+        "src/all/namicomi/src/eu/kanade/tachiyomi/extension/all/namicomi/dto/EntityDto.kt": "06a9376680ceb0f2a6a8d2cf44b1290348320a28b9be7310ce625a7c65fc9fcf",
+        "src/all/namicomi/src/eu/kanade/tachiyomi/extension/all/namicomi/dto/MangaDto.kt": "9c41e7cc71b852075fd9756cc70fc2eb318f0b422eae9ecf04a0248e077fa7ef",
+        "src/all/namicomi/src/eu/kanade/tachiyomi/extension/all/namicomi/dto/OrganizationDto.kt": "e3a53c16715bdce8ebe077fff8617f485c15385e229f03273d25f461e3beee54",
+        "src/all/namicomi/src/eu/kanade/tachiyomi/extension/all/namicomi/dto/PageListDataDto.kt": "7a368e890ed235f72cd261a7d6ea6f54d5121afaf5f416624d0b9a6995ed2b78",
+        "src/all/namicomi/src/eu/kanade/tachiyomi/extension/all/namicomi/dto/ResponseDto.kt": "4f211109905954f16a6a94aaac8f8dda53bdb633dc212569039739317ce07111",
+        "src/all/namicomi/src/eu/kanade/tachiyomi/extension/all/namicomi/NamiComi.kt": "b0cc02d068800f65eed2ec523b75a13511f97c7f2ab8d4d6a907e14fc21a9f09",
+        "src/all/namicomi/src/eu/kanade/tachiyomi/extension/all/namicomi/NamiComiConstants.kt": "41c46b4f5c0c297af6f8be668f131ce0e2f14abe9c5f7e1df15583297be3bf5a",
+        "src/all/namicomi/src/eu/kanade/tachiyomi/extension/all/namicomi/NamiComiFilters.kt": "309b5b1d5cd995e9295739f50bcd8348a47842924e404aaaa0f1514054ab18ed",
+        "src/all/namicomi/src/eu/kanade/tachiyomi/extension/all/namicomi/NamiComiHelper.kt": "343e5f139d9e3d25b5100c9d1b49cbe3aeb1ed74be3c16902e3f5467879af84c"
+      },
+      "candidates": [
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "1163192659786040070",
+          "module": "all.namicomi",
+          "name": "NamiComi",
+          "upstreamLang": "zh-Hans",
+          "baseUrl": "https://namicomi.com",
+          "contentWarning": "SAFE",
+          "version": "1.4.6",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        },
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "7859611418350123856",
+          "module": "all.namicomi",
+          "name": "NamiComi",
+          "upstreamLang": "zh-Hant",
+          "baseUrl": "https://namicomi.com",
+          "contentWarning": "SAFE",
+          "version": "1.4.6",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        }
+      ]
+    },
+    "zh.dongmanmanhua": {
+      "files": {
+        "src/zh/dongmanmanhua/build.gradle.kts": "f585913169de36ac81b3f666bfa6cb28857b47c8ca2ee2ca0260fa82adf2a3f3",
+        "src/zh/dongmanmanhua/src/eu/kanade/tachiyomi/extension/zh/dongmanmanhua/DongmanManhua.kt": "c184312aa94de5efde846a2f398631ef40c7944da0ee18cf83db5e063de9fe94"
+      },
+      "candidates": [
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "4222375517460530289",
+          "module": "zh.dongmanmanhua",
+          "name": "Dongman Manhua",
+          "upstreamLang": "zh-Hans",
+          "baseUrl": "https://www.dongmanmanhua.cn",
+          "contentWarning": "SAFE",
+          "version": "1.4.6",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        }
+      ]
+    },
+    "zh.iqiyi": {
+      "files": {
+        "src/zh/iqiyi/build.gradle.kts": "da9ba838e70272af55cbf7235b3c2f2b9ade63745f4f6a2b4dc03fd74b19fe95",
+        "src/zh/iqiyi/src/eu/kanade/tachiyomi/extension/zh/iqiyi/Dto.kt": "b504a8f4e1b14f0b947ba53e6c14e69dc0778eb10e772513df9f3047164ff819",
+        "src/zh/iqiyi/src/eu/kanade/tachiyomi/extension/zh/iqiyi/Iqiyi.kt": "3bb796b0b654576c936a9e7139625bec17e3d3796a9d51e6f1989d0022bef9cd"
+      },
+      "candidates": [
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "2198877009406729694",
+          "module": "zh.iqiyi",
+          "name": "爱奇艺叭嗒",
+          "upstreamLang": "zh-Hans",
+          "baseUrl": "https://www.iqiyi.com/manhua",
+          "contentWarning": "SAFE",
+          "version": "1.4.4",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        }
+      ]
+    },
+    "all.yellownote": {
+      "files": {
+        "src/all/yellownote/build.gradle.kts": "81a5e5ed7030eedb4209696f18d2badb03069dc7ec1616e6b156e1eec8130bc3",
+        "src/all/yellownote/src/eu/kanade/tachiyomi/extension/all/yellownote/Filters.kt": "196abe1bfeb32d7c09919e2cad384b69f57b739c6e4863796f35953b014749ac",
+        "src/all/yellownote/src/eu/kanade/tachiyomi/extension/all/yellownote/YellowNote.kt": "9c1fc343a0afd2261af2c409a2f96ec3eb5a3b3736947c495b41fae9d45d030b"
+      },
+      "candidates": [
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "170542391855030753",
+          "module": "all.yellownote",
+          "name": "小黄书",
+          "upstreamLang": "zh-Hans",
+          "baseUrl": "https://xchina.co",
+          "contentWarning": "NSFW",
+          "version": "1.4.7",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        },
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "4899554363948814001",
+          "module": "all.yellownote",
+          "name": "小黄书",
+          "upstreamLang": "zh-Hant",
+          "baseUrl": "https://tw.xchina.co",
+          "contentWarning": "NSFW",
+          "version": "1.4.7",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        }
+      ]
+    },
+    "all.mangadex": {
+      "files": {
+        "src/all/mangadex/build.gradle.kts": "22bafe94a5e9a0a3c81937742bb810123ae58b3576b9e4a8c1425e4e787967c8",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/dto/AggregateDto.kt": "d978650d3771312b8280e9245a5f6ab8e9c51a15c6dea9f0d86c1e911e4ac864",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/dto/AtHomeDto.kt": "ec7e4ca6ed02103bd9a1f0a16a60eb45882087bddcd7b4dde801fe8b5314909c",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/dto/AuthorDto.kt": "4e1959b06f3d82ecb6ae158c0b109b4b9af6e9c4e90891bbbed40d8b9cf83790",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/dto/ChapterDto.kt": "5e6efc6cc97386b9e685df329722d21965d22ea5c8c7054cae95a216aeedc40e",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/dto/CoverArtDto.kt": "d40fe4796b2f48c0585ac4936ea0c7b68e5812396f1013487c04ec4d4d887239",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/dto/EntityDto.kt": "566bfe52ed4e3004b07fc5957500ed5cfcbecbf21e725aa59e50d28ff68bfa7f",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/dto/ListDto.kt": "36a71ee4e744007fe3ca0ad85e3a4f01da3a3f8627e8bef4ebd089d380f7850f",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/dto/MangaDto.kt": "4139b5c88b8fa43fa4c4f6871bd6543ea6bdef02c44c6e7308c5a3776d50b97c",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/dto/ResponseDto.kt": "fcd33c5fd73f9f544073a36ca30a1f55bc1c69a77240d63ca336a9e5e57aaa90",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/dto/ScanlationGroupDto.kt": "43fb6d2b246440ed3d7cf080e0fd39ce7e29b25aa8dd2b711379786f64df6340",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/dto/UserDto.kt": "59306ac7c427cabe628809fdacc2a8063145d5b82a9ec3cc392cb8fb3f07dc1b",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/MangaDex.kt": "021b5152c1a93f3b035c2a4fbc69b7e3c511905bcd768b5c67811337a7c1c299",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/MangaDexFilters.kt": "7347cee284683504afa58a06cdb7335ccf3e5744188807861e8374e8f8348183",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/MangaDexHelper.kt": "824011dbccb0a2a2c1e00a306010c704037be70cfa027228a5c91b053c5cc5c6",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/MangaDexIntl.kt": "6c72ae59d3afbee9f9ae519b795c2684abad400f059ba65c535d797512a7e986",
+        "src/all/mangadex/src/eu/kanade/tachiyomi/extension/all/mangadex/MDConstants.kt": "2ea925fba1236e4cb4229daef59239b1102e1a3ecd256479847f26ebcfa9ff20"
+      },
+      "candidates": [
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "1493666528525752601",
+          "module": "all.mangadex",
+          "name": "MangaDex",
+          "upstreamLang": "zh-Hant",
+          "baseUrl": "https://mangadex.org",
+          "contentWarning": "MIXED",
+          "version": "1.4.212",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        },
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "5148895169070562838",
+          "module": "all.mangadex",
+          "name": "MangaDex",
+          "upstreamLang": "zh-Hans",
+          "baseUrl": "https://mangadex.org",
+          "contentWarning": "MIXED",
+          "version": "1.4.212",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        }
+      ]
+    }
+  }
+}

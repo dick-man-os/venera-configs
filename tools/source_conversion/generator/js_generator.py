@@ -81,6 +81,13 @@ def parse_field_extractor(
 
 def generate_venera_js(ir_data: Dict[str, Any]) -> str:
     """Generates Venera JavaScript base source code from validated IR data."""
+    if "familyContract" in ir_data:
+        from pathlib import Path
+        repo = str(Path(__file__).resolve().parents[3])
+        if repo not in sys.path:
+            sys.path.insert(0, repo)
+        from tools.source_conversion.generator.chinese_families import generate
+        return generate(ir_data)
     # 1. Extract metadata & provenance
     name = ir_data["name"]
     source_id = ir_data["id"]

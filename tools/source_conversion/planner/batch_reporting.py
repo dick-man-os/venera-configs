@@ -108,7 +108,7 @@ def add_batch_report(plan, inventory, registry, *, locales=(), eligibility=(), s
             continue
         joined = candidate["registryJoin"]["artifactIds"]
         local = artifacts[joined[0]] if joined else None
-        adapter = adapter_for_candidate(evidence)
+        adapter = adapter_for_candidate(evidence, commit=pins[key[0]])
         signals = candidate["staticEvidence"]["capabilitySignals"]
         reasons = []
         candidate_errors = sorted(set(
@@ -178,7 +178,7 @@ def add_batch_report(plan, inventory, registry, *, locales=(), eligibility=(), s
             "proposedUpstreamVersion": evidence.get("version"), "versionRelation": relation,
             "proposedLocalVersion": None, "patchStatus": patch_status, "patchPath": local["patchPath"] if local else None,
             "sharedRuntimeKeyGroup": local["sharedRuntimeKeyGroup"] if local else None,
-            "authRequired": local["requiresAuth"] if local else None,
+            "authRequired": local["requiresAuth"] if local else (False if "exact-pin-reviewed-family-contract" in candidate["reasonCodes"] else None),
             "authReview": "credentials-or-token-flow" in signals, "jsHeavyReview": "webview-or-quickjs" in signals,
             "health": "unknown",
         })

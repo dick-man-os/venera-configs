@@ -84,6 +84,15 @@ def validate_ir_data(data: Any) -> List[str]:
 
     if is_v02:
         known_fields.add("staticCatalog")
+        known_fields.add("familyContract")
+
+    if "familyContract" in data:
+        from pathlib import Path
+        extractor = str(Path(__file__).resolve().parents[1] / "extractor")
+        if extractor not in sys.path:
+            sys.path.insert(0, extractor)
+        from source_adapters.chinese_families import validate_contract
+        errors.extend(validate_contract(data))
 
     # Validate staticCatalog if present
     if "staticCatalog" in data:
