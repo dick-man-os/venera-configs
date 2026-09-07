@@ -806,7 +806,7 @@ class TestCanonicalEligibilityAudit(MaterializerTestBase):
             "schemaVersion": "1",
             "upstream": {
                 "project": "keiyoushi/extensions-source",
-                "commit": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+                "commit": "5a0261c718cd6d5ecf14963d837f29024c792398",
             },
             "generatedTimestamp": "2023-01-01T00:00:00Z",
             "artifacts": [{

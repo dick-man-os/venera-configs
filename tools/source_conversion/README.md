@@ -146,9 +146,9 @@ refuses to write output inside the supplied upstream checkout. Omitting
 
 ```bash
 python tools/source_conversion/inventory/generate_static_inventory.py \
-  --extensions-root ../extensions-source \
+  --extensions-root "<exact-census-checkout>" \
   --project keiyoushi/extensions-source \
-  --expected-commit 5e06c412c0264b18120fd963fdd6efb529f3fa29
+  --expected-commit 5a0261c718cd6d5ecf14963d837f29024c792398
 ```
 
 Serialization is UTF-8 JSON with controlled field insertion order, two-space
@@ -219,15 +219,15 @@ replaces the canonical path. No summary or hash sidecar is persisted.
 
 ```bash
 python tools/source_conversion/inventory/generate_static_inventory.py \
-  --extensions-root ../extensions-source \
+  --extensions-root "<exact-census-checkout>" \
   --project keiyoushi/extensions-source \
-  --expected-commit 5e06c412c0264b18120fd963fdd6efb529f3fa29 \
+  --expected-commit 5a0261c718cd6d5ecf14963d837f29024c792398 \
   --write
 
 python tools/source_conversion/inventory/generate_static_inventory.py \
-  --extensions-root ../extensions-source \
+  --extensions-root "<exact-census-checkout>" \
   --project keiyoushi/extensions-source \
-  --expected-commit 5e06c412c0264b18120fd963fdd6efb529f3fa29 \
+  --expected-commit 5a0261c718cd6d5ecf14963d837f29024c792398 \
   --check
 ```
 
@@ -614,7 +614,7 @@ them alongside Python and schema inputs.
 
 | Family | Core reading contract | Explicit source IDs |
 |---|---|---|
-| all.globalcomix | API lists/search, numeric ID plus title slug, all releases, premium exclusion, original ordered pages | zh-Hant: `3451257781273481191`, zh-Hans: `7151191693036508367` |
+| all.globalcomix | API lists/search, numeric ID plus API-provided slug, all releases, premium exclusion, original ordered pages | zh-Hant: `3451257781273481191`, zh-Hans: `7151191693036508367` |
 | all.namicomi | Locale/relationship DTOs, offset pagination, all chapter pages, 200-ID access checks, source-quality pages | zh-Hans: `1163192659786040070`, zh-Hant: `7859611418350123856` |
 | zh.dongmanmanhua | HTML catalog/search/detail, daily calendar, bounded next-link chapter traversal, data-url images | zh-Hans: `4222375517460530289` |
 | zh.iqiyi | HTML catalog/search/detail, JSON catalog with reversed episode order, HTML image fallback and paid rejection | zh-Hans: `2198877009406729694` |
@@ -667,17 +667,39 @@ has an explicit anonymous token fallback. None of these deferrals authorizes a
 generic WebView/JavaScript evaluator, login architecture, ownership migration,
 or age/payment gate bypass. The 74 bare-zh candidates remain locale-unresolved.
 
-#### 9D pre-write step 0
+#### 9D canonical census checkpoint and pre-write boundary
 
-The persistent production upstream remains
-`5e06c412c0264b18120fd963fdd6efb529f3fa29`. Before any new Chinese production
-write, reconcile the canonical publication inventory and upstream pin to
-`5a0261c718cd6d5ecf14963d837f29024c792398`, or to a deliberately newer reviewed
-checkpoint with newly reviewed contracts. Regenerate inventory and eligibility,
-then run the real candidate materializer CHECK and review its exact identities,
-patch/access warnings, target manifest and digest. A newer pin is not
-automatically supported by this adapter manifest. 9C does not perform that
-reconciliation, production WRITE, registry/index update or physical acceptance.
+The canonical publication inventory now binds to
+`5a0261c718cd6d5ecf14963d837f29024c792398`: 1,396 modules, 2,212 candidates,
+no unresolved modules, 984,378 bytes, SHA-256
+`6dbfb04abad9736e94aafb3456a77232a61ef7caebd606746bd077b297573c90`.
+The persistent read-only `extensions-source` checkout remains at
+`5e06c412c0264b18120fd963fdd6efb529f3fa29`; existing source-level provenance
+remains its historical extraction checkpoint. Supply an isolated clean Git tree
+at the census pin for canonical inventory CHECK and materializer CHECK.
+
+The full regression's live-checkout scanner accepts the explicit environment
+variable `SOURCE_CONVERSION_TEST_EXTENSIONS_ROOT` for that isolated tree. It
+still checks actual HEAD, cleanliness and exact output bytes; it never fetches
+or changes the persistent checkout. For example, set the variable to the
+verified OS Temp upstream root before `python -B -m unittest discover -s
+tools/source_conversion/tests`.
+
+The bounded 9D GlobalComix repair uses the API's explicit `slug` for detail
+identity. Deriving a slug from a translated Chinese display name produced `-`
+and returned the wrong comic in a live lookup. Missing slugs fail closed.
+
+Live probes on 2026-09-07 found no titles in GlobalComix's `zh` catalog, and
+iQiyi's legacy comic list/search routes redirected to its general homepage
+from the test connection. Neither observation proves a usable Chinese read;
+exclude these two primary instances from this pilot. Do not remap their
+locales or substitute alternates. Every included instance requires its own
+bounded list/detail/chapter/page/image preflight.
+
+Regenerate inventory and eligibility, then run the exact candidate materializer
+CHECK and review its identities, patch/access warnings, target manifest and
+digest. The first Chinese multi-source CREATE still requires a fresh independent
+pre-write review. Pin reconciliation and CHECK do not authorize production WRITE.
 
 For census reproduction, set `PYTHONDONTWRITEBYTECODE=1`, use `python -B` for
 every invocation, and use only OS Temp for an exact clean upstream tree and all
@@ -688,5 +710,7 @@ keiyoushi/extensions-source --expected-commit <full-reviewed-sha> --output
 --registry sources_registry.json --extensions-root <temp-upstream> --batch
 --locale zh-Hant --locale zh-Hans --repo-root .`. Capture stdout as UTF-8 bytes in
 OS Temp. Repeat both generations, compare exact bytes, and run the canonical
-inventory and batch validators plus their schemas. Do not replace the checked-in
-canonical inventory during this stage.
+inventory and batch validators plus their schemas. The guarded canonical
+`--write` lifecycle is used only for reviewed inventory
+checkpoint reconciliation; candidate source outputs remain temporary until the
+independent production-write review.

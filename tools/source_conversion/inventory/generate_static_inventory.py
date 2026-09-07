@@ -41,7 +41,7 @@ COMPATIBILITY = {
     "extraction": "unclassified",
 }
 CANONICAL_PROJECT = "keiyoushi/extensions-source"
-CANONICAL_COMMIT = "5e06c412c0264b18120fd963fdd6efb529f3fa29"
+CANONICAL_COMMIT = "5a0261c718cd6d5ecf14963d837f29024c792398"
 CANONICAL_INVENTORY_PATH = (
     REPO_ROOT / "tools" / "source_conversion" / "inventory" / "upstream_inventory.json"
 )

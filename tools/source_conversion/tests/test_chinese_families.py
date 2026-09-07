@@ -187,7 +187,7 @@ class FamilyContractTests(unittest.TestCase):
         for locale, query in (("zh-Hans", "cn"), ("zh-Hant", "zh")):
             with self.subTest(locale=locale):
                 self.runtime("globalcomix", r"""
-                    const m = {id: 12, name: "Title One", image_url: "//cdn.test/cover.jpg", artist: {name: "Author"}};
+                    const m = {id: 12, name: "Title One", slug: "title-one", image_url: "//cdn.test/cover.jpg", artist: {name: "Author"}};
                     jsonReply({payload:{results:[m,m],pagination:{page:1,total_pages:2}}});
                     const first = await s.explore[0].load(1);
                     eq(first.comics.length, 1); eq(first.hasMore, true); eq(first.comics[0].id, "12/title-one");
@@ -202,13 +202,28 @@ class FamilyContractTests(unittest.TestCase):
 
     def test_globalcomix_details_and_identity_check(self):
         self.runtime("globalcomix", r"""
-            const m = {id:12,name:"Title One",description:"Description",artist:{roman_name:"Author"}};
+            const m = {id:12,name:"Title One",slug:"title-one",description:"Description",artist:{roman_name:"Author"}};
             jsonReply({payload:{results:m}});
             eq((await s.info("12/title-one")).description, "Description");
             eq(calls[0].url, "https://api.globalcomix.com/v1/read/title-one");
             jsonReply({payload:{results:{...m,id:13}}});
             await rejects(() => s.info("12/title-one"), "identity mismatch");
         """)
+
+    def test_globalcomix_authoritative_slug_survives_translated_title(self):
+        for locale in ("zh-Hans", "zh-Hant"):
+            with self.subTest(locale=locale):
+                self.runtime("globalcomix", r"""
+                    const m = {id:31985,name:"侯門少爺寵上天",slug:"the-marquis-s-cherished-one"};
+                    jsonReply({payload:{results:[m],pagination:{page:1,total_pages:1}}});
+                    const list = await s.explore[0].load(1);
+                    eq(list.comics[0].id, "31985/the-marquis-s-cherished-one");
+                    jsonReply({payload:{results:m}});
+                    eq((await s.info(list.comics[0].id)).title, m.name);
+                    eq(calls[1].url, "https://api.globalcomix.com/v1/read/the-marquis-s-cherished-one");
+                    jsonReply({payload:{results:[{id:31985,name:m.name}],pagination:{page:1,total_pages:1}}});
+                    await rejects(() => s.explore[0].load(1), "Missing required value");
+                """, locale)
 
     def test_globalcomix_chapters_preserve_order_and_hide_paid(self):
         self.runtime("globalcomix", r"""

@@ -2,6 +2,7 @@ import copy
 import hashlib
 import io
 import json
+import os
 import tempfile
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
@@ -501,19 +502,19 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         return reg
     def test_current_pin_family_derivation_regression(self):
         summary = self.plan["summary"]
-        self.assertEqual(summary["modules"], 1368)
-        self.assertEqual(summary["candidates"], 2128)
+        self.assertEqual(summary["modules"], 1396)
+        self.assertEqual(summary["candidates"], 2212)
         self.assertEqual(summary["unresolvedModules"], 0)
-        self.assertEqual(summary["themes"], 64)
-        self.assertEqual(summary["themeAssociatedModules"], 725)
-        self.assertEqual(summary["themeAssociatedCandidates"], 836)
-        self.assertEqual(summary["multiCandidateModules"], 77)
-        self.assertEqual(summary["families"], 141)
+        self.assertEqual(summary["themes"], 67)
+        self.assertEqual(summary["themeAssociatedModules"], 738)
+        self.assertEqual(summary["themeAssociatedCandidates"], 853)
+        self.assertEqual(summary["multiCandidateModules"], 81)
+        self.assertEqual(summary["families"], 148)
 
-    def test_current_pin_shared_unit_e0_precedence_regression(self):
+    def test_current_pin_shared_unit_e0_e2_precedence_regression(self):
         shared_modules, shared_candidates = shared_unit_members(self.plan)
-        self.assertEqual(len(shared_modules), 784)
-        self.assertEqual(len(shared_candidates), 1544)
+        self.assertEqual(len(shared_modules), 800)
+        self.assertEqual(len(shared_candidates), 1616)
 
         overrides = {
             "2522335540328470744": "webtoons",
@@ -555,32 +556,46 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         override_identities = {
             (PROJECT, source_id) for source_id in overrides
         }
+        reviewed_shared = {
+            (PROJECT, source_id) for source_id in (
+                "1163192659786040070", "7859611418350123856",
+                "3451257781273481191", "7151191693036508367",
+                "1493666528525752601", "5148895169070562838",
+                "170542391855030753", "4899554363948814001",
+            )
+        }
+        self.assertTrue(reviewed_shared <= shared_candidates)
+        for _, source_id in reviewed_shared:
+            self.assertEqual(candidates_by_id[source_id]["eligibility"], "E2")
         self.assertEqual(
-            shared_candidates - override_identities, e3_candidates
+            shared_candidates - override_identities - reviewed_shared, e3_candidates
         )
-        self.assertEqual(len(shared_candidates) - len(overrides), 1534)
+        self.assertEqual(len(e3_candidates), 1598)
 
     def test_current_pin_classification_count_regression(self):
         counts = self.plan["summary"]["eligibilityCounts"]
         self.assertEqual(
             counts["families"],
-            {"E0": 0, "E1": 0, "E2": 0, "E3": 141, "E4": 0, "E5": 0, "E6": 0},
+            {"E0": 0, "E1": 0, "E2": 0, "E3": 148, "E4": 0, "E5": 0, "E6": 0},
         )
         self.assertEqual(
             counts["modules"],
-            {"E0": 11, "E1": 0, "E2": 0, "E3": 776, "E4": 0, "E5": 0, "E6": 581},
+            {"E0": 11, "E1": 0, "E2": 2, "E3": 792, "E4": 0, "E5": 0, "E6": 591},
         )
         self.assertEqual(
             counts["candidates"],
-            {"E0": 13, "E1": 0, "E2": 0, "E3": 1534, "E4": 0, "E5": 0, "E6": 581},
+            {"E0": 13, "E1": 0, "E2": 10, "E3": 1598, "E4": 0, "E5": 0, "E6": 591},
         )
         self.assertEqual(
             self.plan["summary"]["patchStateCounts"]["candidates"],
-            {"not-required": 0, "required": 0, "unknown": 2128},
+            {"not-required": 10, "required": 0, "unknown": 2202},
         )
 
     def test_complete_cli_scanner_is_byte_deterministic_and_non_writing(self):
-        extensions_root = REPO_ROOT.parent / "extensions-source"
+        extensions_root = Path(os.environ.get(
+            "SOURCE_CONVERSION_TEST_EXTENSIONS_ROOT",
+            REPO_ROOT.parent / "extensions-source",
+        ))
         canonical_inventory = (
             REPO_ROOT
             / "tools"
@@ -626,10 +641,10 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
             second, second_summary = invoke()
             self.assertEqual(first, second)
             self.assertEqual(first_summary, second_summary)
-            self.assertEqual(len(first), 2237181)
+            self.assertEqual(len(first), 2316693)
             self.assertEqual(
                 hashlib.sha256(first).hexdigest(),
-                "cd610bc27f031ad1206082c6ca6262ffef027adc53a65859eef68e423b36f500",
+                "b03bf28ae455f5d8f4a8d46fb4e7d05f0f7cd720fcfdec988ccdacf00e2ef484",
             )
             self.assertEqual(before, snapshot())
 
@@ -659,7 +674,7 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         )
         self.assertEqual(
             self.plan["summary"]["registryJoins"],
-            {"registeredCandidates": 13, "unregisteredCandidates": 2115},
+            {"registeredCandidates": 13, "unregisteredCandidates": 2199},
         )
 
     def test_mangacatalog_proposal_is_report_only(self):
