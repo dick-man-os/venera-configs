@@ -70,8 +70,8 @@
     "upstreamVersion": "1.4.6",
     "upstreamLicense": "Apache-2.0",
     "converterVersion": "0.1.0",
-    "generatedTimestamp": "2026-09-07T06:50:33Z"
+    "generatedTimestamp": "2026-09-08T10:30:30Z"
   },
   "artifactId": "dongmanmanhua_zh_hans",
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

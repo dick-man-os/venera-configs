@@ -17,6 +17,19 @@ def generate(ir):
     family = ir["familyContract"].removesuffix("-v1")
     templates = json.loads(Path(__file__).with_name("chinese_runtime.json").read_text(encoding="utf-8"))
     body, common = templates[family], templates["common"]
+    hooks = {
+        "__REQUEST_URL__": "",
+        "__THUMBNAIL_LOAD__": "url => ({url, headers: this.headers})",
+        "__IMAGE_LOAD__": "url => ({url, headers: this.headers})",
+    }
+    if family == "dongmanmanhua":
+        hooks.update({
+            "__REQUEST_URL__": "        url = this.networkUrl(url);\n",
+            "__THUMBNAIL_LOAD__": '(url, comicId) => this.imageConfig(url, this.networkUrl(comicId || "/"))',
+            "__IMAGE_LOAD__": '(url, comicId, epId) => this.imageConfig(url, epId ? this.readerBase(comicId, epId) : this.networkUrl(comicId || "/"))',
+        })
+    for token, value in hooks.items():
+        common = common.replace(token, value)
     name = "Keiyoushi" + ir["provenance"]["upstreamSourceId"] + "Source"
     # Substitution inserts JSON data and checked-in code, never upstream code.
     return (common.replace("__CLASS__", name).replace("__CONFIG__", cfg)
