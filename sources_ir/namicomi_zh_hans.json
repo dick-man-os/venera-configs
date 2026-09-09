@@ -36,7 +36,8 @@
     "pagination": {
       "limit": 20,
       "offset": "(page-1)*20",
-      "hasNext": "meta.limit + meta.offset < meta.total"
+      "hasNext": "meta.limit + meta.offset < meta.total",
+      "maxPage": "max(1, ceil(meta.total / meta.limit))"
     }
   },
   "details": {
@@ -84,8 +85,8 @@
     "upstreamVersion": "1.4.6",
     "upstreamLicense": "Apache-2.0",
     "converterVersion": "0.1.0",
-    "generatedTimestamp": "2026-09-07T06:50:33Z"
+    "generatedTimestamp": "2026-09-08T16:25:36Z"
   },
   "artifactId": "namicomi_zh_hans",
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

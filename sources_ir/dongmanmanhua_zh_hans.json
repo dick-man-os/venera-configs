@@ -20,11 +20,13 @@
   "explore": {
     "popular": {
       "url": "https://www.dongmanmanhua.cn/dailySchedule",
-      "method": "GET"
+      "method": "GET",
+      "maxPage": 1
     },
     "latest": {
       "url": "https://www.dongmanmanhua.cn/dailySchedule?sortOrder=UPDATE&webtoonCompleteType=ONGOING",
-      "method": "GET"
+      "method": "GET",
+      "maxPage": 1
     }
   },
   "search": {
@@ -70,8 +72,8 @@
     "upstreamVersion": "1.4.6",
     "upstreamLicense": "Apache-2.0",
     "converterVersion": "0.1.0",
-    "generatedTimestamp": "2026-09-08T10:30:30Z"
+    "generatedTimestamp": "2026-09-08T16:25:36Z"
   },
   "artifactId": "dongmanmanhua_zh_hans",
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

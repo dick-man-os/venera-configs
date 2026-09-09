@@ -37,7 +37,8 @@
     },
     "pagination": {
       "page": "p",
-      "hasNext": "payload.pagination.page < payload.pagination.total_pages"
+      "hasNext": "payload.pagination.page < payload.pagination.total_pages",
+      "maxPage": "max(1, payload.pagination.total_pages)"
     }
   },
   "details": {
@@ -78,8 +79,8 @@
     "upstreamVersion": "1.4.4",
     "upstreamLicense": "Apache-2.0",
     "converterVersion": "0.1.0",
-    "generatedTimestamp": "2026-09-07T06:50:33Z"
+    "generatedTimestamp": "2026-09-08T16:25:36Z"
   },
   "artifactId": "globalcomix_zh_hans",
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

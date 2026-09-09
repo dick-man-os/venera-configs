@@ -3,10 +3,10 @@
 class Keiyoushi4222375517460530289Source extends ComicSource {
     name = "Dongman Manhua";
     key = "keiyoushi_4222375517460530289";
-    version = "1.0.1";
+    version = "1.0.2";
     minAppVersion = "1.6.0";
     url = "";
-    config = {"schemaVersion":"0.2","id":"keiyoushi_4222375517460530289","name":"Dongman Manhua","languages":["zh-Hans"],"contentOrigins":[],"contentWarning":"SAFE","sourceType":"html","baseUrl":"https://www.dongmanmanhua.cn","mobileUrl":"https://www.dongmanmanhua.cn","requiresAuth":false,"requiresWebView":false,"familyContract":"dongmanmanhua-v1","headers":{"Referer":"https://www.dongmanmanhua.cn/","Origin":"https://www.dongmanmanhua.cn"},"explore":{"popular":{"url":"https://www.dongmanmanhua.cn/dailySchedule","method":"GET"},"latest":{"url":"https://www.dongmanmanhua.cn/dailySchedule?sortOrder=UPDATE&webtoonCompleteType=ONGOING","method":"GET"}},"search":{"url":"https://www.dongmanmanhua.cn/search","method":"GET","selector":"#content > div.card_wrap.search ul:not(#filterLayer) li a","pagination":{"nextSelector":"div.more_area, div.paginate a[onclick] + a"}},"details":{"url":"{comicId}","method":"GET","fields":{"title":"h1.subj, h3.subj","description":"#_asideDetail p.summary"}},"chapters":{"url":"{comicId}","method":"GET","selector":"ul#_listUl li","pagination":{"nextSelector":"div.paginate a[onclick] + a"},"order":"response"},"pages":{"url":"{chapterId}","method":"GET","selector":"div#_imageList > img","fields":{"imageUrl":"@data-url"},"order":"response"},"provenance":{"type":"converted","upstreamProject":"keiyoushi","upstreamPackage":"eu.kanade.tachiyomi.extension.zh.dongmanmanhua","upstreamSourceId":"4222375517460530289","upstreamCommit":"5a0261c718cd6d5ecf14963d837f29024c792398","upstreamVersion":"1.4.6","upstreamLicense":"Apache-2.0","converterVersion":"0.1.0","generatedTimestamp":"2026-09-08T10:30:30Z"},"artifactId":"dongmanmanhua_zh_hans","version":"1.0.1"};
+    config = {"schemaVersion":"0.2","id":"keiyoushi_4222375517460530289","name":"Dongman Manhua","languages":["zh-Hans"],"contentOrigins":[],"contentWarning":"SAFE","sourceType":"html","baseUrl":"https://www.dongmanmanhua.cn","mobileUrl":"https://www.dongmanmanhua.cn","requiresAuth":false,"requiresWebView":false,"familyContract":"dongmanmanhua-v1","headers":{"Referer":"https://www.dongmanmanhua.cn/","Origin":"https://www.dongmanmanhua.cn"},"explore":{"popular":{"url":"https://www.dongmanmanhua.cn/dailySchedule","method":"GET","maxPage":1},"latest":{"url":"https://www.dongmanmanhua.cn/dailySchedule?sortOrder=UPDATE&webtoonCompleteType=ONGOING","method":"GET","maxPage":1}},"search":{"url":"https://www.dongmanmanhua.cn/search","method":"GET","selector":"#content > div.card_wrap.search ul:not(#filterLayer) li a","pagination":{"nextSelector":"div.more_area, div.paginate a[onclick] + a"}},"details":{"url":"{comicId}","method":"GET","fields":{"title":"h1.subj, h3.subj","description":"#_asideDetail p.summary"}},"chapters":{"url":"{comicId}","method":"GET","selector":"ul#_listUl li","pagination":{"nextSelector":"div.paginate a[onclick] + a"},"order":"response"},"pages":{"url":"{chapterId}","method":"GET","selector":"div#_imageList > img","fields":{"imageUrl":"@data-url"},"order":"response"},"provenance":{"type":"converted","upstreamProject":"keiyoushi","upstreamPackage":"eu.kanade.tachiyomi.extension.zh.dongmanmanhua","upstreamSourceId":"4222375517460530289","upstreamCommit":"5a0261c718cd6d5ecf14963d837f29024c792398","upstreamVersion":"1.4.6","upstreamLicense":"Apache-2.0","converterVersion":"0.1.0","generatedTimestamp":"2026-09-08T16:25:36Z"},"artifactId":"dongmanmanhua_zh_hans","version":"1.0.2"};
     get baseUrl() { return this.config.baseUrl; }
     get locale() { return this.config.languages[0]; }
     get headers() { return this.config.headers; }
@@ -150,7 +150,7 @@ class Keiyoushi4222375517460530289Source extends ComicSource {
             url = this.query(this.config.search.url, params);
             selector = this.config.search.selector;
         } else {
-            if (page !== 1) return {comics: [], hasMore: false};
+            if (page !== 1) return {comics: [], hasMore: false, maxPage: 1};
             url = this.config.explore[kind].url;
             const days = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
             selector = kind === "popular" ? "div#dailyList .daily_section li a, div.daily_lst.comp li a"
@@ -158,7 +158,9 @@ class Keiyoushi4222375517460530289Source extends ComicSource {
         }
         return this.html(url, (doc, request) => ({
             comics: this.unique(doc.querySelectorAll(selector).map(el => this.listItem(el, request))),
-            hasMore: kind === "search" && !!doc.querySelector(this.config.search.pagination.nextSelector)
+            hasMore: kind === "search" && !!doc.querySelector(this.config.search.pagination.nextSelector),
+            // Both daily calendars are complete, unpaged upstream responses.
+            ...(kind === "search" ? {} : {maxPage: 1})
         }));
     };
     info = async id => this.html(this.networkUrl(id), (doc, url) => {
@@ -171,7 +173,7 @@ class Keiyoushi4222375517460530289Source extends ComicSource {
     });
     loadChapters = async id => {
         let url = this.networkUrl(id), ended = false;
-        const visited = new Set(), rows = [];
+        const visited = new Set(), chapterIds = new Set(), rows = [];
         for (let page = 0; page < 1000; page++) {
             if (visited.has(url)) throw new Error("Cyclic chapter pagination");
             visited.add(url);
@@ -182,9 +184,12 @@ class Keiyoushi4222375517460530289Source extends ComicSource {
                 })),
                 next: this.attr(doc, this.config.chapters.pagination.nextSelector, "href")
             }));
-            rows.push(...parsed.rows);
+            const before = chapterIds.size;
+            for (const row of parsed.rows) {
+                if (!chapterIds.has(row.id)) { chapterIds.add(row.id); rows.push(row); }
+            }
             if (!parsed.next) { ended = true; break; }
-            if (!parsed.rows.length) throw new Error("Non-progressing chapter pagination");
+            if (chapterIds.size === before) throw new Error("Non-progressing chapter pagination");
             const next = this.networkUrl(parsed.next, url);
             // Keep navigation within this source's origin.
             if (this.urlOrigin(next) !== this.urlOrigin(this.baseUrl))

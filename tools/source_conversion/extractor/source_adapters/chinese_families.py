@@ -46,7 +46,7 @@ def operation_contract(family, locale, base):
                 "popular": {"url": api + "/comics", "method": "GET"},
                 "latest": {"url": api + "/comics", "method": "GET"}},
             "search": {"url": api + "/comics", "method": "GET",
-                       "query": {"lang_id[]": lang}, "pagination": {"page": "p", "hasNext": "payload.pagination.page < payload.pagination.total_pages"}},
+                       "query": {"lang_id[]": lang}, "pagination": {"page": "p", "hasNext": "payload.pagination.page < payload.pagination.total_pages", "maxPage": "max(1, payload.pagination.total_pages)"}},
             "details": {"url": api + "/read/{slug}", "method": "GET", "fields": {"title": "payload.results.name", "thumbnail": "payload.results.image_url"}},
             "chapters": {"url": api + "/comics/{comicId}/releases", "method": "GET",
                          "query": {"lang_id": lang, "all": "true"}, "listPath": "payload.results",
@@ -59,7 +59,7 @@ def operation_contract(family, locale, base):
         return {
             "explore": {"popular": {"url": api + "/title/search", "method": "GET"}, "latest": {"url": api + "/title/search", "method": "GET"}},
             "search": {"url": api + "/title/search", "method": "GET", "query": {"availableTranslatedLanguages[]": lang},
-                       "pagination": {"limit": 20, "offset": "(page-1)*20", "hasNext": "meta.limit + meta.offset < meta.total"}},
+                       "pagination": {"limit": 20, "offset": "(page-1)*20", "hasNext": "meta.limit + meta.offset < meta.total", "maxPage": "max(1, ceil(meta.total / meta.limit))"}},
             "details": {"url": api + "/title/{comicId}", "method": "GET", "fields": {"title": "data.attributes.title", "description": "data.attributes.description"}},
             "chapters": {"url": api + "/chapter", "method": "GET", "query": {"translatedLanguages[]": lang},
                          "pagination": {"limit": 200, "offset": 0, "hasNext": "meta.limit + meta.offset < meta.total"},
@@ -70,8 +70,8 @@ def operation_contract(family, locale, base):
                       "access": "gating check and HTTP 402 rejection", "order": "response"}}
     if family == "dongmanmanhua":
         return {
-            "explore": {"popular": {"url": base + "/dailySchedule", "method": "GET"},
-                        "latest": {"url": base + "/dailySchedule?sortOrder=UPDATE&webtoonCompleteType=ONGOING", "method": "GET"}},
+            "explore": {"popular": {"url": base + "/dailySchedule", "method": "GET", "maxPage": 1},
+                        "latest": {"url": base + "/dailySchedule?sortOrder=UPDATE&webtoonCompleteType=ONGOING", "method": "GET", "maxPage": 1}},
             "search": {"url": base + "/search", "method": "GET",
                        "selector": "#content > div.card_wrap.search ul:not(#filterLayer) li a",
                        "pagination": {"nextSelector": "div.more_area, div.paginate a[onclick] + a"}},

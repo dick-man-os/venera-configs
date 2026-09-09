@@ -284,24 +284,24 @@
         "name": "Dongman Manhua",
         "fileName": "dongmanmanhua_zh_hans.js",
         "key": "keiyoushi_4222375517460530289",
-        "version": "1.0.1"
+        "version": "1.0.2"
     },
     {
         "name": "GlobalComix",
         "fileName": "globalcomix_zh_hans.js",
         "key": "keiyoushi_7151191693036508367",
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     {
         "name": "NamiComi",
         "fileName": "namicomi_zh_hans.js",
         "key": "keiyoushi_1163192659786040070",
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     {
         "name": "NamiComi",
         "fileName": "namicomi_zh_hant.js",
         "key": "keiyoushi_7859611418350123856",
-        "version": "1.0.0"
+        "version": "1.0.1"
     }
 ]

@@ -1,0 +1,747 @@
+{
+  "access": "Anonymous upstream list includes accessible web chapters only; paid/app-only episodes are not enumerated.",
+  "pageSize": 10,
+  "expectedIds": [
+    28,
+    27,
+    26,
+    25,
+    24,
+    23,
+    22,
+    21,
+    20,
+    19,
+    18,
+    17,
+    16,
+    15,
+    14,
+    13,
+    12,
+    11,
+    10,
+    9,
+    8,
+    7,
+    6,
+    5,
+    4,
+    3,
+    2,
+    1
+  ],
+  "pages": [
+    {
+      "path": "/series/list?title_no=42",
+      "dom": {
+        "text": "",
+        "attributes": {},
+        "select": {
+          "ul#_listUl li": [
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/28"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 28",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/27"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 27",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/26"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 26",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/25"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 25",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/24"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 24",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/23"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 23",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/22"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 22",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/21"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 21",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/20"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 20",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/19"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 19",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            }
+          ],
+          "div.paginate a[onclick] + a": [
+            {
+              "text": "",
+              "attributes": {
+                "href": "?title_no=42&page=2"
+              },
+              "select": {}
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "/series/list?title_no=42&page=2",
+      "dom": {
+        "text": "",
+        "attributes": {},
+        "select": {
+          "ul#_listUl li": [
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/19"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 19",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/18"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 18",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/17"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 17",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/16"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 16",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/15"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 15",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/14"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 14",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/13"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 13",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/12"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 12",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/11"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 11",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/10"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 10",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            }
+          ],
+          "div.paginate a[onclick] + a": [
+            {
+              "text": "",
+              "attributes": {
+                "href": "list?title_no=42&page=3"
+              },
+              "select": {}
+            }
+          ]
+        }
+      }
+    },
+    {
+      "path": "/series/list?title_no=42&page=3",
+      "dom": {
+        "text": "",
+        "attributes": {},
+        "select": {
+          "ul#_listUl li": [
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/10"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 10",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/9"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 9",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/8"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 8",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/7"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 7",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/6"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 6",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/5"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 5",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/4"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 4",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/3"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 3",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/2"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 2",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            },
+            {
+              "text": "",
+              "attributes": {},
+              "select": {
+                "a": [
+                  {
+                    "text": "",
+                    "attributes": {
+                      "href": "/reader/1"
+                    },
+                    "select": {}
+                  }
+                ],
+                "span.subj span": [
+                  {
+                    "text": "Chapter 1",
+                    "attributes": {},
+                    "select": {}
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

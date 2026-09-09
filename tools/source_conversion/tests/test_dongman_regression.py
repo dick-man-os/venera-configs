@@ -198,7 +198,7 @@ class DongmanRuntimeTests(unittest.TestCase):
         root = (ROOT/f'{name}.js').read_bytes()
         self.assertEqual(root, (ROOT/'sources_generated'/f'{name}.base.js').read_bytes())
         self.assertEqual((ROOT/f'{name}.js').read_text(encoding='utf-8'), generate_venera_js(ir))
-        self.assertEqual(ir['version'], '1.0.1')
+        self.assertEqual(ir['version'], '1.0.2')
         index = json.loads((ROOT/'index.json').read_bytes())
         entry = next(item for item in index if item['fileName'] == name+'.js')
         self.assertEqual(entry['version'], ir['version'])

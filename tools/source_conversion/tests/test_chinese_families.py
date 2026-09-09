@@ -193,7 +193,7 @@ class FamilyContractTests(unittest.TestCase):
                     eq(first.comics.length, 1); eq(first.hasMore, true); eq(first.comics[0].id, "12/title-one");
                     jsonReply({payload:{results:[],pagination:{page:2,total_pages:2}}});
                     const last = await s.search.load("漢 & 字", {}, 2);
-                    eq(last, {comics:[],hasMore:false});
+                    eq(last, {comics:[],hasMore:false,maxPage:2});
                     ok(calls[0].url.includes("lang_id%5B%5D=LANG"));
                     ok(calls[1].url.includes("lang_id%5B%5D=LANG"));
                     ok(calls[1].url.includes("p=2")); ok(calls[1].url.includes("sort=relevance"));
@@ -268,7 +268,7 @@ class FamilyContractTests(unittest.TestCase):
                 eq(a.comics[0].description,"fallback"); eq(a.comics[0].subtitle,"Author");
                 ok(a.comics[0].cover.endsWith("/m/cover.jpg"));
                 jsonReply({result:"ok",data:[],meta:{offset:20,limit:20,total:21}});
-                eq(await s.search.load("中文",{},2),{comics:[],hasMore:false});
+                eq(await s.search.load("中文",{},2),{comics:[],hasMore:false,maxPage:2});
                 ok(calls.every(c=>c.url.includes("availableTranslatedLanguages%5B%5D="+s.locale.toLowerCase())));
                 ok(calls[1].url.includes("offset=20"));
             """, locale)
@@ -324,7 +324,7 @@ class FamilyContractTests(unittest.TestCase):
 
     def test_namicomi_204_empty_and_no_gating_for_empty_chapters(self):
         self.runtime("namicomi", r"""
-            jsonReply(null,204); eq(await s.explore[1].load(1),{comics:[],hasMore:false});
+            jsonReply(null,204); eq(await s.explore[1].load(1),{comics:[],hasMore:false,maxPage:1});
             jsonReply(null,204); eq(await s.loadChapters("m"),{});
             eq(calls.length,2);
         """)
@@ -545,7 +545,7 @@ class FamilyContractTests(unittest.TestCase):
     def test_namicomi_response_discriminator_is_not_guessed(self):
         self.runtime("namicomi",r"""
             jsonReply({result:"a-source-defined-value",data:[],meta:{offset:0,limit:20,total:0}});
-            eq(await s.explore[0].load(1),{comics:[],hasMore:false});
+            eq(await s.explore[0].load(1),{comics:[],hasMore:false,maxPage:1});
         """)
 
     def test_old_pin_batch_does_not_promote_shared_family(self):
