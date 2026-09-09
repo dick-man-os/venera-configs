@@ -106,10 +106,11 @@ def operation_contract(family, locale, base):
         api = "https://api.mangadex.org"
         return {
             "explore": {"popular": {"url": api + "/manga", "method": "GET"},
-                        "latest": {"url": api + "/chapter", "method": "GET"}},
+                        "latest": {"url": api + "/chapter", "method": "GET",
+                                   "pagination": {"limit": 100, "offset": "(page-1)*100", "hasNext": "limit+offset < total", "maxPage": "max(1, ceil(total / limit))"}}},
             "search": {"url": api + "/manga", "method": "GET",
                        "query": {"availableTranslatedLanguage[]": "zh-hk" if locale == "zh-Hant" else "zh"},
-                       "pagination": {"limit": 20, "offset": "(page-1)*20", "hasNext": "limit+offset < total"}},
+                       "pagination": {"limit": 20, "offset": "(page-1)*20", "hasNext": "limit+offset < total", "maxPage": "max(1, ceil(total / limit))"}},
             "details": {"url": api + "/manga/{comicId}", "method": "GET", "fields": {"title": "data.attributes.title", "description": "data.attributes.description"}},
             "chapters": {"url": api + "/manga/{comicId}/feed", "method": "GET",
                          "pagination": {"limit": 500, "offset": 0, "hasNext": "limit+offset < total"},

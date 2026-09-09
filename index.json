@@ -303,5 +303,17 @@
         "fileName": "namicomi_zh_hant.js",
         "key": "keiyoushi_7859611418350123856",
         "version": "1.0.1"
+    },
+    {
+        "name": "MangaDex",
+        "fileName": "mangadex_zh_hans.js",
+        "key": "keiyoushi_5148895169070562838",
+        "version": "1.0.0"
+    },
+    {
+        "name": "MangaDex",
+        "fileName": "mangadex_zh_hant.js",
+        "key": "keiyoushi_1493666528525752601",
+        "version": "1.0.0"
     }
 ]

@@ -476,7 +476,7 @@ class FamilyContractTests(unittest.TestCase):
                 const r=await s.explore[0].load(1); eq(r.comics.length,1); eq(r.hasMore,true);
                 eq(r.comics[0].title,s.locale === "zh-Hant" ? "繁" : "简");
                 ok(r.comics[0].cover.endsWith("/cover.jpg"));
-                jsonReply({data:[],offset:20,limit:20,total:21}); eq(await s.search.load("x",{},2),{comics:[],hasMore:false});
+                jsonReply({data:[],offset:20,limit:20,total:21}); eq(await s.search.load("x",{},2),{comics:[],hasMore:false,maxPage:2});
                 ok(calls.every(c=>c.url.includes("availableTranslatedLanguage%5B%5D="+s.dexLocale())));
                 ok(calls.every(c=>c.url.includes("contentRating%5B%5D=safe")&&c.url.includes("contentRating%5B%5D=suggestive")));
             """,locale)
@@ -489,7 +489,7 @@ class FamilyContractTests(unittest.TestCase):
             const r=await s.explore[1].load(1); eq(r.comics.map(c=>c.title),["B","A"]); eq(r.hasMore,false);
             ok(calls[0].url.includes("translatedLanguage%5B%5D=zh"));
             ok(calls[0].url.includes("includeFuturePublishAt=0")); ok(calls[0].url.includes("excludedGroups"));
-            jsonReply({data:[],offset:100,limit:100,total:100}); eq(await s.explore[1].load(2),{comics:[],hasMore:false});
+            jsonReply({data:[],offset:100,limit:100,total:100}); eq(await s.explore[1].load(2),{comics:[],hasMore:false,maxPage:1});
             eq(calls.length,3);
         """)
 

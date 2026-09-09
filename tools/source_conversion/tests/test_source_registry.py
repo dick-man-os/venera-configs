@@ -44,6 +44,8 @@ EXPECTED_RUNTIME_KEYS = {
     "komiic": "Komiic",
     "lanraragi": "lanraragi",
     "manga_dex": "manga_dex",
+    "mangadex_zh_hans": "keiyoushi_5148895169070562838",
+    "mangadex_zh_hant": "keiyoushi_1493666528525752601",
     "manhuagui": "ManHuaGui",
     "manhuaren": "manhuaren",
     "manhuashe": "zh_Hans_manhuashe",
@@ -78,6 +80,8 @@ CONVERTED_ARTIFACTS = {
     "flamecomics",
     "globalcomix_zh_hans",
     "manhuashe",
+    "mangadex_zh_hans",
+    "mangadex_zh_hant",
     "namicomi_zh_hans",
     "namicomi_zh_hant",
     "webtoons",
@@ -93,6 +97,8 @@ CONVERTED_ARTIFACTS = {
 }
 
 EXPECTED_CONVERTED_UPSTREAM = {
+    "mangadex_zh_hans": ("5148895169070562838", "1.4.212", "1.4"),
+    "mangadex_zh_hant": ("1493666528525752601", "1.4.212", "1.4"),
     "dongmanmanhua_zh_hans": ("4222375517460530289", "1.4.6", "1.4"),
     "globalcomix_zh_hans": ("7151191693036508367", "1.4.4", "1.4"),
     "namicomi_zh_hans": ("1163192659786040070", "1.4.6", "1.4"),
@@ -157,10 +163,10 @@ class TestSourceRegistry(unittest.TestCase):
             errors = validate_registry_data(invalid_empty).with_code("SCHEMA_FIELD_VALUE")
             self.assertTrue(any(field in error.message for error in errors), field)
 
-    def test_all_50_catalog_artifacts_are_registered(self):
+    def test_all_52_catalog_artifacts_are_registered(self):
         index = json.loads((repo_root / "index.json").read_text(encoding="utf-8"))
         indexed_ids = {Path(entry["fileName"]).stem for entry in index}
-        self.assertEqual(len(self.artifacts), 50)
+        self.assertEqual(len(self.artifacts), 52)
         self.assertEqual(set(self.by_id), indexed_ids)
 
     def test_artifact_ids_are_unique(self):
@@ -280,7 +286,7 @@ class TestSourceRegistry(unittest.TestCase):
 
     def test_upstream_source_ids_are_json_strings(self):
         upstream_records = [item["upstream"] for item in self.artifacts if "upstream" in item]
-        self.assertEqual(len(upstream_records), 17)
+        self.assertEqual(len(upstream_records), 19)
         self.assertTrue(all(isinstance(item["sourceId"], str) for item in upstream_records))
 
         invalid = copy.deepcopy(self.registry)
@@ -459,6 +465,8 @@ class TestSourceRegistry(unittest.TestCase):
             "copy_manga_multi_accounts": "拷贝漫画(多账号)",
             "dongmanmanhua_zh_hans": "Dongman Manhua",
             "globalcomix_zh_hans": "GlobalComix",
+            "mangadex_zh_hans": "MangaDex",
+            "mangadex_zh_hant": "MangaDex",
             "namicomi_zh_hans": "NamiComi",
             "namicomi_zh_hant": "NamiComi",
             "readblackclovermangaonline": "Read Black Clover Manga Online",
@@ -526,7 +534,9 @@ class TestSourceRegistry(unittest.TestCase):
         )
 
     def test_registry_linkage_does_not_change_generated_or_final_sources(self):
-        BATCH0_GENERATED_NO_PATCH = {
+        CHINESE_GENERATED_NO_PATCH = {
+            "mangadex_zh_hans",
+            "mangadex_zh_hant",
             "dongmanmanhua_zh_hans",
             "globalcomix_zh_hans",
             "namicomi_zh_hans",
@@ -563,7 +573,7 @@ class TestSourceRegistry(unittest.TestCase):
             generated = generate_venera_js(ir)
             checked_in_base = base_path.read_text(encoding="utf-8")
             checked_in_final = final_path.read_text(encoding="utf-8")
-            if artifact_id in BATCH0_GENERATED_NO_PATCH:
+            if artifact_id in CHINESE_GENERATED_NO_PATCH:
                 self.assertFalse(patch_path.exists(), artifact_id)
                 self.assertEqual(generated, checked_in_base, artifact_id)
                 composed = generated

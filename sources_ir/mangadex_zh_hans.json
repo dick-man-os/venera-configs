@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "0.2",
+  "id": "keiyoushi_5148895169070562838",
+  "name": "MangaDex",
+  "languages": [
+    "zh-Hans"
+  ],
+  "contentOrigins": [],
+  "contentWarning": "MIXED",
+  "sourceType": "api",
+  "baseUrl": "https://mangadex.org",
+  "mobileUrl": "https://mangadex.org",
+  "requiresAuth": false,
+  "requiresWebView": false,
+  "familyContract": "mangadex-v1",
+  "headers": {
+    "Referer": "https://mangadex.org/",
+    "Origin": "https://mangadex.org"
+  },
+  "explore": {
+    "popular": {
+      "url": "https://api.mangadex.org/manga",
+      "method": "GET"
+    },
+    "latest": {
+      "url": "https://api.mangadex.org/chapter",
+      "method": "GET",
+      "pagination": {
+        "limit": 100,
+        "offset": "(page-1)*100",
+        "hasNext": "limit+offset < total",
+        "maxPage": "max(1, ceil(total / limit))"
+      }
+    }
+  },
+  "search": {
+    "url": "https://api.mangadex.org/manga",
+    "method": "GET",
+    "query": {
+      "availableTranslatedLanguage[]": "zh"
+    },
+    "pagination": {
+      "limit": 20,
+      "offset": "(page-1)*20",
+      "hasNext": "limit+offset < total",
+      "maxPage": "max(1, ceil(total / limit))"
+    }
+  },
+  "details": {
+    "url": "https://api.mangadex.org/manga/{comicId}",
+    "method": "GET",
+    "fields": {
+      "title": "data.attributes.title",
+      "description": "data.attributes.description"
+    }
+  },
+  "chapters": {
+    "url": "https://api.mangadex.org/manga/{comicId}/feed",
+    "method": "GET",
+    "pagination": {
+      "limit": 500,
+      "offset": 0,
+      "hasNext": "limit+offset < total"
+    },
+    "access": "exclude future/empty/unavailable; reject external chapter with zero pages",
+    "order": "volume desc, chapter desc"
+  },
+  "pages": {
+    "url": "https://api.mangadex.org/at-home/server/{chapterId}",
+    "method": "GET",
+    "fields": {
+      "imageUrl": "baseUrl/data/{chapter.hash}/{chapter.data[]}"
+    },
+    "refresh": "at-home server after 300000 milliseconds",
+    "order": "response"
+  },
+  "provenance": {
+    "type": "converted",
+    "upstreamProject": "keiyoushi",
+    "upstreamPackage": "eu.kanade.tachiyomi.extension.all.mangadex",
+    "upstreamSourceId": "5148895169070562838",
+    "upstreamCommit": "5a0261c718cd6d5ecf14963d837f29024c792398",
+    "upstreamVersion": "1.4.212",
+    "upstreamLicense": "Apache-2.0",
+    "converterVersion": "0.1.0",
+    "generatedTimestamp": "2026-09-09T00:00:00Z"
+  },
+  "artifactId": "mangadex_zh_hans",
+  "version": "1.0.0"
+}

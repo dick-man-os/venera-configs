@@ -522,6 +522,8 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
             "7151191693036508367": "globalcomix_zh_hans",
             "1163192659786040070": "namicomi_zh_hans",
             "7859611418350123856": "namicomi_zh_hant",
+            "1493666528525752601": "mangadex_zh_hant",
+            "5148895169070562838": "mangadex_zh_hans",
             "6485938153129890061": "readblackclovermangaonline",
             "1330793582354406642": "readfairytailedenszeromangaonline",
             "808850989053853006": "readjujutsukaisenmangaonline",
@@ -562,7 +564,6 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         reviewed_shared = {
             (PROJECT, source_id) for source_id in (
                 "3451257781273481191",
-                "1493666528525752601", "5148895169070562838",
                 "170542391855030753", "4899554363948814001",
             )
         }
@@ -586,11 +587,11 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         )
         self.assertEqual(
             counts["candidates"],
-            {"E0": 17, "E1": 0, "E2": 6, "E3": 1598, "E4": 0, "E5": 0, "E6": 591},
+            {"E0": 19, "E1": 0, "E2": 4, "E3": 1598, "E4": 0, "E5": 0, "E6": 591},
         )
         self.assertEqual(
             self.plan["summary"]["patchStateCounts"]["candidates"],
-            {"not-required": 6, "required": 0, "unknown": 2206},
+            {"not-required": 4, "required": 0, "unknown": 2208},
         )
 
     def test_complete_cli_scanner_is_byte_deterministic_and_non_writing(self):
@@ -643,10 +644,10 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
             second, second_summary = invoke()
             self.assertEqual(first, second)
             self.assertEqual(first_summary, second_summary)
-            self.assertEqual(len(first), 2316806)
+            self.assertEqual(len(first), 2316862)
             self.assertEqual(
                 hashlib.sha256(first).hexdigest(),
-                "e6c445f2d9df41db6bea2fe25c7ebcd57e5dfec8053e2fffab0de537df8b3614",
+                "4d020795a280ca0fe6df0afffabfab8be5b279a5be3a6abee4b9ef2e77522bce",
             )
             self.assertEqual(before, snapshot())
 
@@ -668,6 +669,8 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
                 "globalcomix_zh_hans",
                 "namicomi_zh_hans",
                 "namicomi_zh_hant",
+                "mangadex_zh_hans",
+                "mangadex_zh_hant",
                 "readblackclovermangaonline",
                 "readfairytailedenszeromangaonline",
                 "readjujutsukaisenmangaonline",
@@ -680,7 +683,7 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         )
         self.assertEqual(
             self.plan["summary"]["registryJoins"],
-            {"registeredCandidates": 17, "unregisteredCandidates": 2195},
+            {"registeredCandidates": 19, "unregisteredCandidates": 2193},
         )
 
     def test_mangacatalog_proposal_is_report_only(self):

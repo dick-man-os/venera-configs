@@ -693,6 +693,52 @@
         "extensionLib": "1.4",
         "commit": "5a0261c718cd6d5ecf14963d837f29024c792398"
       }
+    },
+    {
+      "artifactId": "mangadex_zh_hans",
+      "runtimeKey": "keiyoushi_5148895169070562838",
+      "catalogName": "MangaDex",
+      "locales": [
+        "zh-Hans"
+      ],
+      "providerId": "mangadex",
+      "siteUrl": "https://mangadex.org",
+      "contentWarning": "MIXED",
+      "implementation": {
+        "producer": "generated",
+        "transport": "api"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "all.mangadex",
+        "sourceId": "5148895169070562838",
+        "version": "1.4.212",
+        "extensionLib": "1.4",
+        "commit": "5a0261c718cd6d5ecf14963d837f29024c792398"
+      }
+    },
+    {
+      "artifactId": "mangadex_zh_hant",
+      "runtimeKey": "keiyoushi_1493666528525752601",
+      "catalogName": "MangaDex",
+      "locales": [
+        "zh-Hant"
+      ],
+      "providerId": "mangadex",
+      "siteUrl": "https://mangadex.org",
+      "contentWarning": "MIXED",
+      "implementation": {
+        "producer": "generated",
+        "transport": "api"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "all.mangadex",
+        "sourceId": "1493666528525752601",
+        "version": "1.4.212",
+        "extensionLib": "1.4",
+        "commit": "5a0261c718cd6d5ecf14963d837f29024c792398"
+      }
     }
   ]
 }
