@@ -62,7 +62,7 @@ class TestPageInterpolation(unittest.TestCase):
         with open(os.path.join(repo_root, "index.json"), encoding="utf-8") as f:
             index = json.load(f)
 
-        expected_version = "1.0.1"
+        expected_version = "1.0.2"
         popular_path = "/category/order/hits/page/${page}"
         latest_path = "/category/order/addtime/page/${page}"
 

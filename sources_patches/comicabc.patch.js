@@ -163,7 +163,7 @@
             }
         }
 
-        chaptersList.reverse();
+        // The site DOM is oldest first; preserve that reader order.
         let chaptersObj = {};
         for (let ch of chaptersList) {
             chaptersObj[ch.id] = ch.title;

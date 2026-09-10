@@ -1,0 +1,1185 @@
+{
+  "search-愛": {
+    "firstCount": 57,
+    "maxPage": 10,
+    "lastCount": 8,
+    "lastMaxPage": 10
+  },
+  "search-爱": {
+    "firstCount": 5,
+    "maxPage": 1,
+    "lastCount": 5,
+    "lastMaxPage": 1
+  },
+  "search-Love": {
+    "firstCount": 30,
+    "maxPage": 1,
+    "lastCount": 30,
+    "lastMaxPage": 1
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://www.webtoons.com/zh-hant/search/originals?keyword=%E6%84%9B&page=1",
+      "status": 200,
+      "finalUrl": "https://www.webtoons.com/zh-hant/search/originals?keyword=%E6%84%9B&page=1",
+      "contentType": "text/html",
+      "bytes": 48918,
+      "sha256": "f393c768c93967d1a28fa5f9e96619d0f086d770c1367e8f98ae50c1484dc316"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.webtoons.com/zh-hant/search/canvas?keyword=%E6%84%9B&page=1",
+      "status": 200,
+      "finalUrl": "https://www.webtoons.com/zh-hant/search/canvas?keyword=%E6%84%9B&page=1",
+      "contentType": "text/html",
+      "bytes": 48114,
+      "sha256": "e4887680f1e79e17f59c6c2742dffebef2da014d7ccb9e21b2cfeee44c5974aa"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.webtoons.com/zh-hant/search/originals?keyword=%E6%84%9B&page=10",
+      "status": 200,
+      "finalUrl": "https://www.webtoons.com/zh-hant/search/originals?keyword=%E6%84%9B&page=10",
+      "contentType": "text/html",
+      "bytes": 22260,
+      "sha256": "fc155d46d417dbf2adbe1c4988785cbe8c5ee3ff05aa6d7c2144ab19e3f43b8c"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.webtoons.com/zh-hant/search/canvas?keyword=%E6%84%9B&page=10",
+      "status": 200,
+      "finalUrl": "https://www.webtoons.com/zh-hant/search/canvas?keyword=%E6%84%9B&page=10",
+      "contentType": "text/html",
+      "bytes": 32481,
+      "sha256": "fabba4200e24fe605afabe1061d696cda2ce6c16e83ba52930366e93741be35f"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.webtoons.com/zh-hant/search/originals?keyword=%E7%88%B1&page=1",
+      "status": 200,
+      "finalUrl": "https://www.webtoons.com/zh-hant/search/originals?keyword=%E7%88%B1&page=1",
+      "contentType": "text/html",
+      "bytes": 22258,
+      "sha256": "f6e6d0a9942a3c96fa0c7bb28c8b0a1eb3b5b0801362d995e4f31af5dddc3d77"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.webtoons.com/zh-hant/search/canvas?keyword=%E7%88%B1&page=1",
+      "status": 200,
+      "finalUrl": "https://www.webtoons.com/zh-hant/search/canvas?keyword=%E7%88%B1&page=1",
+      "contentType": "text/html",
+      "bytes": 27163,
+      "sha256": "8c6a187a37af99978756c896b061bbad6a7c9ecd5af98df16014ffa2c7abbf73"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.webtoons.com/zh-hant/search/originals?keyword=%E7%88%B1&page=1",
+      "status": 200,
+      "finalUrl": "https://www.webtoons.com/zh-hant/search/originals?keyword=%E7%88%B1&page=1",
+      "contentType": "text/html",
+      "bytes": 22258,
+      "sha256": "308c93987b33a57ac37aae8bb2e68ef80e7807b6f5f0dcfe2ccfd842000d542b"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.webtoons.com/zh-hant/search/canvas?keyword=%E7%88%B1&page=1",
+      "status": 200,
+      "finalUrl": "https://www.webtoons.com/zh-hant/search/canvas?keyword=%E7%88%B1&page=1",
+      "contentType": "text/html",
+      "bytes": 27163,
+      "sha256": "f3432df56a5efa4c9a0d195cff398ce5809bf951ac7535f2fed671d5d3029445"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.webtoons.com/zh-hant/search/originals?keyword=Love&page=1",
+      "status": 200,
+      "finalUrl": "https://www.webtoons.com/zh-hant/search/originals?keyword=Love&page=1",
+      "contentType": "text/html",
+      "bytes": 26703,
+      "sha256": "433f099b32999c5e2c34bbb0d46596636e935c197b343075a6f8e2520f7eb53a"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.webtoons.com/zh-hant/search/canvas?keyword=Love&page=1",
+      "status": 200,
+      "finalUrl": "https://www.webtoons.com/zh-hant/search/canvas?keyword=Love&page=1",
+      "contentType": "text/html",
+      "bytes": 44522,
+      "sha256": "2103818bad9a95acb75bc25f75c73187515b5b535ecba7a6418573aabf66abcb"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.webtoons.com/zh-hant/search/originals?keyword=Love&page=1",
+      "status": 200,
+      "finalUrl": "https://www.webtoons.com/zh-hant/search/originals?keyword=Love&page=1",
+      "contentType": "text/html",
+      "bytes": 26703,
+      "sha256": "3847f4b700fcef3829a752f12de9d400b135ea36ad3ac698a8270e8d4415faca"
+    },
+    {
+      "method": "GET",
+      "url": "https://www.webtoons.com/zh-hant/search/canvas?keyword=Love&page=1",
+      "status": 200,
+      "finalUrl": "https://www.webtoons.com/zh-hant/search/canvas?keyword=Love&page=1",
+      "contentType": "text/html",
+      "bytes": 44522,
+      "sha256": "2a8f078cb6b71cc558c4dbf41c2e1b216ea1e9dd63b39e83df70bb2ffda96543"
+    }
+  ],
+  "images": {
+    "webtoons_zh_hant": {
+      "url": "https://webtoon-phinf.pstatic.net/20220929_277/16644486960263FxPF_PNG/1tw_warning_v2.png",
+      "headerNames": [
+        "Referer"
+      ],
+      "status": 200,
+      "contentType": "image/png",
+      "bytesSampled": 128,
+      "signature": "89504e470d0a1a0a0000000d"
+    },
+    "comicabc": {
+      "url": "https://img7.8comic.com/3/10818/1/001_mAr.jpg",
+      "headerNames": [
+        "Referer"
+      ],
+      "status": 200,
+      "contentType": "image/jpeg",
+      "bytesSampled": 128,
+      "signature": "ffd8ffe000104a4649460001"
+    },
+    "manhuashe": {
+      "url": "https://manhua.5um.net/colatj/yirenzhixia/1/a81ede2a833bbdf293eb01757d97a8f6.webp",
+      "headerNames": [
+        "Referer"
+      ],
+      "status": 200,
+      "contentType": "image/webp",
+      "bytesSampled": 128,
+      "signature": "ffd8ffe000104a4649460001"
+    },
+    "mangadex_zh_hant": {
+      "url": "https://cmdxd98sb0x3yprd.mangadex.network/data/7c54156ad2e443ee34937c6a9c61bdc7/1-e7725c41015c2191a20f35cd8bef6e6fb60f45cf083e7cc38a3aee60d30226a2.png",
+      "headerNames": [
+        "Referer",
+        "Origin"
+      ],
+      "status": 200,
+      "contentType": "image/png",
+      "bytesSampled": 128,
+      "signature": "89504e470d0a1a0a0000000d"
+    },
+    "mangadex_zh_hans": {
+      "url": "https://cmdxd98sb0x3yprd.mangadex.network/data/00b740935ba9f17c4c92ab81a298a1fe/1-47dbd5443d841ca98f8ab5570c2a1260c84bc97ae25a0b378e3908c146dc351d.jpg",
+      "headerNames": [
+        "Referer",
+        "Origin"
+      ],
+      "status": 200,
+      "contentType": "image/jpeg",
+      "bytesSampled": 128,
+      "signature": "ffd8ffe000104a4649460001"
+    },
+    "namicomi_zh_hant": {
+      "url": "https://uploads.namicomi.com/chapter/EiiT84c6/28470d975df87d480ff34bbdfe238dac/source/1-70ec20403e0d827d3ef66b7bf5c4a704186b5fe2ab7f642dbbe740c755673b87.png",
+      "headerNames": [
+        "Referer",
+        "Origin"
+      ],
+      "status": 200,
+      "contentType": "image/png",
+      "bytesSampled": 128,
+      "signature": "89504e470d0a1a0a0000000d"
+    },
+    "namicomi_zh_hans": {
+      "url": "https://uploads.namicomi.com/chapter/URFD7dhU/fb261583616fc1aad447831a3225ed07/source/1-078a8bc4255abc8ff299aab915fbae61a81f086a4145492040b905ef3aeae737.png",
+      "headerNames": [
+        "Referer",
+        "Origin"
+      ],
+      "status": 200,
+      "contentType": "image/png",
+      "bytesSampled": 128,
+      "signature": "89504e470d0a1a0a0000000d"
+    },
+    "dongmanmanhua_zh_hans": {
+      "url": "https://cdn.dongmanmanhua.cn/1642470818446195411.jpg",
+      "headerNames": [
+        "Referer",
+        "Origin"
+      ],
+      "status": 200,
+      "contentType": "image/jpeg",
+      "bytesSampled": 128,
+      "signature": "ffd8ffe000104a4649460001"
+    },
+    "globalcomix_zh_hans": {
+      "url": "https://globalcomix-comics-assets-files-desktop.nyc3.cdn.digitaloceanspaces.com/8304/845061_184ca6eac18445f9ea42a84000287ea6.jpg",
+      "headerNames": [
+        "Referer",
+        "Origin",
+        "x-gc-client",
+        "x-gc-identmode"
+      ],
+      "status": 200,
+      "contentType": "image/jpeg",
+      "bytesSampled": 128,
+      "signature": "ffd8ffe000104a4649460001"
+    },
+    "mycomic": {
+      "url": "https://biccam.com/chapters/1/1-c0b8ea.jpg",
+      "headerNames": [
+        "Referer",
+        "User-Agent",
+        "Accept",
+        "Accept-Language",
+        "Sec-Fetch-Dest",
+        "Sec-Fetch-Mode",
+        "Sec-Fetch-Site"
+      ],
+      "status": 200,
+      "contentType": "image/jpeg",
+      "bytesSampled": 128,
+      "signature": "ffd8ffe000104a4649460001"
+    }
+  },
+  "webtoonsLargeSample": {
+    "choice": {
+      "id": "https://www.webtoons.com/zh-hant/action/theeraofoverman/list?title_no=2877",
+      "title": "超人時代",
+      "cover": "https://webtoon-phinf.pstatic.net/20250905_108/1757067539964qUwdY_JPEG/4) Thumb_Poster_2877.jpg?type=q90"
+    },
+    "chapterCount": 241,
+    "first": "序章 (ch. 1)",
+    "last": "[第二季] 第149話 (ch. 241)",
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://www.webtoons.com/zh-hant/action/theeraofoverman/list?title_no=2877",
+        "status": 200,
+        "finalUrl": "https://www.webtoons.com/zh-hant/action/theeraofoverman/list?title_no=2877",
+        "contentType": "text/html",
+        "bytes": 41114,
+        "sha256": "1d59f910f70cb3fad070fe02b696c7ff3c18c89919f289591bee6c26f894b174"
+      },
+      {
+        "method": "GET",
+        "url": "https://m.webtoons.com/api/v1/webtoon/2877/episodes?pageSize=200",
+        "status": 200,
+        "finalUrl": "https://m.webtoons.com/api/v1/webtoon/2877/episodes?pageSize=200",
+        "contentType": "application/json",
+        "bytes": 62868,
+        "sha256": "b7e4105bd08134fd0b9ee61b5c48a07d223cc5f38c8503cba265e65a1ab58784"
+      },
+      {
+        "method": "GET",
+        "url": "https://m.webtoons.com/api/v1/webtoon/2877/episodes?pageSize=200&cursor=200",
+        "status": 200,
+        "finalUrl": "https://m.webtoons.com/api/v1/webtoon/2877/episodes?pageSize=200&cursor=200",
+        "contentType": "application/json",
+        "bytes": 14338,
+        "sha256": "1e3c07e10dba54b5a39f99eed53a4c2ad5d0107ffb0e02802767bdeadd7da1f8"
+      }
+    ],
+    "oldest": {
+      "chapterId": "/zh-hant/action/theeraofoverman/%E5%BA%8F%E7%AB%A0/viewer?title_no=2877&episode_no=1",
+      "pageCount": 36,
+      "middleImageStatus": 200,
+      "contentType": "image/jpeg",
+      "signature": "ffd8ffe000104a4649460001"
+    },
+    "middle": {
+      "chapterId": "/zh-hant/action/theeraofoverman/%E7%AC%AC%E4%BA%8C%E5%AD%A3-%E7%AC%AC29%E8%A9%B1/viewer?title_no=2877&episode_no=121",
+      "pageCount": 58,
+      "middleImageStatus": 200,
+      "contentType": "image/jpeg",
+      "signature": "ffd8ffe000104a4649460001"
+    },
+    "newest": {
+      "chapterId": "/zh-hant/action/theeraofoverman/%E7%AC%AC%E4%BA%8C%E5%AD%A3-%E7%AC%AC149%E8%A9%B1/viewer?title_no=2877&episode_no=241",
+      "pageCount": 120,
+      "middleImageStatus": 200,
+      "contentType": "image/jpeg",
+      "signature": "ffd8ffe000104a4649460001"
+    }
+  },
+  "copyFamilySearch": {
+    "copy_manga": {
+      "observedAt": "2026-09-10T13:56:51.827651+00:00",
+      "queries": [
+        {
+          "keyword": "愛",
+          "upstreamTotal": 1500,
+          "firstCount": 30,
+          "maxPage": 50,
+          "lastCount": 30,
+          "lastMaxPage": 50
+        },
+        {
+          "keyword": "爱",
+          "upstreamTotal": 1500,
+          "firstCount": 30,
+          "maxPage": 50,
+          "lastCount": 30,
+          "lastMaxPage": 50
+        },
+        {
+          "keyword": "Love",
+          "upstreamTotal": 403,
+          "firstCount": 30,
+          "maxPage": 14,
+          "lastCount": 13,
+          "lastMaxPage": 14
+        }
+      ],
+      "status": "PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "url": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=0&q=%E6%84%9B&q_type=",
+          "status": 200,
+          "finalUrl": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=0&q=%E6%84%9B&q_type=",
+          "contentType": "application/json",
+          "bytes": 8345,
+          "sha256": "5a5ebe056bd8eaaa4ec2fbcee5ee392c12584df5371efe5449d2c46f7ce78471"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=1470&q=%E6%84%9B&q_type=",
+          "status": 200,
+          "finalUrl": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=1470&q=%E6%84%9B&q_type=",
+          "contentType": "application/json",
+          "bytes": 10962,
+          "sha256": "565ae4620216eec0ad7632a3280aa1032d5476de96b8e07636ecddd22cfb8c80"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=0&q=%E7%88%B1&q_type=",
+          "status": 200,
+          "finalUrl": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=0&q=%E7%88%B1&q_type=",
+          "contentType": "application/json",
+          "bytes": 8345,
+          "sha256": "5a5ebe056bd8eaaa4ec2fbcee5ee392c12584df5371efe5449d2c46f7ce78471"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=1470&q=%E7%88%B1&q_type=",
+          "status": 200,
+          "finalUrl": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=1470&q=%E7%88%B1&q_type=",
+          "contentType": "application/json",
+          "bytes": 10962,
+          "sha256": "565ae4620216eec0ad7632a3280aa1032d5476de96b8e07636ecddd22cfb8c80"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=0&q=Love&q_type=",
+          "status": 200,
+          "finalUrl": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=0&q=Love&q_type=",
+          "contentType": "application/json",
+          "bytes": 8619,
+          "sha256": "2a4594d98c3a9b49543040092e604d0adf6f9815b5d4a73e2fa52e2f4671c4f5"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=390&q=Love&q_type=",
+          "status": 200,
+          "finalUrl": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=390&q=Love&q_type=",
+          "contentType": "application/json",
+          "bytes": 4248,
+          "sha256": "58665aed816aa23b558b6f2116caf17a93e1c71e684c121029afff3ff496f789"
+        }
+      ]
+    },
+    "copy_manga_multi_accounts": {
+      "observedAt": "2026-09-10T13:56:54.997332+00:00",
+      "queries": [
+        {
+          "keyword": "愛",
+          "upstreamTotal": 1500,
+          "firstCount": 30,
+          "maxPage": 50,
+          "lastCount": 30,
+          "lastMaxPage": 50
+        },
+        {
+          "keyword": "爱",
+          "upstreamTotal": 1500,
+          "firstCount": 30,
+          "maxPage": 50,
+          "lastCount": 30,
+          "lastMaxPage": 50
+        },
+        {
+          "keyword": "Love",
+          "upstreamTotal": 403,
+          "firstCount": 30,
+          "maxPage": 14,
+          "lastCount": 13,
+          "lastMaxPage": 14
+        }
+      ],
+      "status": "PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "url": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=0&q=%E6%84%9B&q_type=",
+          "status": 200,
+          "finalUrl": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=0&q=%E6%84%9B&q_type=",
+          "contentType": "application/json",
+          "bytes": 8345,
+          "sha256": "5a5ebe056bd8eaaa4ec2fbcee5ee392c12584df5371efe5449d2c46f7ce78471"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=1470&q=%E6%84%9B&q_type=",
+          "status": 200,
+          "finalUrl": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=1470&q=%E6%84%9B&q_type=",
+          "contentType": "application/json",
+          "bytes": 10962,
+          "sha256": "565ae4620216eec0ad7632a3280aa1032d5476de96b8e07636ecddd22cfb8c80"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=0&q=%E7%88%B1&q_type=",
+          "status": 200,
+          "finalUrl": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=0&q=%E7%88%B1&q_type=",
+          "contentType": "application/json",
+          "bytes": 8345,
+          "sha256": "5a5ebe056bd8eaaa4ec2fbcee5ee392c12584df5371efe5449d2c46f7ce78471"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=1470&q=%E7%88%B1&q_type=",
+          "status": 200,
+          "finalUrl": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=1470&q=%E7%88%B1&q_type=",
+          "contentType": "application/json",
+          "bytes": 10962,
+          "sha256": "565ae4620216eec0ad7632a3280aa1032d5476de96b8e07636ecddd22cfb8c80"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=0&q=Love&q_type=",
+          "status": 200,
+          "finalUrl": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=0&q=Love&q_type=",
+          "contentType": "application/json",
+          "bytes": 8619,
+          "sha256": "2a4594d98c3a9b49543040092e604d0adf6f9815b5d4a73e2fa52e2f4671c4f5"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=390&q=Love&q_type=",
+          "status": 200,
+          "finalUrl": "https://api.copy2000.online/api/v3/search/comic?limit=30&offset=390&q=Love&q_type=",
+          "contentType": "application/json",
+          "bytes": 4248,
+          "sha256": "58665aed816aa23b558b6f2116caf17a93e1c71e684c121029afff3ff496f789"
+        }
+      ]
+    },
+    "hot_manga": {
+      "observedAt": "2026-09-10T13:56:57.646496+00:00",
+      "queries": [
+        {
+          "keyword": "愛",
+          "upstreamTotal": 1494,
+          "firstCount": 20,
+          "maxPage": 75,
+          "lastCount": 14,
+          "lastMaxPage": 75
+        },
+        {
+          "keyword": "爱",
+          "upstreamTotal": 1494,
+          "firstCount": 20,
+          "maxPage": 75,
+          "lastCount": 14,
+          "lastMaxPage": 75
+        },
+        {
+          "keyword": "Love",
+          "upstreamTotal": 403,
+          "firstCount": 20,
+          "maxPage": 21,
+          "lastCount": 3,
+          "lastMaxPage": 21
+        }
+      ],
+      "status": "PASS",
+      "requests": [
+        {
+          "method": "GET",
+          "url": "https://api.2024manga.com/api/v3/search/comic?platform=3&q=%E6%84%9B&limit=20&offset=0&free_type=1&_update=true",
+          "status": 200,
+          "finalUrl": "https://api.2024manga.com/api/v3/search/comic?platform=3&q=%E6%84%9B&limit=20&offset=0&free_type=1&_update=true",
+          "contentType": "application/json",
+          "bytes": 6424,
+          "sha256": "5f1e33070a290c44e9a803ecca43f85cff248bdd3b2d47918fbe1b45b206c54a"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.2024manga.com/api/v3/search/comic?platform=3&q=%E6%84%9B&limit=20&offset=1480&free_type=1&_update=true",
+          "status": 200,
+          "finalUrl": "https://api.2024manga.com/api/v3/search/comic?platform=3&q=%E6%84%9B&limit=20&offset=1480&free_type=1&_update=true",
+          "contentType": "application/json",
+          "bytes": 5533,
+          "sha256": "a2cdba0db3bc30e7c9158a519e2e539ac432858aef7d2b9c4262fc836d415397"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.2024manga.com/api/v3/search/comic?platform=3&q=%E7%88%B1&limit=20&offset=0&free_type=1&_update=true",
+          "status": 200,
+          "finalUrl": "https://api.2024manga.com/api/v3/search/comic?platform=3&q=%E7%88%B1&limit=20&offset=0&free_type=1&_update=true",
+          "contentType": "application/json",
+          "bytes": 6424,
+          "sha256": "5f1e33070a290c44e9a803ecca43f85cff248bdd3b2d47918fbe1b45b206c54a"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.2024manga.com/api/v3/search/comic?platform=3&q=%E7%88%B1&limit=20&offset=1480&free_type=1&_update=true",
+          "status": 200,
+          "finalUrl": "https://api.2024manga.com/api/v3/search/comic?platform=3&q=%E7%88%B1&limit=20&offset=1480&free_type=1&_update=true",
+          "contentType": "application/json",
+          "bytes": 5533,
+          "sha256": "a2cdba0db3bc30e7c9158a519e2e539ac432858aef7d2b9c4262fc836d415397"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.2024manga.com/api/v3/search/comic?platform=3&q=Love&limit=20&offset=0&free_type=1&_update=true",
+          "status": 200,
+          "finalUrl": "https://api.2024manga.com/api/v3/search/comic?platform=3&q=Love&limit=20&offset=0&free_type=1&_update=true",
+          "contentType": "application/json",
+          "bytes": 6597,
+          "sha256": "4340bf4a6a188487e3adc651c06b6868085d6edac82cd1075b1228250648204b"
+        },
+        {
+          "method": "GET",
+          "url": "https://api.2024manga.com/api/v3/search/comic?platform=3&q=Love&limit=20&offset=400&free_type=1&_update=true",
+          "status": 200,
+          "finalUrl": "https://api.2024manga.com/api/v3/search/comic?platform=3&q=Love&limit=20&offset=400&free_type=1&_update=true",
+          "contentType": "application/json",
+          "bytes": 1124,
+          "sha256": "f318219f069cc3e2b2e3cfbaa729a71c73a8e37bfa3e52945dd067c759246652"
+        }
+      ]
+    }
+  },
+  "beforeAndAfterManualOrder": {
+    "mycomic": {
+      "before": {
+        "runtimeSha256": "710321045b1327f887ca9c6a5f5c26a85ba5bdb66919570239a2df1c55c5ca92",
+        "mode": "offline replay of hashed public responses",
+        "status": "PASS",
+        "chapterCount": 16,
+        "uniqueChapterIds": 16,
+        "sourceFormat": "Map",
+        "edges": [
+          [
+            "",
+            "96338",
+            "第16回"
+          ],
+          [
+            "",
+            "90930",
+            "第15回"
+          ],
+          [
+            "",
+            "2",
+            "第002回"
+          ],
+          [
+            "",
+            "1",
+            "第001回"
+          ]
+        ],
+        "middle": [
+          [
+            "",
+            "8",
+            "第008回"
+          ],
+          [
+            "",
+            "7",
+            "第007回"
+          ]
+        ],
+        "orderedChapterSha256": "035ed2174e4e565385681061726b8d6dd3c685a4f595df3123aaff341d76d188"
+      },
+      "after": {
+        "runtimeSha256": "3d5cea40b147ee93a20834abca96f97a8ac9d6e881d561a766f94e345e9c2da6",
+        "mode": "offline replay of hashed public responses",
+        "status": "PASS",
+        "chapterCount": 16,
+        "uniqueChapterIds": 16,
+        "sourceFormat": "Map",
+        "edges": [
+          [
+            "",
+            "1",
+            "第001回"
+          ],
+          [
+            "",
+            "2",
+            "第002回"
+          ],
+          [
+            "",
+            "90930",
+            "第15回"
+          ],
+          [
+            "",
+            "96338",
+            "第16回"
+          ]
+        ],
+        "middle": [
+          [
+            "",
+            "9",
+            "第009回"
+          ],
+          [
+            "",
+            "10",
+            "第010回暂缺"
+          ]
+        ],
+        "orderedChapterSha256": "72c9cb013a151173feef23a88a146df1e6af38afa5062eb82c565da9e111ea04"
+      }
+    },
+    "manhuagui": {
+      "before": {
+        "runtimeSha256": "210575cf13ed985f10c56336aff398dbed0264d0b911a7a5315520e72f138055",
+        "mode": "offline replay of hashed public responses",
+        "status": "PASS",
+        "chapterCount": 108,
+        "uniqueChapterIds": 108,
+        "sourceFormat": "Map",
+        "edges": [
+          [
+            "番外篇",
+            "441510",
+            "年刊0455p"
+          ],
+          [
+            "番外篇",
+            "441515",
+            "年刊0722p"
+          ],
+          [
+            "单话",
+            "901365",
+            "第119卷23p"
+          ],
+          [
+            "单话",
+            "901366",
+            "第120卷23p"
+          ]
+        ],
+        "middle": [
+          [
+            "单话",
+            "681965",
+            "第167卷23p"
+          ],
+          [
+            "单话",
+            "707685",
+            "第57卷23p"
+          ]
+        ],
+        "orderedChapterSha256": "86474bd827517149e8b8dc87e0d269558308322ab644e9daeee98d692ebfa783"
+      },
+      "after": {
+        "runtimeSha256": "92ce8a147e6d27b1f4a73eaa4ec0feaff70a3cf8f53b4149aec45de4f57e4747",
+        "mode": "offline replay of hashed public responses",
+        "status": "PASS",
+        "chapterCount": 108,
+        "uniqueChapterIds": 108,
+        "sourceFormat": "Map",
+        "edges": [
+          [
+            "番外篇",
+            "441510",
+            "年刊0455p"
+          ],
+          [
+            "番外篇",
+            "441515",
+            "年刊0722p"
+          ],
+          [
+            "单话",
+            "843572",
+            "第15卷22p"
+          ],
+          [
+            "单话",
+            "452040",
+            "第25卷25p"
+          ]
+        ],
+        "middle": [
+          [
+            "单话",
+            "525860",
+            "第99卷24p"
+          ],
+          [
+            "单话",
+            "873845",
+            "第101卷24p"
+          ]
+        ],
+        "orderedChapterSha256": "19b22248f65674011e83012ba8e7ddf725876e68d4bab9a1b9762aa65f96d317"
+      }
+    }
+  },
+  "convertedRescueComparisons": {
+    "webtoons_zh_hant": {
+      "before": {
+        "artifactId": "webtoons_zh_hant",
+        "time": "2026-09-10T07:34:55.673917+00:00",
+        "runtimeSha256": "396d8cf4cc9460dca9b75956415024cac6ea294397e686b125e0787f97296e9d",
+        "operations": {
+          "explore": {
+            "status": "PASS",
+            "requestCount": 1
+          },
+          "latest": {
+            "status": "PASS",
+            "requestCount": 2
+          },
+          "search": {
+            "status": "PASS",
+            "requestCount": 3
+          },
+          "detail": {
+            "status": "PASS",
+            "requestCount": 5
+          },
+          "reader-oldest": {
+            "status": "PASS",
+            "requestCount": 6
+          },
+          "image-config-oldest": {
+            "status": "PASS",
+            "requestCount": 6
+          },
+          "reader-newest": {
+            "status": "PASS",
+            "requestCount": 7
+          },
+          "image-config-newest": {
+            "status": "PASS",
+            "requestCount": 7
+          }
+        },
+        "exploreCount": 30,
+        "title": "第44節生存課",
+        "chapterCount": 36,
+        "chapterEdges": [
+          {
+            "id": "/zh-hant/thriller/44th-period-survival-class/%E7%AC%AC%E4%BA%8C%E5%AD%A3-%E7%AC%AC1%E8%A9%B1-%E8%BD%89%E5%AD%B8%E7%94%9F/viewer?title_no=8230&episode_no=36",
+            "title": "第二季 第1話 轉學生 (ch. 36) ♫"
+          },
+          {
+            "id": "/zh-hant/thriller/44th-period-survival-class/%E7%AC%AC%E4%B8%80%E5%AD%A3%E5%BE%8C%E8%A8%98/viewer?title_no=8230&episode_no=35",
+            "title": "第一季後記 (ch. 35)"
+          },
+          {
+            "id": "/zh-hant/thriller/44th-period-survival-class/%E7%AC%AC2%E8%A9%B1-%E6%96%B0%E5%AD%B8%E6%9C%9F/viewer?title_no=8230&episode_no=2",
+            "title": "第2話 新學期 (ch. 2)"
+          },
+          {
+            "id": "/zh-hant/thriller/44th-period-survival-class/%E7%AC%AC1%E8%A9%B1-%E5%85%A5%E5%AD%B8/viewer?title_no=8230&episode_no=1",
+            "title": "第1話 入學 (ch. 1)"
+          }
+        ],
+        "uniqueChapterIds": 36,
+        "oldestPages": 155,
+        "oldestImageUrlsAbsolute": true,
+        "oldestImageHeaderNames": [
+          "Referer"
+        ],
+        "newestPages": 73,
+        "newestImageUrlsAbsolute": true,
+        "newestImageHeaderNames": [
+          "Referer"
+        ]
+      },
+      "after": {
+        "artifactId": "webtoons_zh_hant",
+        "time": "2026-09-10T07:45:38.949934+00:00",
+        "runtimeSha256": "3ed8c29f3c1306e7c8b85d88e98ddc6412637eff1d14dd67b1dce95fcb65ebbc",
+        "operations": {
+          "explore": {
+            "status": "PASS",
+            "requestCount": 1
+          },
+          "latest": {
+            "status": "PASS",
+            "requestCount": 2
+          },
+          "search": {
+            "status": "PASS",
+            "requestCount": 4
+          },
+          "detail": {
+            "status": "PASS",
+            "requestCount": 6
+          },
+          "reader-oldest": {
+            "status": "PASS",
+            "requestCount": 7
+          },
+          "image-config-oldest": {
+            "status": "PASS",
+            "requestCount": 7
+          },
+          "reader-newest": {
+            "status": "PASS",
+            "requestCount": 8
+          },
+          "image-config-newest": {
+            "status": "PASS",
+            "requestCount": 8
+          }
+        },
+        "exploreCount": 30,
+        "title": "第44節生存課",
+        "chapterCount": 36,
+        "chapterEdges": [
+          {
+            "id": "/zh-hant/thriller/44th-period-survival-class/%E7%AC%AC1%E8%A9%B1-%E5%85%A5%E5%AD%B8/viewer?title_no=8230&episode_no=1",
+            "title": "第1話 入學 (ch. 1)"
+          },
+          {
+            "id": "/zh-hant/thriller/44th-period-survival-class/%E7%AC%AC2%E8%A9%B1-%E6%96%B0%E5%AD%B8%E6%9C%9F/viewer?title_no=8230&episode_no=2",
+            "title": "第2話 新學期 (ch. 2)"
+          },
+          {
+            "id": "/zh-hant/thriller/44th-period-survival-class/%E7%AC%AC%E4%B8%80%E5%AD%A3%E5%BE%8C%E8%A8%98/viewer?title_no=8230&episode_no=35",
+            "title": "第一季後記 (ch. 35)"
+          },
+          {
+            "id": "/zh-hant/thriller/44th-period-survival-class/%E7%AC%AC%E4%BA%8C%E5%AD%A3-%E7%AC%AC1%E8%A9%B1-%E8%BD%89%E5%AD%B8%E7%94%9F/viewer?title_no=8230&episode_no=36",
+            "title": "第二季 第1話 轉學生 (ch. 36) ♫"
+          }
+        ],
+        "uniqueChapterIds": 36,
+        "oldestPages": 73,
+        "oldestImageUrlsAbsolute": true,
+        "oldestImageHeaderNames": [
+          "Referer"
+        ],
+        "newestPages": 155,
+        "newestImageUrlsAbsolute": true,
+        "newestImageHeaderNames": [
+          "Referer"
+        ]
+      }
+    },
+    "comicabc": {
+      "before": {
+        "artifactId": "comicabc",
+        "time": "2026-09-10T07:35:00.270671+00:00",
+        "runtimeSha256": "d0be8d02d3a27698531c7f770e6ba471287be5b9b45ea861f98d36278209ea21",
+        "operations": {
+          "explore": {
+            "status": "PASS",
+            "requestCount": 1
+          },
+          "latest": {
+            "status": "PASS",
+            "requestCount": 2
+          },
+          "search": {
+            "status": "PASS",
+            "requestCount": 3
+          },
+          "detail": {
+            "status": "PASS",
+            "requestCount": 5
+          },
+          "reader-oldest": {
+            "status": "PASS",
+            "requestCount": 6
+          },
+          "image-config-oldest": {
+            "status": "PASS",
+            "requestCount": 6
+          },
+          "reader-newest": {
+            "status": "PASS",
+            "requestCount": 7
+          },
+          "image-config-newest": {
+            "status": "PASS",
+            "requestCount": 7
+          }
+        },
+        "exploreCount": 48,
+        "title": "狂賭之淵",
+        "chapterCount": 135,
+        "chapterEdges": [
+          {
+            "id": "https://www.8comic.com/view/10818.html?ch=130",
+            "title": "第130話"
+          },
+          {
+            "id": "https://www.8comic.com/view/10818.html?ch=129",
+            "title": "第129話"
+          },
+          {
+            "id": "https://www.8comic.com/view/10818.html?ch=2",
+            "title": "2話"
+          },
+          {
+            "id": "https://www.8comic.com/view/10818.html?ch=1",
+            "title": "1話"
+          }
+        ],
+        "uniqueChapterIds": 135,
+        "oldestPages": 33,
+        "oldestImageUrlsAbsolute": true,
+        "oldestImageHeaderNames": [
+          "Referer"
+        ],
+        "newestPages": 83,
+        "newestImageUrlsAbsolute": true,
+        "newestImageHeaderNames": [
+          "Referer"
+        ]
+      },
+      "after": {
+        "artifactId": "comicabc",
+        "time": "2026-09-10T07:45:44.277198+00:00",
+        "runtimeSha256": "0d0a609a717d8acc54fcf146cd741824050950a52eceda837eceef4f19e45669",
+        "operations": {
+          "explore": {
+            "status": "PASS",
+            "requestCount": 1
+          },
+          "latest": {
+            "status": "PASS",
+            "requestCount": 2
+          },
+          "search": {
+            "status": "PASS",
+            "requestCount": 3
+          },
+          "detail": {
+            "status": "PASS",
+            "requestCount": 5
+          },
+          "reader-oldest": {
+            "status": "PASS",
+            "requestCount": 6
+          },
+          "image-config-oldest": {
+            "status": "PASS",
+            "requestCount": 6
+          },
+          "reader-newest": {
+            "status": "PASS",
+            "requestCount": 7
+          },
+          "image-config-newest": {
+            "status": "PASS",
+            "requestCount": 7
+          }
+        },
+        "exploreCount": 48,
+        "title": "狂賭之淵",
+        "chapterCount": 135,
+        "chapterEdges": [
+          {
+            "id": "https://www.8comic.com/view/10818.html?ch=1",
+            "title": "1話"
+          },
+          {
+            "id": "https://www.8comic.com/view/10818.html?ch=2",
+            "title": "2話"
+          },
+          {
+            "id": "https://www.8comic.com/view/10818.html?ch=129",
+            "title": "第129話"
+          },
+          {
+            "id": "https://www.8comic.com/view/10818.html?ch=130",
+            "title": "第130話"
+          }
+        ],
+        "uniqueChapterIds": 135,
+        "oldestPages": 83,
+        "oldestImageUrlsAbsolute": true,
+        "oldestImageHeaderNames": [
+          "Referer"
+        ],
+        "newestPages": 33,
+        "newestImageUrlsAbsolute": true,
+        "newestImageHeaderNames": [
+          "Referer"
+        ]
+      }
+    },
+    "manhuashe": {
+      "before": {
+        "artifactId": "manhuashe",
+        "time": "2026-09-10T07:35:06.141070+00:00",
+        "runtimeSha256": "fcdcd7e26e5bd9c25ea2033d9c6d0817cd168f687dd037cbc9c7334c25eb1c6d",
+        "operations": {
+          "explore": {
+            "status": "PASS",
+            "requestCount": 1
+          },
+          "latest": {
+            "status": "PASS",
+            "requestCount": 2
+          },
+          "search": {
+            "status": "PASS",
+            "requestCount": 3
+          },
+          "detail": {
+            "status": "PASS",
+            "requestCount": 5
+          },
+          "reader-oldest": {
+            "status": "PASS",
+            "requestCount": 6
+          },
+          "image-config-oldest": {
+            "status": "PASS",
+            "requestCount": 6
+          },
+          "reader-newest": {
+            "status": "PASS",
+            "requestCount": 7
+          },
+          "image-config-newest": {
+            "status": "PASS",
+            "requestCount": 7
+          }
+        },
+        "exploreCount": 20,
+        "title": "一人之下",
+        "chapterCount": 800,
+        "chapterEdges": [
+          {
+            "id": "/chapter_13871_2070970.html",
+            "title": "最新公告"
+          },
+          {
+            "id": "/chapter_13871_1346833.html",
+            "title": "公告"
+          },
+          {
+            "id": "/chapter_13871_4993.html",
+            "title": "第2话 2.姐姐2"
+          },
+          {
+            "id": "/chapter_13871_4992.html",
+            "title": "第1话 1.姐姐1"
+          }
+        ],
+        "uniqueChapterIds": 800,
+        "oldestPages": 1,
+        "oldestImageUrlsAbsolute": true,
+        "oldestImageHeaderNames": [
+          "Referer"
+        ],
+        "newestPages": 18,
+        "newestImageUrlsAbsolute": true,
+        "newestImageHeaderNames": [
+          "Referer"
+        ]
+      },
+      "after": {
+        "artifactId": "manhuashe",
+        "time": "2026-09-10T07:45:50.358081+00:00",
+        "runtimeSha256": "1e9a44c05b576b35987da746260b7786d2465d78fffec43bfafc4d2babf5d961",
+        "operations": {
+          "explore": {
+            "status": "PASS",
+            "requestCount": 1
+          },
+          "latest": {
+            "status": "PASS",
+            "requestCount": 2
+          },
+          "search": {
+            "status": "PASS",
+            "requestCount": 3
+          },
+          "detail": {
+            "status": "PASS",
+            "requestCount": 5
+          },
+          "reader-oldest": {
+            "status": "PASS",
+            "requestCount": 6
+          },
+          "image-config-oldest": {
+            "status": "PASS",
+            "requestCount": 6
+          },
+          "reader-newest": {
+            "status": "PASS",
+            "requestCount": 7
+          },
+          "image-config-newest": {
+            "status": "PASS",
+            "requestCount": 7
+          }
+        },
+        "exploreCount": 20,
+        "title": "一人之下",
+        "chapterCount": 800,
+        "chapterEdges": [
+          {
+            "id": "/chapter_13871_4992.html",
+            "title": "第1话 1.姐姐1"
+          },
+          {
+            "id": "/chapter_13871_4993.html",
+            "title": "第2话 2.姐姐2"
+          },
+          {
+            "id": "/chapter_13871_1346833.html",
+            "title": "公告"
+          },
+          {
+            "id": "/chapter_13871_2070970.html",
+            "title": "最新公告"
+          }
+        ],
+        "uniqueChapterIds": 800,
+        "oldestPages": 18,
+        "oldestImageUrlsAbsolute": true,
+        "oldestImageHeaderNames": [
+          "Referer"
+        ],
+        "newestPages": 1,
+        "newestImageUrlsAbsolute": true,
+        "newestImageHeaderNames": [
+          "Referer"
+        ]
+      }
+    }
+  },
+  "methodNotes": [
+    "Runtime callbacks used QuickJS and the unchanged host Dart DOM bridge; no physical Windows UI automation is claimed.",
+    "Chapter replay preserves actual Map insertion order; JSON integer-key object serialization alone cannot prove reader order.",
+    "Stored response SHA256 values attest dated public observations. No account cookies or headers are published.",
+    "Counts and search totals may change upstream. Samples from different Explore rankings are different titles, not regressions.",
+    "Image URL query strings are omitted; image prefix signatures are file magic bytes, not authentication signatures."
+  ]
+}

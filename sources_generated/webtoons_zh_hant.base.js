@@ -14,7 +14,7 @@
 class ZhhantWebtoonsSource extends ComicSource {
     name = "Webtoons 繁體中文"
     key = "zh_Hant_webtoons"
-    version = "1.0.0"
+    version = "1.0.1"
     minAppVersion = "1.6.0"
 
     static baseUrl = "https://www.webtoons.com"

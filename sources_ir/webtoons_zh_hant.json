@@ -2,7 +2,7 @@
   "schemaVersion": "0.1.0",
   "artifactId": "webtoons_zh_hant",
   "id": "zh-Hant_webtoons",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "Webtoons 繁體中文",
   "languages": [
     "zh-Hant"

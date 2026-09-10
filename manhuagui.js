@@ -4,7 +4,7 @@ class ManHuaGui extends ComicSource {
 
   key = "ManHuaGui";
 
-  version = "1.2.1";
+  version = "1.2.2";
 
   minAppVersion = "1.4.0";
 
@@ -957,7 +957,8 @@ class ManHuaGui extends ComicSource {
               groupChapters.set(id, title);
             }
             
-            groupChapters = new Map([...groupChapters].sort((a, b) => a[0] - b[0]));
+            // Site order is newest first; IDs reflect uploads, not reading order.
+            groupChapters = new Map([...groupChapters].reverse());
             
             chaptersMap.set(groupName, groupChapters);
           }
@@ -986,7 +987,8 @@ class ManHuaGui extends ComicSource {
             }
           }
           
-          groupChapters = new Map([...groupChapters].sort((a, b) => a[0] - b[0]));
+          // Reverse the complete group once, after collecting all DOM panels.
+          groupChapters = new Map([...groupChapters].reverse());
           chaptersMap.set(groupName, groupChapters);
         }
       }
@@ -1001,7 +1003,7 @@ class ManHuaGui extends ComicSource {
             chapters.set(id, title);
           }
         }
-        chapters = new Map([...chapters].sort((a, b) => a[0] - b[0]));
+        // Older hosts retain the same group order when flattening.
       }
 
       let recommend = [];

@@ -145,7 +145,10 @@ function diffIndexEntries(baseByFile, currentByFile) {
 }
 
 function isConfigFile(filePath) {
-  if (!filePath.endsWith(".js")) {
+  // Only root JavaScript files are publishable source artifacts. Generated
+  // bases, patches and test fixtures use JavaScript too, but have no catalog
+  // entry or independent publication version.
+  if (path.dirname(filePath) !== "." || !filePath.endsWith(".js")) {
     return false;
   }
   const baseName = path.basename(filePath);

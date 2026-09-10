@@ -14,7 +14,7 @@
 class ZhhansManhuasheSource extends ComicSource {
     name = "Manhuashe"
     key = "zh_Hans_manhuashe"
-    version = "1.0.1"
+    version = "1.0.2"
     minAppVersion = "1.6.0"
     get baseUrl() {
         let m = this.loadSetting('baseUrlSelection');
@@ -211,7 +211,7 @@ class ZhhansManhuasheSource extends ComicSource {
             id: (el.attributes['href'] || ''),
             title: (el.text || ''),
         }));
-        chaptersList.reverse();
+        // The site DOM is oldest first; preserve that reader order.
 
         let chaptersObj = {};
         for (let ch of chaptersList) {

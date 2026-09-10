@@ -14,7 +14,7 @@
 class ZhhantComicabcSource extends ComicSource {
     name = "Comicabc"
     key = "zh_Hant_comicabc"
-    version = "1.0.3"
+    version = "1.0.4"
     minAppVersion = "1.6.0"
 
     static baseUrl = "https://www.8comic.com"
@@ -276,7 +276,7 @@ class ZhhantComicabcSource extends ComicSource {
             }
         }
 
-        chaptersList.reverse();
+        // The site DOM is oldest first; preserve that reader order.
         let chaptersObj = {};
         for (let ch of chaptersList) {
             chaptersObj[ch.id] = ch.title;

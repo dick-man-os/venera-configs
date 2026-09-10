@@ -148,15 +148,15 @@ process.stdout.write(JSON.stringify(source.parseEpisodeImagesCustom(input.html, 
         with open(self.index_path, "r", encoding="utf-8") as f:
             index = json.load(f)
 
-        self.assertEqual(ir["version"], "1.0.3")
+        self.assertEqual(ir["version"], "1.0.4")
         self.assertEqual(generate_venera_js(ir), self.base_code)
         self.assertEqual(patch_js(self.base_code, self.patch_code), self.final_code)
-        self.assertIn('version = "1.0.3"', self.base_code)
-        self.assertIn('version = "1.0.3"', self.final_code)
+        self.assertIn('version = "1.0.4"', self.base_code)
+        self.assertIn('version = "1.0.4"', self.final_code)
 
         entries = [entry for entry in index if entry.get("key") == "zh_Hant_comicabc"]
         self.assertEqual(len(entries), 1)
-        self.assertEqual(entries[0]["version"], "1.0.3")
+        self.assertEqual(entries[0]["version"], "1.0.4")
 
     def test_absolute_cover_normalization(self):
         """Verify cover URLs are normalized to absolute URLs using baseUrl without double-prefixing."""

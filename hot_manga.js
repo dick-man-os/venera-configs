@@ -10,7 +10,7 @@ class HotManga extends ComicSource {
 
     key = "hot_manga"
 
-    version = "1.0.0"
+    version = "1.0.1"
 
     minAppVersion = "1.6.0"
 
@@ -412,7 +412,7 @@ class HotManga extends ComicSource {
 
             return {
                 comics: data["results"]["list"].map(parseComic),
-                maxPage: (data["results"]["total"] - (data["results"]["total"] % 21)) / 21 + 1
+                maxPage: Math.max(1, Math.ceil(data["results"]["total"] / (author && author in this.author_path_word_dict ? 30 : 20)))
             }
         },
 

@@ -4,7 +4,7 @@ class CopyManga extends ComicSource {
 
     key = "copy_manga"
 
-    version = "1.4.1"
+    version = "1.4.2"
 
     minAppVersion = "1.6.0"
 
@@ -529,7 +529,7 @@ class CopyManga extends ComicSource {
 
             return {
                 comics: data["results"]["list"].map(parseComic),
-                maxPage: (data["results"]["total"] - (data["results"]["total"] % 21)) / 21 + 1
+                maxPage: Math.max(1, Math.ceil(data["results"]["total"] / 30))
             }
         },
         optionList: [

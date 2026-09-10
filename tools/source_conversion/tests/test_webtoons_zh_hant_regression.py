@@ -36,7 +36,7 @@ class TestWebtoonsZhHantRegression(unittest.TestCase):
             str(self.extensions_root),
             timestamp=self.canonical_ir["provenance"]["generatedTimestamp"],
             language="zh-Hant",
-            source_version="1.0.0",
+            source_version="1.0.1",
         )
 
         expected = copy.deepcopy(self.canonical_ir)
@@ -56,17 +56,17 @@ class TestWebtoonsZhHantRegression(unittest.TestCase):
         )
 
         self.assertEqual(self.canonical_ir["id"], "zh-Hant_webtoons")
-        self.assertEqual(self.canonical_ir["version"], "1.0.0")
+        self.assertEqual(self.canonical_ir["version"], "1.0.1")
         self.assertEqual(self.canonical_ir["languages"], ["zh-Hant"])
         self.assertEqual(locale_cookie["value"], "zh_TW")
 
         self.assertIn('key = "zh_Hant_webtoons"', self.canonical_final)
-        self.assertIn('version = "1.0.0"', self.canonical_final)
+        self.assertIn('version = "1.0.1"', self.canonical_final)
         self.assertIn("/zh-hant/ranking/trending", self.canonical_final)
         self.assertIn("/zh-hant/originals/${day}?sortOrder=UPDATE", self.canonical_final)
         self.assertIn("/zh-hant/search?keyword=${encodeURIComponent(keyword)}", self.canonical_final)
         self.assertIn('.webtoon_list li a', self.canonical_final)
-        self.assertIn('/api/v1/${type}/${titleId}/episodes?pageSize=99999', self.canonical_final)
+        self.assertIn('/api/v1/${type}/${titleId}/episodes?pageSize=200', self.canonical_final)
         self.assertIn('readingLanguageCode=zh-hant', self.canonical_final)
         self.assertIn('div#_imageList > img', self.canonical_final)
         self.assertIn('el.attributes["data-url"]', self.canonical_final)
@@ -93,7 +93,7 @@ class TestWebtoonsZhHantRegression(unittest.TestCase):
         self.assertEqual(english[0]["version"], "1.0.1")
         self.assertEqual(english[0]["fileName"], "webtoons.js")
         self.assertEqual(len(zh_hant), 1)
-        self.assertEqual(zh_hant[0]["version"], "1.0.0")
+        self.assertEqual(zh_hant[0]["version"], "1.0.1")
         self.assertEqual(zh_hant[0]["fileName"], "webtoons_zh_hant.js")
 
 

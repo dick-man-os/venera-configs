@@ -177,7 +177,7 @@ class MyComic extends ComicSource {
 
     key = "mycomic";
 
-    version = "1.1.0";
+    version = "1.1.1";
 
     minAppVersion = "1.4.6";
 
@@ -599,7 +599,8 @@ class MyComic extends ComicSource {
                 cover: cover,
                 description: description,
                 tags: tags,
-                chapters: chapters,
+                // The embedded list and fallback links are newest first.
+                chapters: new Map([...chapters].reverse()),
                 thumbnails: [cover],
                 url: url,
                 uploader: author || undefined,

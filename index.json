@@ -3,13 +3,13 @@
         "name": "拷贝漫画",
         "fileName": "copy_manga.js",
         "key": "copy_manga",
-        "version": "1.4.1"
+        "version": "1.4.2"
     },
     {
         "name": "拷贝漫画(多账号)",
         "fileName": "copy_manga_multi_accounts.js",
         "key": "copy_manga",
-        "version": "1.4.1"
+        "version": "1.4.2"
     },
     {
         "name": "Komiic",
@@ -102,7 +102,7 @@
         "name": "漫画柜",
         "fileName": "manhuagui.js",
         "key": "ManHuaGui",
-        "version": "1.2.1"
+        "version": "1.2.2"
     },
     {
         "name": "漫蛙吧",
@@ -180,7 +180,7 @@
         "name": "热辣漫画",
         "fileName": "hot_manga.js",
         "key": "hot_manga",
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     {
         "name": "Kavita",
@@ -199,7 +199,7 @@
         "name": "MYCOMIC",
         "fileName": "mycomic.js",
         "key": "mycomic",
-        "version": "1.1.0",
+        "version": "1.1.1",
         "description": "mycomic.com漫画源, 遇到Cloudflare验证请在源设置中登录"
     },
     {
@@ -212,19 +212,19 @@
         "name": "Webtoons 繁體中文",
         "fileName": "webtoons_zh_hant.js",
         "key": "zh_Hant_webtoons",
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     {
         "name": "Manhuashe",
         "fileName": "manhuashe.js",
         "key": "zh_Hans_manhuashe",
-        "version": "1.0.1"
+        "version": "1.0.2"
     },
     {
         "name": "無限動漫",
         "fileName": "comicabc.js",
         "key": "zh_Hant_comicabc",
-        "version": "1.0.3"
+        "version": "1.0.4"
     },
     {
         "name": "Flame Comics",

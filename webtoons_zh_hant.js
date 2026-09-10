@@ -14,7 +14,7 @@
 class ZhhantWebtoonsSource extends ComicSource {
     name = "Webtoons 繁體中文"
     key = "zh_Hant_webtoons"
-    version = "1.0.0"
+    version = "1.0.1"
     minAppVersion = "1.6.0"
 
     static baseUrl = "https://www.webtoons.com"
@@ -192,18 +192,35 @@ class ZhhantWebtoonsSource extends ComicSource {
         }
 
         let type = (comicUrl.includes("/canvas/") || comicUrl.includes("/challenge/")) ? "canvas" : "webtoon";
-        let apiUrl = `${ZhhantWebtoonsSource.mobileUrl}/api/v1/${type}/${titleId}/episodes?pageSize=99999`;
-        if (type === "canvas") {
-            apiUrl += "&readingLanguageCode=zh-hant";
+        let apiUrl = `${ZhhantWebtoonsSource.mobileUrl}/api/v1/${type}/${titleId}/episodes?pageSize=200`;
+        if (type === "canvas") apiUrl += "&readingLanguageCode=zh-hant";
+        const rawEpisodes = [], seen = new Set();
+        let cursor = 0, ended = false;
+        for (let pass = 0; pass < 1000; pass++) {
+            const url = apiUrl + (cursor ? `&cursor=${cursor}` : "");
+            const res = await Network.get(url, ZhhantWebtoonsSource.headers);
+            if (res.status !== 200) throw new Error(`Failed to load episodes, status: ${res.status}`);
+            const data = JSON.parse(res.body), result = data?.result;
+            if (data.success === false || !Array.isArray(result?.episodeList))
+                throw new Error("Invalid Webtoons episode response");
+            const next = result.nextCursor;
+            if (!Number.isSafeInteger(next) || next < 0)
+                throw new Error("Missing or invalid Webtoons cursor");
+            const before = seen.size;
+            for (const ep of result.episodeList) {
+                if (typeof ep?.viewerLink !== "string" || !ep.viewerLink.trim())
+                    throw new Error("Missing Webtoons chapter identity");
+                if (seen.has(ep.viewerLink)) continue;
+                seen.add(ep.viewerLink);
+                rawEpisodes.push(ep);
+            }
+            if ((cursor || next) && seen.size === before)
+                throw new Error("Non-progressing Webtoons chapter page");
+            if (next === 0) { ended = true; break; }
+            if (next <= cursor) throw new Error("Non-progressing Webtoons cursor");
+            cursor = next;
         }
-
-        let res = await Network.get(apiUrl, ZhhantWebtoonsSource.headers);
-        if (res.status !== 200) {
-            throw new Error(`Failed to load episodes from API, status: ${res.status}`);
-        }
-
-        let data = JSON.parse(res.body);
-        let rawEpisodes = (data.result && data.result.episodeList) ? data.result.episodeList : [];
+        if (!ended) throw new Error("Incomplete Webtoons chapter pagination");
 
         // Regex for episode number & season extraction:
         // Group 1: season number
@@ -277,8 +294,8 @@ class ZhhantWebtoonsSource extends ComicSource {
         }
 
         let chaptersMap = new Map();
-        // Insert episodes in reverse order (latest first) to match upstream Webtoons conventions
-        for (let i = episodes.length - 1; i >= 0; i--) {
+        // The API is chronological. Preserve complete, deduplicated reader order.
+        for (let i = 0; i < episodes.length; i++) {
             let ep = episodes[i];
             let chNumberStr = Number.isInteger(ep.chapterNumber)
                 ? ep.chapterNumber.toString()
@@ -312,5 +329,39 @@ class ZhhantWebtoonsSource extends ComicSource {
      */
     parsePagesCustom = (images, htmlBody) => {
         return images;
+    }
+
+    // The combined search route is a preview and ignores page. Search each
+    // provider-owned result type, with its advertised 30-slot page count.
+    search = {
+        load: async (keyword, options, page) => {
+            if (!Number.isSafeInteger(page) || page < 1) throw new Error("Invalid search page");
+            const comics = [], seen = new Set();
+            let maxPage = 1;
+            for (const type of ["originals", "canvas"]) {
+                const url = `${ZhhantWebtoonsSource.baseUrl}/zh-hant/search/${type}?keyword=${encodeURIComponent(keyword)}&page=${page}`;
+                const res = await Network.get(url, ZhhantWebtoonsSource.headers);
+                if (res.status !== 200) throw new Error(`Failed to search Webtoons, status: ${res.status}`);
+                const doc = new HtmlDocument(res.body);
+                try {
+                    const elements = doc.querySelectorAll(".webtoon_list li a");
+                    const text = (doc.querySelector(".series_count .number")?.text || "").replace(/,/g, "").trim();
+                    if (!/^\d+$/.test(text) && elements.length) throw new Error("Missing Webtoons search count");
+                    const total = text ? Number(text) : 0;
+                    if (!Number.isSafeInteger(total) || total < 0) throw new Error("Invalid Webtoons search count");
+                    const last = Math.max(1, Math.ceil(total / 30));
+                    maxPage = Math.max(maxPage, last);
+                    if (page > last) continue;
+                    for (const el of elements) {
+                        const id = el.attributes.href || "";
+                        if (!id || seen.has(id)) continue;
+                        seen.add(id);
+                        comics.push(new Comic({id, title: el.querySelector(".title")?.text || "",
+                            cover: el.querySelector("img")?.attributes.src || ""}));
+                    }
+                } finally { doc.dispose(); }
+            }
+            return {comics, maxPage};
+        }
     }
 }

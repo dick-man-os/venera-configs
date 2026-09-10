@@ -15,7 +15,7 @@
             id: (el.attributes['href'] || ''),
             title: (el.text || ''),
         }));
-        chaptersList.reverse();
+        // The site DOM is oldest first; preserve that reader order.
 
         let chaptersObj = {};
         for (let ch of chaptersList) {
