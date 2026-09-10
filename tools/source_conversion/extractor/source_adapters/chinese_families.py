@@ -64,7 +64,7 @@ def operation_contract(family, locale, base):
             "chapters": {"url": api + "/chapter", "method": "GET", "query": {"translatedLanguages[]": lang},
                          "pagination": {"limit": 200, "offset": 0, "hasNext": "meta.limit + meta.offset < meta.total"},
                          "access": {"url": api + "/gating/check", "method": "POST", "chunkSize": 200, "allow": "data.attributes.map[id] === true"},
-                         "order": "volume desc, chapter desc"},
+                         "order": "oldest first; reverse complete volume desc, chapter desc response"},
             "pages": {"url": api + "/images/chapter/{chapterId}?newQualities=true", "method": "GET",
                       "fields": {"imageUrl": "data.baseUrl/chapter/{chapterId}/{data.hash}/source/{data.source[].filename}"},
                       "access": "gating check and HTTP 402 rejection", "order": "response"}}
@@ -77,7 +77,7 @@ def operation_contract(family, locale, base):
                        "pagination": {"nextSelector": "div.more_area, div.paginate a[onclick] + a"}},
             "details": {"url": "{comicId}", "method": "GET", "fields": {"title": "h1.subj, h3.subj", "description": "#_asideDetail p.summary"}},
             "chapters": {"url": "{comicId}", "method": "GET", "selector": "ul#_listUl li",
-                         "pagination": {"nextSelector": "div.paginate a[onclick] + a"}, "order": "response"},
+                         "pagination": {"nextSelector": "div.paginate a[onclick] + a"}, "order": "oldest first; reverse complete newest-first response"},
             "pages": {"url": "{chapterId}", "method": "GET", "selector": "div#_imageList > img", "fields": {"imageUrl": "@data-url"}, "order": "response"}}
     if family == "iqiyi":
         return {
@@ -114,7 +114,7 @@ def operation_contract(family, locale, base):
             "details": {"url": api + "/manga/{comicId}", "method": "GET", "fields": {"title": "data.attributes.title", "description": "data.attributes.description"}},
             "chapters": {"url": api + "/manga/{comicId}/feed", "method": "GET",
                          "pagination": {"limit": 500, "offset": 0, "hasNext": "limit+offset < total"},
-                         "access": "exclude future/empty/unavailable; reject external chapter with zero pages", "order": "volume desc, chapter desc"},
+                         "access": "exclude future/empty/unavailable; reject external chapter with zero pages", "order": "oldest first; reverse complete volume desc, chapter desc response"},
             "pages": {"url": api + "/at-home/server/{chapterId}", "method": "GET",
                       "fields": {"imageUrl": "baseUrl/data/{chapter.hash}/{chapter.data[]}"},
                       "refresh": "at-home server after 300000 milliseconds", "order": "response"}}
@@ -127,9 +127,12 @@ def make_ir(candidate, timestamp):
         raise ValueError("Candidate has no reviewed family contract")
     locale = candidate.get("canonicalLocale", candidate["upstreamLang"])
     base = candidate["baseUrl"]
+    display_name = candidate["name"]
+    if family in {"mangadex", "namicomi"}:
+        display_name += "（" + {"zh-Hant": "繁體中文", "zh-Hans": "简体中文"}[locale] + "）"
     ir = {
         "schemaVersion": "0.2", "id": "keiyoushi_" + candidate["sourceId"],
-        "name": candidate["name"], "languages": [locale], "contentOrigins": [],
+        "name": display_name, "languages": [locale], "contentOrigins": [],
         "contentWarning": candidate["contentWarning"],
         "sourceType": "api" if family in {"globalcomix", "namicomi", "mangadex"} else "hybrid" if family == "iqiyi" else "html",
         "baseUrl": base, "mobileUrl": base, "requiresAuth": False, "requiresWebView": False,

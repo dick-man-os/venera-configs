@@ -714,3 +714,7 @@ inventory and batch validators plus their schemas. The guarded canonical
 `--write` lifecycle is used only for reviewed inventory
 checkpoint reconciliation; candidate source outputs remain temporary until the
 independent production-write review.
+
+### 9F-R1 chapter contract and MangaDex architecture
+
+See [the consolidation audit and Windows handoff](CHINESE_CHAPTER_CONTRACT.md) for the canonical locale architecture, complete chronological chapter contract, live access-specific counts, and identity/restart verification.

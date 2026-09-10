@@ -1,7 +1,7 @@
 {
   "schemaVersion": "0.2",
   "id": "keiyoushi_1163192659786040070",
-  "name": "NamiComi",
+  "name": "NamiComi（简体中文）",
   "languages": [
     "zh-Hans"
   ],
@@ -65,7 +65,7 @@
       "chunkSize": 200,
       "allow": "data.attributes.map[id] === true"
     },
-    "order": "volume desc, chapter desc"
+    "order": "oldest first; reverse complete volume desc, chapter desc response"
   },
   "pages": {
     "url": "https://api.namicomi.com/images/chapter/{chapterId}?newQualities=true",
@@ -88,5 +88,5 @@
     "generatedTimestamp": "2026-09-08T16:25:36Z"
   },
   "artifactId": "namicomi_zh_hans",
-  "version": "1.0.1"
+  "version": "1.0.2"
 }

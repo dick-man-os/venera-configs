@@ -72,7 +72,7 @@ class DongmanRuntimeTests(unittest.TestCase):
             htmlReply({json.dumps(detail)}); htmlReply({json.dumps(page)});
             const result = await s.comic.loadInfo('/list');
             eq(result.subtitle, 'Correct'); eq(result.title, 'Title');
-            eq(result.chapters, {{[s.baseUrl+'/reader/2']:'Two', [s.baseUrl+'/reader/1']:'One'}});
+            eq(result.chapters, {{[s.baseUrl+'/reader/1']:'One', [s.baseUrl+'/reader/2']:'Two'}});
             eq(disposed, 2);
         """)
 
@@ -198,7 +198,7 @@ class DongmanRuntimeTests(unittest.TestCase):
         root = (ROOT/f'{name}.js').read_bytes()
         self.assertEqual(root, (ROOT/'sources_generated'/f'{name}.base.js').read_bytes())
         self.assertEqual((ROOT/f'{name}.js').read_text(encoding='utf-8'), generate_venera_js(ir))
-        self.assertEqual(ir['version'], '1.0.2')
+        self.assertEqual(ir['version'], '1.0.3')
         index = json.loads((ROOT/'index.json').read_bytes())
         entry = next(item for item in index if item['fileName'] == name+'.js')
         self.assertEqual(entry['version'], ir['version'])

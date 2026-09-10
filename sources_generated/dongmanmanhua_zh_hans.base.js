@@ -3,10 +3,10 @@
 class Keiyoushi4222375517460530289Source extends ComicSource {
     name = "Dongman Manhua";
     key = "keiyoushi_4222375517460530289";
-    version = "1.0.2";
+    version = "1.0.3";
     minAppVersion = "1.6.0";
     url = "";
-    config = {"schemaVersion":"0.2","id":"keiyoushi_4222375517460530289","name":"Dongman Manhua","languages":["zh-Hans"],"contentOrigins":[],"contentWarning":"SAFE","sourceType":"html","baseUrl":"https://www.dongmanmanhua.cn","mobileUrl":"https://www.dongmanmanhua.cn","requiresAuth":false,"requiresWebView":false,"familyContract":"dongmanmanhua-v1","headers":{"Referer":"https://www.dongmanmanhua.cn/","Origin":"https://www.dongmanmanhua.cn"},"explore":{"popular":{"url":"https://www.dongmanmanhua.cn/dailySchedule","method":"GET","maxPage":1},"latest":{"url":"https://www.dongmanmanhua.cn/dailySchedule?sortOrder=UPDATE&webtoonCompleteType=ONGOING","method":"GET","maxPage":1}},"search":{"url":"https://www.dongmanmanhua.cn/search","method":"GET","selector":"#content > div.card_wrap.search ul:not(#filterLayer) li a","pagination":{"nextSelector":"div.more_area, div.paginate a[onclick] + a"}},"details":{"url":"{comicId}","method":"GET","fields":{"title":"h1.subj, h3.subj","description":"#_asideDetail p.summary"}},"chapters":{"url":"{comicId}","method":"GET","selector":"ul#_listUl li","pagination":{"nextSelector":"div.paginate a[onclick] + a"},"order":"response"},"pages":{"url":"{chapterId}","method":"GET","selector":"div#_imageList > img","fields":{"imageUrl":"@data-url"},"order":"response"},"provenance":{"type":"converted","upstreamProject":"keiyoushi","upstreamPackage":"eu.kanade.tachiyomi.extension.zh.dongmanmanhua","upstreamSourceId":"4222375517460530289","upstreamCommit":"5a0261c718cd6d5ecf14963d837f29024c792398","upstreamVersion":"1.4.6","upstreamLicense":"Apache-2.0","converterVersion":"0.1.0","generatedTimestamp":"2026-09-08T16:25:36Z"},"artifactId":"dongmanmanhua_zh_hans","version":"1.0.2"};
+    config = {"schemaVersion":"0.2","id":"keiyoushi_4222375517460530289","name":"Dongman Manhua","languages":["zh-Hans"],"contentOrigins":[],"contentWarning":"SAFE","sourceType":"html","baseUrl":"https://www.dongmanmanhua.cn","mobileUrl":"https://www.dongmanmanhua.cn","requiresAuth":false,"requiresWebView":false,"familyContract":"dongmanmanhua-v1","headers":{"Referer":"https://www.dongmanmanhua.cn/","Origin":"https://www.dongmanmanhua.cn"},"explore":{"popular":{"url":"https://www.dongmanmanhua.cn/dailySchedule","method":"GET","maxPage":1},"latest":{"url":"https://www.dongmanmanhua.cn/dailySchedule?sortOrder=UPDATE&webtoonCompleteType=ONGOING","method":"GET","maxPage":1}},"search":{"url":"https://www.dongmanmanhua.cn/search","method":"GET","selector":"#content > div.card_wrap.search ul:not(#filterLayer) li a","pagination":{"nextSelector":"div.more_area, div.paginate a[onclick] + a"}},"details":{"url":"{comicId}","method":"GET","fields":{"title":"h1.subj, h3.subj","description":"#_asideDetail p.summary"}},"chapters":{"url":"{comicId}","method":"GET","selector":"ul#_listUl li","pagination":{"nextSelector":"div.paginate a[onclick] + a"},"order":"oldest first; reverse complete newest-first response"},"pages":{"url":"{chapterId}","method":"GET","selector":"div#_imageList > img","fields":{"imageUrl":"@data-url"},"order":"response"},"provenance":{"type":"converted","upstreamProject":"keiyoushi","upstreamPackage":"eu.kanade.tachiyomi.extension.zh.dongmanmanhua","upstreamSourceId":"4222375517460530289","upstreamCommit":"5a0261c718cd6d5ecf14963d837f29024c792398","upstreamVersion":"1.4.6","upstreamLicense":"Apache-2.0","converterVersion":"0.1.0","generatedTimestamp":"2026-09-08T16:25:36Z"},"artifactId":"dongmanmanhua_zh_hans","version":"1.0.3"};
     get baseUrl() { return this.config.baseUrl; }
     get locale() { return this.config.languages[0]; }
     get headers() { return this.config.headers; }
@@ -197,7 +197,8 @@ class Keiyoushi4222375517460530289Source extends ComicSource {
             url = next;
         }
         if (!ended) throw new Error("Chapter traversal bound exceeded");
-        return this.chaptersObject(rows);
+        // The web list is newest first; Venera reader indices advance toward newer chapters.
+        return this.chaptersObject(rows.reverse());
     };
     images = async (comicId, epId) => this.html(this.readerBase(comicId, epId), (doc, url) =>
         doc.querySelectorAll(this.config.pages.selector).map(el => this.networkUrl(this.required(this.attr(el, null, "data-url")), url)));

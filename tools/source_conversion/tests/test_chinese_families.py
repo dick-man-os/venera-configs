@@ -365,7 +365,7 @@ class FamilyContractTests(unittest.TestCase):
         last=node(select={"ul#_listUl li":[row("Two","/read/2"),row("One","/read/1")]})
         self.runtime("dongmanmanhua", f"""
             htmlReply({json.dumps(first)}); htmlReply({json.dumps(last)});
-            eq(Object.values(await s.loadChapters("/title")),["Two","One"]);
+            eq(Object.values(await s.loadChapters("/title")),["One","Two"]);
             eq(calls[1].url,s.baseUrl+"/title?page=2"); eq(disposed,2);
         """)
 

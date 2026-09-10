@@ -1,12 +1,12 @@
 // Converted from the exact upstream commit in config.provenance.
 // Apache-2.0 upstream; bounded family contract. No downloaded code is executed.
 class Keiyoushi7859611418350123856Source extends ComicSource {
-    name = "NamiComi";
+    name = "NamiComi（繁體中文）";
     key = "keiyoushi_7859611418350123856";
-    version = "1.0.1";
+    version = "1.0.2";
     minAppVersion = "1.6.0";
     url = "";
-    config = {"schemaVersion":"0.2","id":"keiyoushi_7859611418350123856","name":"NamiComi","languages":["zh-Hant"],"contentOrigins":[],"contentWarning":"SAFE","sourceType":"api","baseUrl":"https://namicomi.com","mobileUrl":"https://namicomi.com","requiresAuth":false,"requiresWebView":false,"familyContract":"namicomi-v1","headers":{"Referer":"https://namicomi.com/","Origin":"https://namicomi.com"},"explore":{"popular":{"url":"https://api.namicomi.com/title/search","method":"GET"},"latest":{"url":"https://api.namicomi.com/title/search","method":"GET"}},"search":{"url":"https://api.namicomi.com/title/search","method":"GET","query":{"availableTranslatedLanguages[]":"zh-hant"},"pagination":{"limit":20,"offset":"(page-1)*20","hasNext":"meta.limit + meta.offset < meta.total","maxPage":"max(1, ceil(meta.total / meta.limit))"}},"details":{"url":"https://api.namicomi.com/title/{comicId}","method":"GET","fields":{"title":"data.attributes.title","description":"data.attributes.description"}},"chapters":{"url":"https://api.namicomi.com/chapter","method":"GET","query":{"translatedLanguages[]":"zh-hant"},"pagination":{"limit":200,"offset":0,"hasNext":"meta.limit + meta.offset < meta.total"},"access":{"url":"https://api.namicomi.com/gating/check","method":"POST","chunkSize":200,"allow":"data.attributes.map[id] === true"},"order":"volume desc, chapter desc"},"pages":{"url":"https://api.namicomi.com/images/chapter/{chapterId}?newQualities=true","method":"GET","fields":{"imageUrl":"data.baseUrl/chapter/{chapterId}/{data.hash}/source/{data.source[].filename}"},"access":"gating check and HTTP 402 rejection","order":"response"},"provenance":{"type":"converted","upstreamProject":"keiyoushi","upstreamPackage":"eu.kanade.tachiyomi.extension.all.namicomi","upstreamSourceId":"7859611418350123856","upstreamCommit":"5a0261c718cd6d5ecf14963d837f29024c792398","upstreamVersion":"1.4.6","upstreamLicense":"Apache-2.0","converterVersion":"0.1.0","generatedTimestamp":"2026-09-08T16:25:36Z"},"artifactId":"namicomi_zh_hant","version":"1.0.1"};
+    config = {"schemaVersion":"0.2","id":"keiyoushi_7859611418350123856","name":"NamiComi（繁體中文）","languages":["zh-Hant"],"contentOrigins":[],"contentWarning":"SAFE","sourceType":"api","baseUrl":"https://namicomi.com","mobileUrl":"https://namicomi.com","requiresAuth":false,"requiresWebView":false,"familyContract":"namicomi-v1","headers":{"Referer":"https://namicomi.com/","Origin":"https://namicomi.com"},"explore":{"popular":{"url":"https://api.namicomi.com/title/search","method":"GET"},"latest":{"url":"https://api.namicomi.com/title/search","method":"GET"}},"search":{"url":"https://api.namicomi.com/title/search","method":"GET","query":{"availableTranslatedLanguages[]":"zh-hant"},"pagination":{"limit":20,"offset":"(page-1)*20","hasNext":"meta.limit + meta.offset < meta.total","maxPage":"max(1, ceil(meta.total / meta.limit))"}},"details":{"url":"https://api.namicomi.com/title/{comicId}","method":"GET","fields":{"title":"data.attributes.title","description":"data.attributes.description"}},"chapters":{"url":"https://api.namicomi.com/chapter","method":"GET","query":{"translatedLanguages[]":"zh-hant"},"pagination":{"limit":200,"offset":0,"hasNext":"meta.limit + meta.offset < meta.total"},"access":{"url":"https://api.namicomi.com/gating/check","method":"POST","chunkSize":200,"allow":"data.attributes.map[id] === true"},"order":"oldest first; reverse complete volume desc, chapter desc response"},"pages":{"url":"https://api.namicomi.com/images/chapter/{chapterId}?newQualities=true","method":"GET","fields":{"imageUrl":"data.baseUrl/chapter/{chapterId}/{data.hash}/source/{data.source[].filename}"},"access":"gating check and HTTP 402 rejection","order":"response"},"provenance":{"type":"converted","upstreamProject":"keiyoushi","upstreamPackage":"eu.kanade.tachiyomi.extension.all.namicomi","upstreamSourceId":"7859611418350123856","upstreamCommit":"5a0261c718cd6d5ecf14963d837f29024c792398","upstreamVersion":"1.4.6","upstreamLicense":"Apache-2.0","converterVersion":"0.1.0","generatedTimestamp":"2026-09-08T16:25:36Z"},"artifactId":"namicomi_zh_hant","version":"1.0.2"};
     get baseUrl() { return this.config.baseUrl; }
     get locale() { return this.config.languages[0]; }
     get headers() { return this.config.headers; }
@@ -158,14 +158,17 @@ class Keiyoushi7859611418350123856Source extends ComicSource {
     };
     loadChapters = async id => {
         this.required(id);
-        const rows = [];
+        const rows = [], seen = new Set();
         let offset = 0, ended = false;
         for (let pass = 0; pass < 1000; pass++) {
             const values = [["titleId", id], ["includes[]", "organization"], ["limit", 200], ["offset", offset],
                 ["translatedLanguages[]", this.externalLocale()], ["order[volume]", "desc"], ["order[chapter]", "desc"]];
             const body = await this.json(this.query(this.config.chapters.url, values));
-            if (body === null) { ended = true; break; }
-                const data = this.array(body.data), more = this.pagination(body, offset);
+            if (body === null) { if (offset) throw new Error("Incomplete chapter pagination"); ended = true; break; }
+            const data = this.array(body.data), more = this.pagination(body, offset);
+            const before = seen.size;
+            for (const chapter of data) seen.add(this.required(chapter.id));
+            if ((offset || more) && seen.size === before) throw new Error("Non-progressing chapter pagination");
             rows.push(...data);
             if (!more) { ended = true; break; }
             if (!data.length) throw new Error("Non-progressing chapter pagination");
@@ -175,7 +178,8 @@ class Keiyoushi7859611418350123856Source extends ComicSource {
         const unique = this.unique(rows);
         if (!unique.length) return {};
         const access = await this.access(unique.map(c => this.required(c.id)));
-        return this.chaptersObject(unique.filter(c => access[c.id] === true).map(c => {
+        // Convert the complete upstream newest-first list once, after identity deduplication.
+        return this.chaptersObject(unique.filter(c => access[c.id] === true).reverse().map(c => {
             const a = c.attributes;
             if (!a) throw new Error("Missing chapter attributes");
             const parts = [a.volume ? "Vol." + a.volume : "", a.chapter ? "Ch." + a.chapter : ""].filter(Boolean);

@@ -1,0 +1,92 @@
+[
+  {
+    "artifact": "namicomi_zh_hant",
+    "comicId": "73hLs8EN",
+    "title": "愛上我前未婚夫的祖父",
+    "authoritativeAccessible": 3,
+    "oldestTitle": "Ch.1",
+    "latestTitle": "Ch.3",
+    "chapters": {
+      "EiiT84c6": "Ch.1",
+      "sbLt8yL7": "Ch.2",
+      "9B7mW7zu": "Ch.3"
+    }
+  },
+  {
+    "artifact": "namicomi_zh_hans",
+    "comicId": "5eKytbrB",
+    "title": "我是赛拉",
+    "authoritativeAccessible": 1,
+    "oldestTitle": "我是赛拉",
+    "latestTitle": "我是赛拉",
+    "chapters": {
+      "URFD7dhU": "我是赛拉"
+    }
+  },
+  {
+    "artifact": "mangadex_zh_hant",
+    "comicId": "/manga/77bee52c-d2d6-44ad-a33a-1734c1fe696a",
+    "title": "Kage no Jitsuryokusha ni Naritakute!",
+    "authoritativeAccessible": 6,
+    "oldestTitle": "Ch.75",
+    "latestTitle": "Ch.84",
+    "chapters": {
+      "/chapter/8535e04c-3e27-4195-8e6a-949a285dcfd4": "Ch.75",
+      "/chapter/ece802e9-daff-4c65-bf6c-30dc8319491d": "Ch.81",
+      "/chapter/f4e9a0ac-d02d-4fc8-89a0-65091a3d1881": "Ch.82.1",
+      "/chapter/04ea241c-6c4d-4af7-acae-7249e600a1fa": "Ch.82.2",
+      "/chapter/3723b7b9-0984-4942-a68d-637621568b22": "Ch.83",
+      "/chapter/ffdacd1e-4272-40eb-992c-04f07736f74d": "Ch.84"
+    }
+  },
+  {
+    "artifact": "mangadex_zh_hans",
+    "comicId": "/manga/77bee52c-d2d6-44ad-a33a-1734c1fe696a",
+    "title": "Kage no Jitsuryokusha ni Naritakute!",
+    "authoritativeAccessible": 2,
+    "oldestTitle": "Ch.76.1",
+    "latestTitle": "Ch.76.2",
+    "chapters": {
+      "/chapter/de75b745-d4c2-43dd-9c69-c650b206e015": "Ch.76.1",
+      "/chapter/81f5d624-a888-46dc-88e0-78c7dc4df632": "Ch.76.2"
+    }
+  },
+  {
+    "artifact": "globalcomix_zh_hans",
+    "comicId": "8304/--25",
+    "title": "暴走群俠傳",
+    "authoritativeAccessible": 7,
+    "oldestTitle": "Ch.1 - 第一話：關於我行俠仗義被打",
+    "latestTitle": "Ch.7 - 第六話：大人你聽我狡辯！！",
+    "chapters": {
+      "d76cbbe5-58df-44b6-bccb-7875a403ce43": "Ch.1 - 第一話：關於我行俠仗義被打",
+      "ef983dd9-4d24-4b61-af5a-c93ee46d9bfc": "Ch.2 - 第二話：我大意了！沒有閃！",
+      "25d8ec68-8a26-4a1d-abd7-ea4d5a7b0cac": "Ch.3 - 第三話：對不起，我是主角！",
+      "482074eb-ff0b-4ca6-81a3-54693a880ba2": "Ch.4 - 第四話：你是風兒，我是沙。",
+      "754e3414-3844-45a7-82cd-8f021a294ed7": "Ch.5 - 第五話：你跟我談人性？（上）",
+      "6948bef1-beea-4599-b81b-09d18210837f": "Ch.6 - 第五話：你跟我談人性？（下）",
+      "8b0a22cc-1164-412e-af64-e31674f0cb27": "Ch.7 - 第六話：大人你聽我狡辯！！"
+    }
+  },
+  {
+    "artifact": "dongmanmanhua_zh_hans",
+    "comicId": "https://www.dongmanmanhua.cn/SUSPENSE/ruchuyizhedenver/list?title_no=1954",
+    "title": "如出一辙的女儿",
+    "authoritativeAccessible": 11,
+    "oldestTitle": "第1话",
+    "latestTitle": "【免费】后记",
+    "chapters": {
+      "https://www.dongmanmanhua.cn/SUSPENSE/ruchuyizhedenver/%E7%AC%AC1%E8%AF%9D/viewer?title_no=1954&episode_no=1": "第1话",
+      "https://www.dongmanmanhua.cn/SUSPENSE/ruchuyizhedenver/%E7%AC%AC2%E8%AF%9D/viewer?title_no=1954&episode_no=2": "第2话",
+      "https://www.dongmanmanhua.cn/SUSPENSE/ruchuyizhedenver/%E7%AC%AC3%E8%AF%9D/viewer?title_no=1954&episode_no=3": "第3话",
+      "https://www.dongmanmanhua.cn/SUSPENSE/ruchuyizhedenver/%E7%AC%AC4%E8%AF%9D/viewer?title_no=1954&episode_no=4": "第4话",
+      "https://www.dongmanmanhua.cn/SUSPENSE/ruchuyizhedenver/%E7%AC%AC5%E8%AF%9D/viewer?title_no=1954&episode_no=5": "第5话",
+      "https://www.dongmanmanhua.cn/SUSPENSE/ruchuyizhedenver/%E7%AC%AC6%E8%AF%9D/viewer?title_no=1954&episode_no=6": "第6话",
+      "https://www.dongmanmanhua.cn/SUSPENSE/ruchuyizhedenver/%E7%AC%AC7%E8%AF%9D/viewer?title_no=1954&episode_no=7": "第7话",
+      "https://www.dongmanmanhua.cn/SUSPENSE/ruchuyizhedenver/%E7%AC%AC8%E8%AF%9D/viewer?title_no=1954&episode_no=8": "第8话",
+      "https://www.dongmanmanhua.cn/SUSPENSE/ruchuyizhedenver/%E7%AC%AC9%E8%AF%9D/viewer?title_no=1954&episode_no=9": "第9话",
+      "https://www.dongmanmanhua.cn/SUSPENSE/ruchuyizhedenver/%E7%AC%AC10%E8%AF%9D/viewer?title_no=1954&episode_no=10": "第10话",
+      "https://www.dongmanmanhua.cn/SUSPENSE/ruchuyizhedenver/%E5%85%8D%E8%B4%B9%E5%90%8E%E8%AE%B0/viewer?title_no=1954&episode_no=104": "【免费】后记"
+    }
+  }
+]

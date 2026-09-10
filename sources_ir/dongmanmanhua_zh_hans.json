@@ -52,7 +52,7 @@
     "pagination": {
       "nextSelector": "div.paginate a[onclick] + a"
     },
-    "order": "response"
+    "order": "oldest first; reverse complete newest-first response"
   },
   "pages": {
     "url": "{chapterId}",
@@ -75,5 +75,5 @@
     "generatedTimestamp": "2026-09-08T16:25:36Z"
   },
   "artifactId": "dongmanmanhua_zh_hans",
-  "version": "1.0.2"
+  "version": "1.0.3"
 }

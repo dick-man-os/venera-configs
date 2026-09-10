@@ -1,7 +1,7 @@
 {
   "schemaVersion": "0.2",
   "id": "keiyoushi_5148895169070562838",
-  "name": "MangaDex",
+  "name": "MangaDex（简体中文）",
   "languages": [
     "zh-Hans"
   ],
@@ -63,7 +63,7 @@
       "hasNext": "limit+offset < total"
     },
     "access": "exclude future/empty/unavailable; reject external chapter with zero pages",
-    "order": "volume desc, chapter desc"
+    "order": "oldest first; reverse complete volume desc, chapter desc response"
   },
   "pages": {
     "url": "https://api.mangadex.org/at-home/server/{chapterId}",
@@ -86,5 +86,5 @@
     "generatedTimestamp": "2026-09-09T00:00:00Z"
   },
   "artifactId": "mangadex_zh_hans",
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

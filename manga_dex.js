@@ -8,7 +8,7 @@ class MangaDex extends ComicSource {
     // unique id of the source
     key = "manga_dex"
 
-    version = "1.1.1"
+    version = "1.1.2"
 
     minAppVersion = "1.6.0"
 
@@ -518,13 +518,27 @@ class MangaDex extends ComicSource {
 
         },
         getChapters: async (id) => {
-            let res = await fetch(`https://api.mangadex.org/manga/${id}/feed?limit=500&translatedLanguage[]=en&order[chapter]=asc`)
-            if (!res.ok) {
-                throw new Error("Network response was not ok")
+            const rows = [], seen = new Set()
+            let offset = 0, ended = false
+            for (let page = 0; page < 1000; page++) {
+                const res = await fetch(`https://api.mangadex.org/manga/${id}/feed?limit=500&offset=${offset}&translatedLanguage[]=en&order[chapter]=asc`)
+                if (!res.ok) throw new Error("Network response was not ok")
+                const data = await res.json()
+                if (!Array.isArray(data.data) || !Number.isSafeInteger(data.limit) || data.limit <= 0 ||
+                    data.offset !== offset || !Number.isSafeInteger(data.total) || data.total < 0)
+                    throw new Error("Invalid chapter pagination")
+                const more = offset + data.limit < data.total, before = seen.size
+                for (const chapter of data.data) {
+                    if (typeof chapter.id !== "string" || !chapter.id) throw new Error("Missing chapter identity")
+                    if (!seen.has(chapter.id)) { seen.add(chapter.id); rows.push(chapter) }
+                }
+                if ((offset || more) && seen.size === before) throw new Error("Non-progressing chapter pagination")
+                if (!more) { ended = true; break }
+                offset += data.limit
             }
-            let data = await res.json()
+            if (!ended) throw new Error("Chapter traversal bound exceeded")
             let chapters = new Map()
-            for (let chapter of data['data']) {
+            for (let chapter of rows) {
                 let id = chapter['id']
                 let chapterId = chapter['attributes']['chapter'] ?? "Oneshot"
                 let title = chapter['attributes']['title']

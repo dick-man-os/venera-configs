@@ -1,12 +1,12 @@
 // Converted from the exact upstream commit in config.provenance.
 // Apache-2.0 upstream; bounded family contract. No downloaded code is executed.
 class Keiyoushi5148895169070562838Source extends ComicSource {
-    name = "MangaDex";
+    name = "MangaDex（简体中文）";
     key = "keiyoushi_5148895169070562838";
-    version = "1.0.0";
+    version = "1.0.1";
     minAppVersion = "1.6.0";
     url = "";
-    config = {"schemaVersion":"0.2","id":"keiyoushi_5148895169070562838","name":"MangaDex","languages":["zh-Hans"],"contentOrigins":[],"contentWarning":"MIXED","sourceType":"api","baseUrl":"https://mangadex.org","mobileUrl":"https://mangadex.org","requiresAuth":false,"requiresWebView":false,"familyContract":"mangadex-v1","headers":{"Referer":"https://mangadex.org/","Origin":"https://mangadex.org"},"explore":{"popular":{"url":"https://api.mangadex.org/manga","method":"GET"},"latest":{"url":"https://api.mangadex.org/chapter","method":"GET","pagination":{"limit":100,"offset":"(page-1)*100","hasNext":"limit+offset < total","maxPage":"max(1, ceil(total / limit))"}}},"search":{"url":"https://api.mangadex.org/manga","method":"GET","query":{"availableTranslatedLanguage[]":"zh"},"pagination":{"limit":20,"offset":"(page-1)*20","hasNext":"limit+offset < total","maxPage":"max(1, ceil(total / limit))"}},"details":{"url":"https://api.mangadex.org/manga/{comicId}","method":"GET","fields":{"title":"data.attributes.title","description":"data.attributes.description"}},"chapters":{"url":"https://api.mangadex.org/manga/{comicId}/feed","method":"GET","pagination":{"limit":500,"offset":0,"hasNext":"limit+offset < total"},"access":"exclude future/empty/unavailable; reject external chapter with zero pages","order":"volume desc, chapter desc"},"pages":{"url":"https://api.mangadex.org/at-home/server/{chapterId}","method":"GET","fields":{"imageUrl":"baseUrl/data/{chapter.hash}/{chapter.data[]}"},"refresh":"at-home server after 300000 milliseconds","order":"response"},"provenance":{"type":"converted","upstreamProject":"keiyoushi","upstreamPackage":"eu.kanade.tachiyomi.extension.all.mangadex","upstreamSourceId":"5148895169070562838","upstreamCommit":"5a0261c718cd6d5ecf14963d837f29024c792398","upstreamVersion":"1.4.212","upstreamLicense":"Apache-2.0","converterVersion":"0.1.0","generatedTimestamp":"2026-09-09T00:00:00Z"},"artifactId":"mangadex_zh_hans","version":"1.0.0"};
+    config = {"schemaVersion":"0.2","id":"keiyoushi_5148895169070562838","name":"MangaDex（简体中文）","languages":["zh-Hans"],"contentOrigins":[],"contentWarning":"MIXED","sourceType":"api","baseUrl":"https://mangadex.org","mobileUrl":"https://mangadex.org","requiresAuth":false,"requiresWebView":false,"familyContract":"mangadex-v1","headers":{"Referer":"https://mangadex.org/","Origin":"https://mangadex.org"},"explore":{"popular":{"url":"https://api.mangadex.org/manga","method":"GET"},"latest":{"url":"https://api.mangadex.org/chapter","method":"GET","pagination":{"limit":100,"offset":"(page-1)*100","hasNext":"limit+offset < total","maxPage":"max(1, ceil(total / limit))"}}},"search":{"url":"https://api.mangadex.org/manga","method":"GET","query":{"availableTranslatedLanguage[]":"zh"},"pagination":{"limit":20,"offset":"(page-1)*20","hasNext":"limit+offset < total","maxPage":"max(1, ceil(total / limit))"}},"details":{"url":"https://api.mangadex.org/manga/{comicId}","method":"GET","fields":{"title":"data.attributes.title","description":"data.attributes.description"}},"chapters":{"url":"https://api.mangadex.org/manga/{comicId}/feed","method":"GET","pagination":{"limit":500,"offset":0,"hasNext":"limit+offset < total"},"access":"exclude future/empty/unavailable; reject external chapter with zero pages","order":"oldest first; reverse complete volume desc, chapter desc response"},"pages":{"url":"https://api.mangadex.org/at-home/server/{chapterId}","method":"GET","fields":{"imageUrl":"baseUrl/data/{chapter.hash}/{chapter.data[]}"},"refresh":"at-home server after 300000 milliseconds","order":"response"},"provenance":{"type":"converted","upstreamProject":"keiyoushi","upstreamPackage":"eu.kanade.tachiyomi.extension.all.mangadex","upstreamSourceId":"5148895169070562838","upstreamCommit":"5a0261c718cd6d5ecf14963d837f29024c792398","upstreamVersion":"1.4.212","upstreamLicense":"Apache-2.0","converterVersion":"0.1.0","generatedTimestamp":"2026-09-09T00:00:00Z"},"artifactId":"mangadex_zh_hans","version":"1.0.1"};
     get baseUrl() { return this.config.baseUrl; }
     get locale() { return this.config.languages[0]; }
     get headers() { return this.config.headers; }
@@ -169,22 +169,26 @@ class Keiyoushi5148895169070562838Source extends ComicSource {
         return this.manga(body.data);
     };
     loadChapters = async id => {
-        const uuid=this.uuid(id), rows=[];
+        const uuid=this.uuid(id), rows=[], seen=new Set();
         let offset=0, ended=false;
         for(let pass=0;pass<1000;pass++) {
             const body=await this.json(this.query(this.config.chapters.url.replace("{comicId}",uuid),[
                 ["includes[]","scanlation_group"],["includes[]","user"],["limit",500],["offset",offset],
                 ["translatedLanguage[]",this.dexLocale()],["order[volume]","desc"],["order[chapter]","desc"],
                 ["includeFuturePublishAt",0],["includeEmptyPages",0],["includeUnavailable",0],...this.allRatings()]));
-            if(body === null) { ended=true; break; }
+            if(body === null) { if(offset) throw new Error("Incomplete chapter pagination"); ended=true; break; }
             const data=this.array(body.data), more=this.pagination(body,offset);
+            const before=seen.size;
+            for(const chapter of data) seen.add(this.uuid(chapter.id));
+            if((offset || more) && seen.size === before) throw new Error("Non-progressing chapter pagination");
             rows.push(...data);
             if(!more) { ended=true; break; }
             if(!data.length) throw new Error("Non-progressing chapter pagination");
             offset+=body.limit;
         }
         if(!ended) throw new Error("Chapter traversal bound exceeded");
-        return this.chaptersObject(this.unique(rows).filter(c=>{
+        // Preserve upstream decimal/special/volume ordering, inverted only after all pages.
+        return this.chaptersObject(this.unique(rows).reverse().filter(c=>{
             if(!c.attributes) throw new Error("Missing chapter attributes");
             return !c.attributes.isUnavailable && !(c.attributes.externalUrl != null && c.attributes.pages === 0);
         }).map(c=>{

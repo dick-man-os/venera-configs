@@ -651,7 +651,7 @@
     {
       "artifactId": "namicomi_zh_hans",
       "runtimeKey": "keiyoushi_1163192659786040070",
-      "catalogName": "NamiComi",
+      "catalogName": "NamiComi（简体中文）",
       "locales": [
         "zh-Hans"
       ],
@@ -674,7 +674,7 @@
     {
       "artifactId": "namicomi_zh_hant",
       "runtimeKey": "keiyoushi_7859611418350123856",
-      "catalogName": "NamiComi",
+      "catalogName": "NamiComi（繁體中文）",
       "locales": [
         "zh-Hant"
       ],
@@ -697,7 +697,7 @@
     {
       "artifactId": "mangadex_zh_hans",
       "runtimeKey": "keiyoushi_5148895169070562838",
-      "catalogName": "MangaDex",
+      "catalogName": "MangaDex（简体中文）",
       "locales": [
         "zh-Hans"
       ],
@@ -720,7 +720,7 @@
     {
       "artifactId": "mangadex_zh_hant",
       "runtimeKey": "keiyoushi_1493666528525752601",
-      "catalogName": "MangaDex",
+      "catalogName": "MangaDex（繁體中文）",
       "locales": [
         "zh-Hant"
       ],
