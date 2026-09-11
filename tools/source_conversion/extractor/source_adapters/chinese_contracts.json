@@ -181,6 +181,88 @@
         }
       ]
     },
+    "zh.manhuawu": {
+      "canonicalLocale": "zh-Hans",
+      "files": {
+        "lib-multisrc/mccms/src/eu/kanade/tachiyomi/multisrc/mccms/MCCMSWeb.kt": "626ee11b7350067ed4bb30372c1efc802898ca9fbec883d937ee81421aeb6ab0",
+        "lib-multisrc/mccms/src/eu/kanade/tachiyomi/multisrc/mccms/MCCMSConfig.kt": "3414ac58ed78453d048a12eb4d1dce16674786b0c060f51cd0ca4194cb42c9e8",
+        "src/zh/manhuawu/build.gradle.kts": "c9f91b96f3885d98c5664b86d8ef894283f7d160c21b47d3270f8117859e0a99",
+        "src/zh/manhuawu/src/eu/kanade/tachiyomi/extension/zh/manhuawu/Manhuawu.kt": "75ffc906cd69319a01391fc687fbe7f26eec6959a1ba8b5afde3af5b6b063e83"
+      },
+      "candidates": [
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "3279300917142951720",
+          "module": "zh.manhuawu",
+          "name": "漫画屋",
+          "upstreamLang": "zh",
+          "baseUrl": "https://www.mhua5.com",
+          "contentWarning": "SAFE",
+          "theme": "mccms",
+          "version": "1.4.9",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        }
+      ]
+    },
+    "zh.miaoqu": {
+      "canonicalLocale": "zh-Hans",
+      "files": {
+        "lib-multisrc/mccms/src/eu/kanade/tachiyomi/multisrc/mccms/MCCMSWeb.kt": "626ee11b7350067ed4bb30372c1efc802898ca9fbec883d937ee81421aeb6ab0",
+        "lib-multisrc/mccms/src/eu/kanade/tachiyomi/multisrc/mccms/MCCMSConfig.kt": "3414ac58ed78453d048a12eb4d1dce16674786b0c060f51cd0ca4194cb42c9e8",
+        "src/zh/miaoqu/build.gradle.kts": "c6be375dac1f013c126c816db67bae077bf433783b1e73ad07c8d05a80a093df",
+        "src/zh/miaoqu/src/eu/kanade/tachiyomi/extension/zh/miaoqu/Miaoqu.kt": "b08cdec2a12fecc7dea9232dcc956bc08bcd7f683d634a8e6adc974815febc78"
+      },
+      "candidates": [
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "116946528518438525",
+          "module": "zh.miaoqu",
+          "name": "喵趣漫画",
+          "upstreamLang": "zh",
+          "baseUrl": "https://www.miaoqumh.org",
+          "contentWarning": "SAFE",
+          "theme": "mccms",
+          "version": "1.4.8",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        }
+      ]
+    },
+    "zh.sixmh": {
+      "canonicalLocale": "zh-Hans",
+      "files": {
+        "lib-multisrc/mccms/src/eu/kanade/tachiyomi/multisrc/mccms/MCCMSWeb.kt": "626ee11b7350067ed4bb30372c1efc802898ca9fbec883d937ee81421aeb6ab0",
+        "lib-multisrc/mccms/src/eu/kanade/tachiyomi/multisrc/mccms/MCCMSConfig.kt": "3414ac58ed78453d048a12eb4d1dce16674786b0c060f51cd0ca4194cb42c9e8",
+        "src/zh/sixmh/build.gradle.kts": "f21d2942ce72bac9dbf6f5c0662a866ef6309676c59d7be9573f136c748733f5",
+        "src/zh/sixmh/src/eu/kanade/tachiyomi/extension/zh/sixmh/SixMH.kt": "0f936d5722fcb82e3620d8ca036b7a3e173261a75599c4ef4e4ec76aca7f123d",
+        "src/zh/sixmh/src/eu/kanade/tachiyomi/extension/zh/sixmh/Crypto.kt": "71e410eeeaa21fbc513acc849ed5e8c6fbb5ea4d30386b88a61cc2b69a43aff1"
+      },
+      "candidates": [
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "5183325399429659419",
+          "module": "zh.sixmh",
+          "name": "六漫画",
+          "upstreamLang": "zh",
+          "baseUrl": "https://www.liumanhua.com",
+          "contentWarning": "NSFW",
+          "theme": "mccms",
+          "version": "1.4.16",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        }
+      ]
+    },
     "all.mangadex": {
       "files": {
         "src/all/mangadex/build.gradle.kts": "22bafe94a5e9a0a3c81937742bb810123ae58b3576b9e4a8c1425e4e787967c8",

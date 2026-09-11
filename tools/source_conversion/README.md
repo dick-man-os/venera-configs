@@ -318,6 +318,10 @@ normalized without changing inventory bytes. Bare `zh` stays `zh`. `all` and
 No name, URL, or module language is used to guess a Chinese script. Explicit
 script filters also include corresponding tags with a region suffix.
 
+Closed Chinese family contracts may carry a reviewed script resolution alongside
+the byte-exact raw candidate. This is accepted only at the contract's exact
+upstream pin and source ID; generic candidates still keep bare `zh` unresolved.
+
 All unresolved locales are retained in `batch.unresolvedLocales` even when a
 locale filter excludes them. All unresolved modules remain visible because
 their source languages and identities are unknown. `--include-unresolved-locales`
@@ -592,14 +596,15 @@ production artifacts remain unchanged.
 
 ### 9C exact-pin Chinese family contracts
 
-The six reviewed families are bound to upstream `keiyoushi/extensions-source`
+The seven reviewed families are bound to upstream `keiyoushi/extensions-source`
 commit `5a0261c718cd6d5ecf14963d837f29024c792398`. The closed candidate and file
 SHA-256 manifest is `extractor/source_adapters/chinese_contracts.json`; every
 listed Kotlin/build input must match before extraction. The planner requires
 both that pin and the complete original inventory candidate record. A different
 pin, identity, locale, or metadata record supplies no new eligibility evidence.
 The inventory remains an unmodified static census; reviewed extraction evidence
-is added by the planner. Bare `zh` is never assigned a script.
+is added by the planner. Bare `zh` is never assigned a script unless an exact
+closed contract carries the reviewed script resolution described above.
 
 `familyContract` is an optional IR 0.2 enum selecting a fixed family emitter.
 The IR records operation endpoints, language parameters, field/selector mappings,
@@ -620,13 +625,17 @@ them alongside Python and schema inputs.
 | zh.iqiyi | HTML catalog/search/detail, JSON catalog with reversed episode order, HTML image fallback and paid rejection | zh-Hans: `2198877009406729694` |
 | all.yellownote | Locale domains, explicit NSFW metadata, HTML catalog/detail, descending synthetic chapters, original image rewrite | zh-Hans: `170542391855030753`, zh-Hant: `4899554363948814001` |
 | all.mangadex | Chinese locale DTOs, relationship join, paginated feed, unavailable/external filtering, original pages and expiring host refresh | zh-Hant: `1493666528525752601`, zh-Hans: `5148895169070562838` |
+| MCCMS | Shared HTML catalog/detail/chapter semantics, explicit OLD→NEW normalization, and bounded HTML-lazy, XOR/Base64 or AES-CBC reader variants | zh-Hans: `3279300917142951720`, `116946528518438525`, `5183325399429659419` |
 
 Relevant upstream implementations are the six modules' source class/factory and
 DTO files, recorded individually with hashes in the manifest. GlobalComix uses
 `GlobalComix.kt` and `dto/*`; NamiComi uses `NamiComi.kt` and its DTO/access models;
 Dongman uses `DongmanManhua.kt`; iQiyi uses `Iqiyi.kt` and its catalog models;
 YellowNote uses `YellowNote.kt`; MangaDex uses `MangaDex.kt` plus DTO/network
-helpers. The manifest is authoritative for exact paths and capitalization.
+helpers; MCCMS uses its shared superclass/config plus each module's exact
+override and crypto inputs. The manifest is authoritative for exact paths and
+capitalization. See [the 9G closure](CHINESE_ADAPTER_EXPANSION_9G.md) for the
+family ranking, live publication gate and complete candidate matrix reference.
 
 The emitted sources support the anonymous, accessible core reading subset.
 Optional accounts, purchase flows, user preference filters, and source-specific

@@ -315,5 +315,11 @@
         "fileName": "mangadex_zh_hant.js",
         "key": "keiyoushi_1493666528525752601",
         "version": "1.0.1"
+    },
+    {
+        "name": "漫画屋",
+        "fileName": "manhuawu.js",
+        "key": "keiyoushi_3279300917142951720",
+        "version": "1.0.0"
     }
 ]

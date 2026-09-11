@@ -11,7 +11,20 @@ import subprocess
 
 MANIFEST = json.loads(Path(__file__).with_name("chinese_contracts.json").read_text(encoding="utf-8"))
 PIN = MANIFEST["commit"]
-ENABLED = {"all.globalcomix", "all.namicomi", "zh.dongmanmanhua", "zh.iqiyi", "all.yellownote", "all.mangadex"}
+MCCMS_MODULES = {"zh.manhuawu", "zh.miaoqu", "zh.sixmh"}
+ENABLED = {
+    "all.globalcomix", "all.namicomi", "zh.dongmanmanhua", "zh.iqiyi",
+    "all.yellownote", "all.mangadex", *MCCMS_MODULES,
+}
+
+
+def family_name(module):
+    return "mccms" if module in MCCMS_MODULES else module.split(".")[-1]
+
+
+def reviewed_locale(candidate):
+    entry = MANIFEST["families"][candidate["module"]]
+    return entry.get("canonicalLocale", candidate.get("canonicalLocale", candidate["upstreamLang"]))
 
 
 def candidate_contract(candidate, commit):
@@ -22,7 +35,7 @@ def candidate_contract(candidate, commit):
         return None
     for expected in MANIFEST["families"][module]["candidates"]:
         if candidate == expected:
-            return module.split(".")[-1] + "-v1"
+            return family_name(module) + "-v1"
     return None
 
 
@@ -31,11 +44,11 @@ def adapter_name(candidate):
         for expected in MANIFEST["families"][module]["candidates"]:
             if all(candidate.get(k) == expected.get(k) for k in
                    ("project", "module", "sourceId", "upstreamLang")):
-                return module.split(".")[-1]
+                return family_name(module)
     return None
 
 
-def operation_contract(family, locale, base):
+def operation_contract(family, locale, base, candidate=None):
     """Stable per-operation declarative evidence consumed by the family emitter."""
     lang = ({"zh-Hans": "cn", "zh-Hant": "zh"}[locale] if family == "globalcomix"
             else locale.lower())
@@ -118,14 +131,65 @@ def operation_contract(family, locale, base):
             "pages": {"url": api + "/at-home/server/{chapterId}", "method": "GET",
                       "fields": {"imageUrl": "baseUrl/data/{chapter.hash}/{chapter.data[]}"},
                       "refresh": "at-home server after 300000 milliseconds", "order": "response"}}
+    if family == "mccms":
+        source_id = candidate["sourceId"] if candidate else None
+        variants = {
+            "3279300917142951720": {
+                "variant": "default", "listing": ".common-comic-item",
+                "title": ".comic__title > a", "cover": "img", "coverAttr": "data-original",
+                "detailsRoot": ".de-info__box", "detailTitle": ".comic-title",
+                "detailCover": "img", "detailCoverAttr": "src", "detailAuthor": ".name",
+                "detailDescription": ".intro-total", "detailTags": ".comic-status a",
+                "chapters": ".chapter__list-box > li", "chapterName": "a",
+                "chapterOrder": "oldest-first", "reader": "html-lazy",
+                "readerSelector": "img[data-original]", "readerAttr": "data-original",
+                "detailsBase": "desktop", "pagination": "paired-links"},
+            "116946528518438525": {
+                "variant": "miaoqu", "listing": "#mangawrap > li",
+                "title": ".manga-name", "link": "a", "cover": "a",
+                "coverAttr": "style-background-url", "detailsRoot": ".infobox",
+                "detailTitle": ".title", "detailCover": "img", "detailCoverAttr": "src",
+                "detailDescription": ".text", "detailTags": ".tage",
+                "chapters": "ul.list > li", "chapterName": "a",
+                "chapterOrder": "oldest-first", "reader": "miaoqu-xor-base64",
+                "detailsBase": "mobile", "pagination": "next-id"},
+            "5183325399429659419": {
+                "variant": "sixmh", "listing": "div.cy_list_mh ul",
+                "title": "li.title > a", "cover": "img", "coverAttr": "src",
+                "detailsRoot": "div.cy_info", "detailTitle": "div.cy_title",
+                "detailCover": "div.cy_info_cover > a > img.pic", "detailCoverAttr": "src",
+                "detailAuthor": "div.cy_xinxi span:first-child > a",
+                "detailDescription": "div.cy_desc #comic-description",
+                "detailTags": "div.cy_xinxi:nth-child(2) span:first-child > a",
+                "chapters": "ul#mh-chapter-list-ol-0 li.chapter__item", "chapterName": "a",
+                "chapterOrder": "newest-first", "reader": "sixmh-aes-cbc",
+                "detailsBase": "desktop", "pagination": "paired-links"},
+        }
+        fields = variants.get(source_id)
+        if fields is None:
+            raise ValueError("Unknown reviewed MCCMS candidate")
+        return {
+            "explore": {
+                "popular": {"url": base + "/category/order/hits/page/{page}", "method": "GET"},
+                "latest": {"url": base + "/category/order/addtime/page/{page}", "method": "GET"}},
+            "search": {"url": base + "/search/{query}/{page}", "method": "GET",
+                       "selector": fields["listing"],
+                       "pagination": {"mode": fields["pagination"]}, "fields": fields},
+            "details": {"url": "{comicId}", "method": "GET", "selector": fields["detailsRoot"],
+                        "fields": fields},
+            "chapters": {"url": "{comicId}", "method": "GET", "selector": fields["chapters"],
+                         "fields": {"name": fields["chapterName"]}, "order": fields["chapterOrder"]},
+            "pages": {"url": "{chapterId}", "method": "GET", "decoder": fields["reader"],
+                      "selector": fields.get("readerSelector", ""),
+                      "fields": {"imageUrl": fields.get("readerAttr", "")}, "order": "response"}}
     raise ValueError("Unknown reviewed family")
 
 
 def make_ir(candidate, timestamp):
-    family = candidate["module"].split(".")[-1]
+    family = family_name(candidate["module"])
     if candidate_contract(candidate, PIN) is None:
         raise ValueError("Candidate has no reviewed family contract")
-    locale = candidate.get("canonicalLocale", candidate["upstreamLang"])
+    locale = reviewed_locale(candidate)
     base = candidate["baseUrl"]
     display_name = candidate["name"]
     if family in {"mangadex", "namicomi"}:
@@ -135,10 +199,11 @@ def make_ir(candidate, timestamp):
         "name": display_name, "languages": [locale], "contentOrigins": [],
         "contentWarning": candidate["contentWarning"],
         "sourceType": "api" if family in {"globalcomix", "namicomi", "mangadex"} else "hybrid" if family == "iqiyi" else "html",
-        "baseUrl": base, "mobileUrl": base, "requiresAuth": False, "requiresWebView": False,
+        "baseUrl": base, "mobileUrl": base.replace("//www.", "//m.") if family == "mccms" else base,
+        "requiresAuth": False, "requiresWebView": False,
         "familyContract": family + "-v1",
         "headers": {"Referer": base + "/", "Origin": base},
-        **operation_contract(family, locale, base),
+        **operation_contract(family, locale, base, candidate),
         "provenance": {
             "type": "converted", "upstreamProject": "keiyoushi",
             "upstreamPackage": "eu.kanade.tachiyomi.extension." + candidate["module"],
@@ -149,6 +214,8 @@ def make_ir(candidate, timestamp):
         ir["headers"].update({"x-gc-client": "gck_d0f170d5729446dcb3b55e6b3ebc7bf6", "x-gc-identmode": "cookie"})
     if family == "iqiyi":
         ir["headers"]["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"
+    if family == "mccms":
+        ir["headers"] = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"}
     return ir
 
 
@@ -187,7 +254,7 @@ def extract(extensions_root, source_path, timestamp=None, language_override=None
     if len(matches) != 1:
         raise ValueError("Exact reviewed source ID required")
     candidate = matches[0]
-    locale = candidate.get("canonicalLocale", candidate["upstreamLang"])
+    locale = reviewed_locale(candidate)
     if language_override is not None and language_override != locale:
         raise ValueError("Family locale override conflicts with upstream identity")
     timestamp = timestamp or datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")

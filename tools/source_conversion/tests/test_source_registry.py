@@ -49,6 +49,7 @@ EXPECTED_RUNTIME_KEYS = {
     "manhuagui": "ManHuaGui",
     "manhuaren": "manhuaren",
     "manhuashe": "zh_Hans_manhuashe",
+    "manhuawu": "keiyoushi_3279300917142951720",
     "manwaba": "manwaba",
     "mh1234": "mh1234",
     "mh18": "mh18",
@@ -79,6 +80,7 @@ CONVERTED_ARTIFACTS = {
     "dongmanmanhua_zh_hans",
     "flamecomics",
     "globalcomix_zh_hans",
+    "manhuawu",
     "manhuashe",
     "mangadex_zh_hans",
     "mangadex_zh_hant",
@@ -101,6 +103,7 @@ EXPECTED_CONVERTED_UPSTREAM = {
     "mangadex_zh_hant": ("1493666528525752601", "1.4.212", "1.4"),
     "dongmanmanhua_zh_hans": ("4222375517460530289", "1.4.6", "1.4"),
     "globalcomix_zh_hans": ("7151191693036508367", "1.4.4", "1.4"),
+    "manhuawu": ("3279300917142951720", "1.4.9", "1.4"),
     "namicomi_zh_hans": ("1163192659786040070", "1.4.6", "1.4"),
     "namicomi_zh_hant": ("7859611418350123856", "1.4.6", "1.4"),
     "webtoons": ("2522335540328470744", "1.4.57", "1.4"),
@@ -163,10 +166,10 @@ class TestSourceRegistry(unittest.TestCase):
             errors = validate_registry_data(invalid_empty).with_code("SCHEMA_FIELD_VALUE")
             self.assertTrue(any(field in error.message for error in errors), field)
 
-    def test_all_52_catalog_artifacts_are_registered(self):
+    def test_all_53_catalog_artifacts_are_registered(self):
         index = json.loads((repo_root / "index.json").read_text(encoding="utf-8"))
         indexed_ids = {Path(entry["fileName"]).stem for entry in index}
-        self.assertEqual(len(self.artifacts), 52)
+        self.assertEqual(len(self.artifacts), 53)
         self.assertEqual(set(self.by_id), indexed_ids)
 
     def test_artifact_ids_are_unique(self):
@@ -286,7 +289,7 @@ class TestSourceRegistry(unittest.TestCase):
 
     def test_upstream_source_ids_are_json_strings(self):
         upstream_records = [item["upstream"] for item in self.artifacts if "upstream" in item]
-        self.assertEqual(len(upstream_records), 19)
+        self.assertEqual(len(upstream_records), 20)
         self.assertTrue(all(isinstance(item["sourceId"], str) for item in upstream_records))
 
         invalid = copy.deepcopy(self.registry)
@@ -465,6 +468,7 @@ class TestSourceRegistry(unittest.TestCase):
             "copy_manga_multi_accounts": "拷贝漫画(多账号)",
             "dongmanmanhua_zh_hans": "Dongman Manhua",
             "globalcomix_zh_hans": "GlobalComix",
+            "manhuawu": "漫画屋",
             "mangadex_zh_hans": "MangaDex（简体中文）",
             "mangadex_zh_hant": "MangaDex（繁體中文）",
             "namicomi_zh_hans": "NamiComi（简体中文）",
@@ -539,6 +543,7 @@ class TestSourceRegistry(unittest.TestCase):
             "mangadex_zh_hant",
             "dongmanmanhua_zh_hans",
             "globalcomix_zh_hans",
+            "manhuawu",
             "namicomi_zh_hans",
             "namicomi_zh_hant",
         }

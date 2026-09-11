@@ -452,7 +452,16 @@ def _validate_extracted_identity(
         raise MaterializationError(
             "Extracted contentWarning does not match canonical inventory evidence"
         )
-    locale = candidate_locale(candidate)
+    from tools.source_conversion.extractor.source_adapters.chinese_families import (
+        PIN as reviewed_pin,
+        candidate_contract,
+        reviewed_locale,
+    )
+    locale = (
+        reviewed_locale(candidate)
+        if candidate_contract(candidate, reviewed_pin)
+        else candidate_locale(candidate)
+    )
     if locale is None or ir_data.get("languages") != [locale]:
         raise MaterializationError(
             "Extracted languages do not match canonicalLocale/upstreamLang inventory evidence"

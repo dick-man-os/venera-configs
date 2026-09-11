@@ -30,6 +30,30 @@ class ComicSource {}
 class Comic { constructor(data) { Object.assign(this, data); } }
 class ComicDetails { constructor(data) { Object.assign(this, data); } }
 let disposed = 0, calls = [], replies = [];
+let decodeReplies = [], decryptReplies = [], convertCalls = [];
+function asciiBytes(value) {
+    const result = new Uint8Array(value.length);
+    for (let i=0;i<value.length;i++) result[i] = value.charCodeAt(i);
+    return result;
+}
+const Convert = {
+    decodeBase64: value => {
+        convertCalls.push({kind:"base64",value});
+        if (!decodeReplies.length) throw new Error("Unexpected base64 decode");
+        return decodeReplies.shift();
+    },
+    decodeUtf8: value => {
+        const bytes = new Uint8Array(value), chars = [];
+        for (const byte of bytes) chars.push(String.fromCharCode(byte));
+        return chars.join("");
+    },
+    encodeUtf8: value => asciiBytes(value).buffer,
+    decryptAesCbc: (data,key,iv) => {
+        convertCalls.push({kind:"aes",data:Array.from(new Uint8Array(data)),key:Array.from(new Uint8Array(key)),iv:Array.from(new Uint8Array(iv))});
+        if (!decryptReplies.length) throw new Error("Unexpected AES decrypt");
+        return decryptReplies.shift();
+    }
+};
 class Node {
     constructor(data = {}) { this.data = data; this.text = data.text || ""; this.attributes = data.attributes || {}; }
     querySelectorAll(selector) { return (this.data.select?.[selector] || []).map(x => new Node(x)); }
@@ -59,7 +83,7 @@ async function rejects(fn, text) {
 
 
 def candidate(family, locale="zh-Hans"):
-    return next(c for c in CANDIDATES if c["module"].endswith("." + family) and c["upstreamLang"] == locale)
+    return next(c for c in CANDIDATES if families.family_name(c["module"]) == family and families.reviewed_locale(c) == locale)
 
 
 def node(text="", attrs=None, select=None):
@@ -67,8 +91,10 @@ def node(text="", attrs=None, select=None):
 
 
 class FamilyContractTests(unittest.TestCase):
-    def runtime(self, family, code, locale="zh-Hans"):
-        ir = families.make_ir(candidate(family, locale), STAMP)
+    def runtime(self, family, code, locale="zh-Hans", source_id=None):
+        selected = (next(c for c in CANDIDATES if c["sourceId"] == source_id)
+                    if source_id else candidate(family, locale))
+        ir = families.make_ir(selected, STAMP)
         ctx = quickjs.Context()
         source = generate_venera_js(ir)
         classname = "Keiyoushi" + ir["provenance"]["upstreamSourceId"] + "Source"
@@ -88,9 +114,9 @@ class FamilyContractTests(unittest.TestCase):
                 ir = families.make_ir(c, STAMP)
                 self.assertEqual(validate_ir_data(ir), [])
                 jsonschema.validate(ir, SCHEMA)
-                self.assertEqual(ir["languages"], [c["upstreamLang"]])
+                self.assertEqual(ir["languages"], [families.reviewed_locale(c)])
                 self.assertEqual(ir["provenance"]["upstreamSourceId"], c["sourceId"])
-                self.assertEqual(adapter_for_candidate(c), c["module"].split(".")[-1])
+                self.assertEqual(adapter_for_candidate(c), families.family_name(c["module"]))
                 self.assertNotIn(ir["id"], keys)
                 keys.add(ir["id"])
                 js = generate_venera_js(ir)
@@ -175,13 +201,116 @@ class FamilyContractTests(unittest.TestCase):
         """)
 
     def test_http_errors_and_invalid_page(self):
-        for family in ("globalcomix", "namicomi", "dongmanmanhua", "iqiyi"):
+        for family in ("globalcomix", "namicomi", "dongmanmanhua", "iqiyi", "mccms"):
             with self.subTest(family=family):
                 self.runtime(family, r"""
                     jsonReply({}, 403); await rejects(() => s.search.load("x", {}, 1), "HTTP 403");
                     jsonReply({}, 402); await rejects(() => s.search.load("x", {}, 1), "Payment");
                     await rejects(() => s.search.load("x", {}, 0), "Invalid page");
                 """)
+
+    def test_mccms_raw_zh_is_exactly_reviewed_as_simplified(self):
+        candidates = [c for c in CANDIDATES if families.family_name(c["module"]) == "mccms"]
+        self.assertEqual(len(candidates), 3)
+        for c in candidates:
+            with self.subTest(module=c["module"]):
+                self.assertEqual(c["upstreamLang"], "zh")
+                self.assertEqual(families.reviewed_locale(c), "zh-Hans")
+                ir = families.make_ir(c, STAMP)
+                self.assertEqual(ir["languages"], ["zh-Hans"])
+                self.assertEqual(ir["familyContract"], "mccms-v1")
+                self.assertEqual(set(ir["headers"]), {"User-Agent"})
+
+    def test_mccms_default_catalog_search_pagination_and_dedup(self):
+        item = node(select={
+            ".comic__title > a": [node("Fixture", {"href": "/index.php/comic/fixture"})],
+            "img": [node(attrs={"data-original": "//img.test/cover.jpg"})],
+        })
+        more = node(select={
+            ".common-comic-item": [item, item],
+            "#Pagination a, .NewPages a": [node(attrs={"href": "/page/1"}), node(attrs={"href": "/page/2"})],
+        })
+        final = node(select={
+            ".common-comic-item": [item],
+            "#Pagination a, .NewPages a": [node(attrs={"href": "/page/2"}), node(attrs={"href": "/page/2"})],
+        })
+        self.runtime("mccms", f"""
+            htmlReply({json.dumps(more)}); const popular=await s.explore[0].load(1);
+            eq(popular.comics.length,1); eq(popular.comics[0].id,"/comic/fixture");
+            eq(popular.comics[0].cover,"https://img.test/cover.jpg"); eq(popular.hasMore,true);
+            htmlReply({json.dumps(final)}); const search=await s.search.load("斗罗 大陆",{{}},2);
+            eq(search.hasMore,false); ok(calls[1].url.endsWith("/search/%E6%96%97%E7%BD%97%20%E5%A4%A7%E9%99%86/2"));
+            eq(await s.search.load("   ",{{}},1),{{comics:[],hasMore:false}}); eq(disposed,2);
+        """, source_id="3279300917142951720")
+
+    def test_mccms_details_and_old_to_new_chapter_contract(self):
+        details_root = node(select={
+            ".comic-title": [node("Fixture")], "img": [node(attrs={"src": "/cover.jpg"})],
+            ".name": [node("Author")], ".intro-total": [node("Summary")],
+            ".comic-status a": [node("冒险"), node("剧情")],
+        })
+        details = node(select={".de-info__box": [details_root]})
+        def chapter(title, href):
+            return node(select={"a": [node(title, {"href": href})]})
+        chapters = node(select={".chapter__list-box > li": [
+            chapter("Old", "/index.php/chapter/1"), chapter("Old duplicate", "/index.php/chapter/1"),
+            chapter("New", "/index.php/chapter/2"),
+        ]})
+        self.runtime("mccms", f"""
+            htmlReply({json.dumps(details)}); const info=await s.info("/comic/fixture");
+            eq(info.title,"Fixture"); eq(info.subtitle,"Author"); eq(info.description,"Summary");
+            eq(info.cover,s.baseUrl+"/cover.jpg"); eq(info.tags,{{Genre:["冒险","剧情"]}});
+            htmlReply({json.dumps(chapters)}); const eps=await s.loadChapters("/comic/fixture");
+            eq(Object.keys(eps),["/chapter/1","/chapter/2"]); eq(Object.values(eps),["Old","New"]);
+        """, source_id="3279300917142951720")
+
+        six_chapters = node(select={"ul#mh-chapter-list-ol-0 li.chapter__item": [
+            chapter("New", "/comic/2.html"), chapter("Old", "/comic/1.html"),
+        ]})
+        self.runtime("mccms", f"""
+            htmlReply({json.dumps(six_chapters)}); const eps=await s.loadChapters("/comic/fixture");
+            eq(Object.keys(eps),["/comic/1.html","/comic/2.html"]); eq(Object.values(eps),["Old","New"]);
+        """, source_id="5183325399429659419")
+
+        miaoqu_chapters = node(select={"ul.list > li": [
+            chapter("Old", "/263176/63234.html"), chapter("New", "/263176/63235.html"),
+        ]})
+        self.runtime("mccms", f"""
+            htmlReply({json.dumps(miaoqu_chapters)}); const eps=await s.loadChapters("/fixture");
+            eq(Object.values(eps),["Old","New"]); eq(calls[0].url,"https://m.miaoqumh.org/fixture");
+        """, source_id="116946528518438525")
+
+    def test_mccms_reader_variants_order_dedup_decoding_and_headers(self):
+        default_reader = node(select={"img[data-original]": [
+            node(attrs={"data-original": "//img.test/1.jpg"}),
+            node(attrs={"data-original": "//img.test/1.jpg"}),
+            node(attrs={"data-original": "/2.jpg"}),
+        ]})
+        self.runtime("mccms", f"""
+            htmlReply({json.dumps(default_reader)}); const images=await s.images("/comic/a","/chapter/1");
+            eq(images,["https://img.test/1.jpg",s.baseUrl+"/2.jpg"]); eq(calls[0].headers,s.headers);
+            ok(!("Referer" in calls[0].headers)); eq(disposed,1);
+        """, source_id="3279300917142951720")
+
+        self.runtime("mccms", r"""
+            const stage="fixture-base64", key="8-mbJpU7", encrypted=asciiBytes(stage);
+            for(let i=0;i<encrypted.length;i++) encrypted[i]^=key.charCodeAt(i&7);
+            decodeReplies.push(encrypted.buffer,asciiBytes('[{"url":"//img.test/1.jpg"},{"url":"//img.test/1.jpg"},{"url":"/2.jpg"}]').buffer);
+            htmlReply("var DATA='fixture'",500);
+            eq(await s.images("/263176","/263176/63234.html"),["https://img.test/1.jpg",s.config.mobileUrl+"/2.jpg"]);
+            eq(calls[0].url,s.config.mobileUrl+"/263176/63234.html"); eq(convertCalls.length,2);
+            htmlReply("missing",500); await rejects(()=>s.images("x","/1/63234.html"),"Missing Miaoqu");
+        """, source_id="116946528518438525")
+
+        self.runtime("mccms", r"""
+            const raw=new Uint8Array(32); for(let i=16;i<32;i++) raw[i]=i;
+            const json=asciiBytes('{"images":["//img.test/1.jpg","/2.jpg"]}'), padding=16-(json.length%16);
+            const padded=new Uint8Array(json.length+padding); padded.set(json); padded.fill(padding,json.length);
+            decodeReplies.push(raw.buffer); decryptReplies.push(padded.buffer); htmlReply("params = 'fixture'");
+            eq(await s.images("/263176","/263176/63234.html"),["https://img.test/1.jpg",s.baseUrl+"/2.jpg"]);
+            eq(convertCalls[1].kind,"aes"); eq(String.fromCharCode(...convertCalls[1].key),"9S8$vJnU2ANeSRoF");
+            eq(convertCalls[1].iv,new Array(16).fill(0)); eq(convertCalls[1].data,[16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]);
+        """, source_id="5183325399429659419")
 
     def test_globalcomix_catalog_first_next_final_locale_and_dedup(self):
         for locale, query in (("zh-Hans", "cn"), ("zh-Hant", "zh")):
@@ -557,6 +686,20 @@ class FamilyContractTests(unittest.TestCase):
                    "candidates":[c,c2],"unresolvedModules":[]}
         plan=add_batch_report(build_plan(inventory,registry),inventory,registry)
         self.assertTrue(all(row["state"]=="UNRESOLVED_METADATA" and row["adapter"]=="generic-html" for row in plan["batch"]["candidates"]))
+
+    def test_9g_matrix_closes_all_r2_candidates_without_unknown(self):
+        r2 = json.loads((ROOT / "tools/source_conversion/audit/chinese_runtime_audit_9fr2.json").read_bytes())
+        matrix = json.loads((ROOT / "tools/source_conversion/audit/chinese_candidate_matrix_9g.json").read_bytes())
+        expected = {row["upstream"]["sourceId"] for row in r2["chineseCandidates"]}
+        actual = {row["sourceId"] for row in matrix["candidates"]}
+        self.assertEqual(matrix["summary"]["total"], 93)
+        self.assertEqual(actual, expected)
+        self.assertEqual(matrix["summary"]["unexplainedUnknown"], 0)
+        self.assertFalse(any(row["classification"] == "UNKNOWN" for row in matrix["candidates"]))
+        by_id = {row["sourceId"]: row for row in matrix["candidates"]}
+        self.assertEqual(by_id["3279300917142951720"]["classification"], "PUBLISHED_PASS")
+        self.assertEqual(by_id["116946528518438525"]["classification"], "CONVERTED_LIVE_BLOCKED")
+        self.assertEqual(by_id["5183325399429659419"]["classification"], "CONVERTED_LIVE_BLOCKED")
 
 
 

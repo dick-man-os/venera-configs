@@ -16,7 +16,12 @@ def generate(ir):
     cfg = json.dumps(ir, ensure_ascii=False, separators=(",", ":"))
     family = ir["familyContract"].removesuffix("-v1")
     templates = json.loads(Path(__file__).with_name("chinese_runtime.json").read_text(encoding="utf-8"))
-    body, common = templates[family], templates["common"]
+    if family == "mccms":
+        mccms = json.loads(Path(__file__).with_name("chinese_mccms_runtime.json").read_text(encoding="utf-8"))
+        body = "\n".join(mccms["mccms"]) + "\n"
+    else:
+        body = templates[family]
+    common = templates["common"]
     hooks = {
         "__REQUEST_URL__": "",
         "__THUMBNAIL_LOAD__": "url => ({url, headers: this.headers})",

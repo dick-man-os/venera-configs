@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "0.2",
+  "id": "keiyoushi_3279300917142951720",
+  "name": "漫画屋",
+  "languages": [
+    "zh-Hans"
+  ],
+  "contentOrigins": [],
+  "contentWarning": "SAFE",
+  "sourceType": "html",
+  "baseUrl": "https://www.mhua5.com",
+  "mobileUrl": "https://m.mhua5.com",
+  "requiresAuth": false,
+  "requiresWebView": false,
+  "familyContract": "mccms-v1",
+  "headers": {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"
+  },
+  "explore": {
+    "popular": {
+      "url": "https://www.mhua5.com/category/order/hits/page/{page}",
+      "method": "GET"
+    },
+    "latest": {
+      "url": "https://www.mhua5.com/category/order/addtime/page/{page}",
+      "method": "GET"
+    }
+  },
+  "search": {
+    "url": "https://www.mhua5.com/search/{query}/{page}",
+    "method": "GET",
+    "selector": ".common-comic-item",
+    "pagination": {
+      "mode": "paired-links"
+    },
+    "fields": {
+      "variant": "default",
+      "listing": ".common-comic-item",
+      "title": ".comic__title > a",
+      "cover": "img",
+      "coverAttr": "data-original",
+      "detailsRoot": ".de-info__box",
+      "detailTitle": ".comic-title",
+      "detailCover": "img",
+      "detailCoverAttr": "src",
+      "detailAuthor": ".name",
+      "detailDescription": ".intro-total",
+      "detailTags": ".comic-status a",
+      "chapters": ".chapter__list-box > li",
+      "chapterName": "a",
+      "chapterOrder": "oldest-first",
+      "reader": "html-lazy",
+      "readerSelector": "img[data-original]",
+      "readerAttr": "data-original",
+      "detailsBase": "desktop",
+      "pagination": "paired-links"
+    }
+  },
+  "details": {
+    "url": "{comicId}",
+    "method": "GET",
+    "selector": ".de-info__box",
+    "fields": {
+      "variant": "default",
+      "listing": ".common-comic-item",
+      "title": ".comic__title > a",
+      "cover": "img",
+      "coverAttr": "data-original",
+      "detailsRoot": ".de-info__box",
+      "detailTitle": ".comic-title",
+      "detailCover": "img",
+      "detailCoverAttr": "src",
+      "detailAuthor": ".name",
+      "detailDescription": ".intro-total",
+      "detailTags": ".comic-status a",
+      "chapters": ".chapter__list-box > li",
+      "chapterName": "a",
+      "chapterOrder": "oldest-first",
+      "reader": "html-lazy",
+      "readerSelector": "img[data-original]",
+      "readerAttr": "data-original",
+      "detailsBase": "desktop",
+      "pagination": "paired-links"
+    }
+  },
+  "chapters": {
+    "url": "{comicId}",
+    "method": "GET",
+    "selector": ".chapter__list-box > li",
+    "fields": {
+      "name": "a"
+    },
+    "order": "oldest-first"
+  },
+  "pages": {
+    "url": "{chapterId}",
+    "method": "GET",
+    "decoder": "html-lazy",
+    "selector": "img[data-original]",
+    "fields": {
+      "imageUrl": "data-original"
+    },
+    "order": "response"
+  },
+  "provenance": {
+    "type": "converted",
+    "upstreamProject": "keiyoushi",
+    "upstreamPackage": "eu.kanade.tachiyomi.extension.zh.manhuawu",
+    "upstreamSourceId": "3279300917142951720",
+    "upstreamCommit": "5a0261c718cd6d5ecf14963d837f29024c792398",
+    "upstreamVersion": "1.4.9",
+    "upstreamLicense": "Apache-2.0",
+    "converterVersion": "0.1.0",
+    "generatedTimestamp": "2026-09-11T03:59:34Z"
+  },
+  "artifactId": "manhuawu",
+  "version": "1.0.0"
+}

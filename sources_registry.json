@@ -739,6 +739,30 @@
         "extensionLib": "1.4",
         "commit": "5a0261c718cd6d5ecf14963d837f29024c792398"
       }
+    },
+    {
+      "artifactId": "manhuawu",
+      "runtimeKey": "keiyoushi_3279300917142951720",
+      "catalogName": "漫画屋",
+      "locales": [
+        "zh-Hans"
+      ],
+      "providerId": "manhuawu",
+      "siteUrl": "https://www.mhua5.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated",
+        "transport": "html"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "zh.manhuawu",
+        "sourceId": "3279300917142951720",
+        "version": "1.4.9",
+        "extensionLib": "1.4",
+        "commit": "5a0261c718cd6d5ecf14963d837f29024c792398",
+        "theme": "mccms"
+      }
     }
   ]
 }
