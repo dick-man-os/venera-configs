@@ -12,14 +12,19 @@ import subprocess
 MANIFEST = json.loads(Path(__file__).with_name("chinese_contracts.json").read_text(encoding="utf-8"))
 PIN = MANIFEST["commit"]
 MCCMS_MODULES = {"zh.manhuawu", "zh.miaoqu", "zh.sixmh"}
+MANGA18_MODULES = {"zh.hanman18"}
 ENABLED = {
     "all.globalcomix", "all.namicomi", "zh.dongmanmanhua", "zh.iqiyi",
-    "all.yellownote", "all.mangadex", *MCCMS_MODULES,
+    "all.yellownote", "all.mangadex", *MCCMS_MODULES, *MANGA18_MODULES,
 }
 
 
 def family_name(module):
-    return "mccms" if module in MCCMS_MODULES else module.split(".")[-1]
+    if module in MCCMS_MODULES:
+        return "mccms"
+    if module in MANGA18_MODULES:
+        return "manga18"
+    return module.split(".")[-1]
 
 
 def reviewed_locale(candidate):
@@ -182,6 +187,31 @@ def operation_contract(family, locale, base, candidate=None):
             "pages": {"url": "{chapterId}", "method": "GET", "decoder": fields["reader"],
                       "selector": fields.get("readerSelector", ""),
                       "fields": {"imageUrl": fields.get("readerAttr", "")}, "order": "response"}}
+    if family == "manga18":
+        fields = {
+            "listing": "div.story_item", "title": "div.mg_info > div.mg_name a",
+            "link": "div.mg_info > div.mg_name a", "cover": "img", "coverAttr": "src",
+            "infoRoot": "div.detail_listInfo", "detailTitle": "div.detail_name > h1",
+            "detailCover": "div.detail_avatar > img", "detailCoverAttr": "src",
+            "detailDescription": "div.detail_reviewContent",
+            "detailTags": "div.info_value > a[href*=\"/manga-list/\"]",
+            "chapters": "div.chapter_box .item", "chapterOrder": "newest-first",
+            "reader": "slides-path-base64", "rejectDirectoryUrls": True,
+        }
+        return {
+            "explore": {
+                "popular": {"url": base + "/list-manga/{page}?order_by=views", "method": "GET"},
+                "latest": {"url": base + "/list-manga/{page}", "method": "GET"}},
+            "search": {"url": base + "/list-manga/{page}?search={query}", "method": "GET",
+                       "selector": fields["listing"],
+                       "pagination": {"nextSelector": ".pagination > li:last-child:not(.active)"},
+                       "fields": fields},
+            "details": {"url": "{comicId}", "method": "GET", "selector": fields["infoRoot"],
+                        "fields": fields},
+            "chapters": {"url": "{comicId}", "method": "GET", "selector": fields["chapters"],
+                         "order": fields["chapterOrder"]},
+            "pages": {"url": "{chapterId}", "method": "GET", "decoder": fields["reader"],
+                      "rejectDirectoryUrls": True, "order": "response"}}
     raise ValueError("Unknown reviewed family")
 
 
@@ -216,6 +246,8 @@ def make_ir(candidate, timestamp):
         ir["headers"]["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"
     if family == "mccms":
         ir["headers"] = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"}
+    if family == "manga18":
+        ir["headers"] = {"Referer": base + "/"}
     return ir
 
 

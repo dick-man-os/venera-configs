@@ -763,6 +763,30 @@
         "commit": "5a0261c718cd6d5ecf14963d837f29024c792398",
         "theme": "mccms"
       }
+    },
+    {
+      "artifactId": "hanman18",
+      "runtimeKey": "keiyoushi_5092568988625041973",
+      "catalogName": "HANMAN18",
+      "locales": [
+        "zh-Hant"
+      ],
+      "providerId": "hanman18",
+      "siteUrl": "https://hanman18.com",
+      "contentWarning": "NSFW",
+      "implementation": {
+        "producer": "generated",
+        "transport": "html"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "zh.hanman18",
+        "sourceId": "5092568988625041973",
+        "version": "1.4.3",
+        "extensionLib": "1.4",
+        "commit": "5a0261c718cd6d5ecf14963d837f29024c792398",
+        "theme": "manga18"
+      }
     }
   ]
 }

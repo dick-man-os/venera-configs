@@ -263,6 +263,33 @@
         }
       ]
     },
+    "zh.hanman18": {
+      "canonicalLocale": "zh-Hant",
+      "files": {
+        "lib-multisrc/manga18/src/eu/kanade/tachiyomi/multisrc/manga18/Manga18.kt": "3a1b9d07f028b118312551d4cdca6085f567ca7b2c347132925529a0949b52f1",
+        "lib-multisrc/manga18/src/eu/kanade/tachiyomi/multisrc/manga18/Filters.kt": "1b67e70fcd0201d59e5dc714ae0d92b966726692241bf1b4c18ac5f9cb7da860",
+        "src/zh/hanman18/build.gradle.kts": "f46595766b21fdc0eb573ca8e5c23827db549dca9feabf73544de85fe46d1892",
+        "src/zh/hanman18/src/eu/kanade/tachiyomi/extension/zh/hanman18/HANMAN18.kt": "50e84487643ef5e1a00ce29b1e9f52738006c24930838eb6aceb780ba3644f71"
+      },
+      "candidates": [
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "5092568988625041973",
+          "module": "zh.hanman18",
+          "name": "HANMAN18",
+          "upstreamLang": "zh",
+          "baseUrl": "https://hanman18.com",
+          "contentWarning": "NSFW",
+          "theme": "manga18",
+          "version": "1.4.3",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        }
+      ]
+    },
     "all.mangadex": {
       "files": {
         "src/all/mangadex/build.gradle.kts": "22bafe94a5e9a0a3c81937742bb810123ae58b3576b9e4a8c1425e4e787967c8",

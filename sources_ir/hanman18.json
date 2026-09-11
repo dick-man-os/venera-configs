@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "0.2",
+  "id": "keiyoushi_5092568988625041973",
+  "name": "HANMAN18",
+  "languages": [
+    "zh-Hant"
+  ],
+  "contentOrigins": [],
+  "contentWarning": "NSFW",
+  "sourceType": "html",
+  "baseUrl": "https://hanman18.com",
+  "mobileUrl": "https://hanman18.com",
+  "requiresAuth": false,
+  "requiresWebView": false,
+  "familyContract": "manga18-v1",
+  "headers": {
+    "Referer": "https://hanman18.com/"
+  },
+  "explore": {
+    "popular": {
+      "url": "https://hanman18.com/list-manga/{page}?order_by=views",
+      "method": "GET"
+    },
+    "latest": {
+      "url": "https://hanman18.com/list-manga/{page}",
+      "method": "GET"
+    }
+  },
+  "search": {
+    "url": "https://hanman18.com/list-manga/{page}?search={query}",
+    "method": "GET",
+    "selector": "div.story_item",
+    "pagination": {
+      "nextSelector": ".pagination > li:last-child:not(.active)"
+    },
+    "fields": {
+      "listing": "div.story_item",
+      "title": "div.mg_info > div.mg_name a",
+      "link": "div.mg_info > div.mg_name a",
+      "cover": "img",
+      "coverAttr": "src",
+      "infoRoot": "div.detail_listInfo",
+      "detailTitle": "div.detail_name > h1",
+      "detailCover": "div.detail_avatar > img",
+      "detailCoverAttr": "src",
+      "detailDescription": "div.detail_reviewContent",
+      "detailTags": "div.info_value > a[href*=\"/manga-list/\"]",
+      "chapters": "div.chapter_box .item",
+      "chapterOrder": "newest-first",
+      "reader": "slides-path-base64",
+      "rejectDirectoryUrls": true
+    }
+  },
+  "details": {
+    "url": "{comicId}",
+    "method": "GET",
+    "selector": "div.detail_listInfo",
+    "fields": {
+      "listing": "div.story_item",
+      "title": "div.mg_info > div.mg_name a",
+      "link": "div.mg_info > div.mg_name a",
+      "cover": "img",
+      "coverAttr": "src",
+      "infoRoot": "div.detail_listInfo",
+      "detailTitle": "div.detail_name > h1",
+      "detailCover": "div.detail_avatar > img",
+      "detailCoverAttr": "src",
+      "detailDescription": "div.detail_reviewContent",
+      "detailTags": "div.info_value > a[href*=\"/manga-list/\"]",
+      "chapters": "div.chapter_box .item",
+      "chapterOrder": "newest-first",
+      "reader": "slides-path-base64",
+      "rejectDirectoryUrls": true
+    }
+  },
+  "chapters": {
+    "url": "{comicId}",
+    "method": "GET",
+    "selector": "div.chapter_box .item",
+    "order": "newest-first"
+  },
+  "pages": {
+    "url": "{chapterId}",
+    "method": "GET",
+    "decoder": "slides-path-base64",
+    "rejectDirectoryUrls": true,
+    "order": "response"
+  },
+  "provenance": {
+    "type": "converted",
+    "upstreamProject": "keiyoushi",
+    "upstreamPackage": "eu.kanade.tachiyomi.extension.zh.hanman18",
+    "upstreamSourceId": "5092568988625041973",
+    "upstreamCommit": "5a0261c718cd6d5ecf14963d837f29024c792398",
+    "upstreamVersion": "1.4.3",
+    "upstreamLicense": "Apache-2.0",
+    "converterVersion": "0.1.0",
+    "generatedTimestamp": "2026-09-11T19:22:31Z"
+  },
+  "artifactId": "hanman18",
+  "version": "1.0.0"
+}

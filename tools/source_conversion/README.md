@@ -626,16 +626,19 @@ them alongside Python and schema inputs.
 | all.yellownote | Locale domains, explicit NSFW metadata, HTML catalog/detail, descending synthetic chapters, original image rewrite | zh-Hans: `170542391855030753`, zh-Hant: `4899554363948814001` |
 | all.mangadex | Chinese locale DTOs, relationship join, paginated feed, unavailable/external filtering, original pages and expiring host refresh | zh-Hant: `1493666528525752601`, zh-Hans: `5148895169070562838` |
 | MCCMS | Shared HTML catalog/detail/chapter semantics, explicit OLD→NEW normalization, and bounded HTML-lazy, XOR/Base64 or AES-CBC reader variants | zh-Hans: `3279300917142951720`, `116946528518438525`, `5183325399429659419` |
+| Manga18 | HTML catalog/search/detail, explicit newest-first to OLD→NEW chapter normalization, and Base64 reader payload with directory-placeholder rejection | zh-Hant: `5092568988625041973` |
 
-Relevant upstream implementations are the six modules' source class/factory and
+Relevant upstream implementations are the reviewed modules' source class/factory and
 DTO files, recorded individually with hashes in the manifest. GlobalComix uses
 `GlobalComix.kt` and `dto/*`; NamiComi uses `NamiComi.kt` and its DTO/access models;
 Dongman uses `DongmanManhua.kt`; iQiyi uses `Iqiyi.kt` and its catalog models;
 YellowNote uses `YellowNote.kt`; MangaDex uses `MangaDex.kt` plus DTO/network
 helpers; MCCMS uses its shared superclass/config plus each module's exact
-override and crypto inputs. The manifest is authoritative for exact paths and
-capitalization. See [the 9G closure](CHINESE_ADAPTER_EXPANSION_9G.md) for the
-family ranking, live publication gate and complete candidate matrix reference.
+override and crypto inputs; Manga18 uses its shared superclass/filter contract
+and the exact HANMAN18 module override. The manifest is authoritative for exact
+paths and capitalization. See [the 9G closure](CHINESE_ADAPTER_EXPANSION_9G.md)
+for the prior family baseline and [the 9H expansion](CHINESE_ADAPTER_EXPANSION_9H.md)
+for the Manga18 contract, live evidence and successor matrix.
 
 The emitted sources support the anonymous, accessible core reading subset.
 Optional accounts, purchase flows, user preference filters, and source-specific

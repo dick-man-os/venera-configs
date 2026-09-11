@@ -201,13 +201,13 @@ class FamilyContractTests(unittest.TestCase):
         """)
 
     def test_http_errors_and_invalid_page(self):
-        for family in ("globalcomix", "namicomi", "dongmanmanhua", "iqiyi", "mccms"):
+        for family in ("globalcomix", "namicomi", "dongmanmanhua", "iqiyi", "mccms", "manga18"):
             with self.subTest(family=family):
                 self.runtime(family, r"""
                     jsonReply({}, 403); await rejects(() => s.search.load("x", {}, 1), "HTTP 403");
                     jsonReply({}, 402); await rejects(() => s.search.load("x", {}, 1), "Payment");
                     await rejects(() => s.search.load("x", {}, 0), "Invalid page");
-                """)
+                """, locale="zh-Hant" if family == "manga18" else "zh-Hans")
 
     def test_mccms_raw_zh_is_exactly_reviewed_as_simplified(self):
         candidates = [c for c in CANDIDATES if families.family_name(c["module"]) == "mccms"]
@@ -311,6 +311,76 @@ class FamilyContractTests(unittest.TestCase):
             eq(convertCalls[1].kind,"aes"); eq(String.fromCharCode(...convertCalls[1].key),"9S8$vJnU2ANeSRoF");
             eq(convertCalls[1].iv,new Array(16).fill(0)); eq(convertCalls[1].data,[16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]);
         """, source_id="5183325399429659419")
+
+    def test_manga18_reviewed_locale_warning_and_headers(self):
+        c = candidate("manga18", "zh-Hant")
+        self.assertEqual(c["upstreamLang"], "zh")
+        ir = families.make_ir(c, STAMP)
+        self.assertEqual(ir["languages"], ["zh-Hant"])
+        self.assertEqual(ir["contentWarning"], "NSFW")
+        self.assertEqual(ir["familyContract"], "manga18-v1")
+        self.assertEqual(ir["headers"], {"Referer": "https://hanman18.com/"})
+
+    def test_manga18_catalog_search_pagination_and_dedup(self):
+        item = node(select={
+            "div.mg_info > div.mg_name a": [node("秘密教學", {"href": "/manhwa/mimijiaohua"})],
+            "img": [node(attrs={"src": "//img.test/cover.webp"})],
+        })
+        first = node(select={
+            "div.story_item": [item, item],
+            ".pagination > li:last-child:not(.active)": [node()],
+        })
+        final = node(select={"div.story_item": [item]})
+        self.runtime("manga18", f"""
+            htmlReply({json.dumps(first)}); const popular=await s.explore[0].load(1);
+            eq(popular.comics.length,1); eq(popular.comics[0].id,"/manhwa/mimijiaohua");
+            eq(popular.comics[0].cover,"https://img.test/cover.webp");
+            eq(popular.comics[0].tags,["NSFW"]); eq(popular.hasMore,true);
+            htmlReply({json.dumps(final)}); const search=await s.search.load("秘密 教學",{{}},2);
+            eq(search.hasMore,false); ok(calls[1].url.endsWith("/list-manga/2?search=%E7%A7%98%E5%AF%86%20%E6%95%99%E5%AD%B8"));
+            eq(await s.search.load("   ",{{}},1),{{comics:[],hasMore:false}}); eq(disposed,2);
+        """, source_id="5092568988625041973")
+
+    def test_manga18_details_and_old_to_new_chapter_contract(self):
+        def field(label, value):
+            return node(select={"div.info_label": [node(label)], "div.info_value": [node(value)]})
+        info = node(select={
+            "div.item": [field("author", "Author"), field("artist", "Artist"), field("Other name", "Alt")],
+            "div.info_value > a[href*=\"/manga-list/\"]": [node("劇情")],
+        })
+        details = node(select={
+            "div.detail_listInfo": [info], "div.detail_name > h1": [node("秘密教學")],
+            "div.detail_avatar > img": [node(attrs={"src": "/cover.webp"})],
+            "div.detail_reviewContent": [node("Summary")],
+        })
+        def chapter(title, href):
+            return node(select={"a": [node(title, {"href": href})]})
+        chapters = node(select={"div.chapter_box .item": [
+            chapter("New", "/manhwa/a/2"), chapter("New duplicate", "/manhwa/a/2"),
+            chapter("Old", "/manhwa/a/1"),
+        ]})
+        self.runtime("manga18", f"""
+            htmlReply({json.dumps(details)}); const info=await s.info("/manhwa/a");
+            eq(info.title,"秘密教學"); eq(info.subtitle,"Author, Artist");
+            eq(info.description,"Summary\\n\\nAlternative Names:\\nAlt");
+            eq(info.cover,s.baseUrl+"/cover.webp"); eq(info.tags,{{Genre:["劇情"]}});
+            htmlReply({json.dumps(chapters)}); const eps=await s.loadChapters("/manhwa/a");
+            eq(Object.keys(eps),["/manhwa/a/1","/manhwa/a/2"]); eq(Object.values(eps),["Old","New"]);
+        """, source_id="5092568988625041973")
+
+    def test_manga18_reader_order_placeholder_rejection_dedup_and_headers(self):
+        self.runtime("manga18", r"""
+            decodeReplies.push(
+                asciiBytes("https://img.test/chapter/").buffer,
+                asciiBytes("//img.test/chapter/01.jpg").buffer,
+                asciiBytes("//img.test/chapter/01.jpg").buffer,
+                asciiBytes(" /chapter/02.jpg\r\n").buffer
+            );
+            htmlReply('var slides_p_path = ["a","b","c","d",];');
+            eq(await s.images("/manhwa/a","/manhwa/a/1"),["https://img.test/chapter/01.jpg",s.baseUrl+"/chapter/02.jpg"]);
+            eq(calls[0].headers,{Referer:"https://hanman18.com/"}); eq(convertCalls.length,4);
+            htmlReply("missing"); await rejects(()=>s.images("a","/manhwa/a/2"),"reader data");
+        """, source_id="5092568988625041973")
 
     def test_globalcomix_catalog_first_next_final_locale_and_dedup(self):
         for locale, query in (("zh-Hans", "cn"), ("zh-Hant", "zh")):
@@ -687,9 +757,9 @@ class FamilyContractTests(unittest.TestCase):
         plan=add_batch_report(build_plan(inventory,registry),inventory,registry)
         self.assertTrue(all(row["state"]=="UNRESOLVED_METADATA" and row["adapter"]=="generic-html" for row in plan["batch"]["candidates"]))
 
-    def test_9g_matrix_closes_all_r2_candidates_without_unknown(self):
+    def test_9h_matrix_closes_all_r2_candidates_without_unknown(self):
         r2 = json.loads((ROOT / "tools/source_conversion/audit/chinese_runtime_audit_9fr2.json").read_bytes())
-        matrix = json.loads((ROOT / "tools/source_conversion/audit/chinese_candidate_matrix_9g.json").read_bytes())
+        matrix = json.loads((ROOT / "tools/source_conversion/audit/chinese_candidate_matrix_9h.json").read_bytes())
         expected = {row["upstream"]["sourceId"] for row in r2["chineseCandidates"]}
         actual = {row["sourceId"] for row in matrix["candidates"]}
         self.assertEqual(matrix["summary"]["total"], 93)
@@ -698,6 +768,9 @@ class FamilyContractTests(unittest.TestCase):
         self.assertFalse(any(row["classification"] == "UNKNOWN" for row in matrix["candidates"]))
         by_id = {row["sourceId"]: row for row in matrix["candidates"]}
         self.assertEqual(by_id["3279300917142951720"]["classification"], "PUBLISHED_PASS")
+        self.assertEqual(by_id["5092568988625041973"]["classification"], "PUBLISHED_PASS")
+        self.assertEqual(by_id["5092568988625041973"]["locale"], "zh-Hant")
+        self.assertEqual(by_id["5092568988625041973"]["artifactId"], "hanman18")
         self.assertEqual(by_id["116946528518438525"]["classification"], "CONVERTED_LIVE_BLOCKED")
         self.assertEqual(by_id["5183325399429659419"]["classification"], "CONVERTED_LIVE_BLOCKED")
 

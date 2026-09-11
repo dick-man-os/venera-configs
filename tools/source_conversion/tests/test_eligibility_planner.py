@@ -525,6 +525,7 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
             "1493666528525752601": "mangadex_zh_hant",
             "5148895169070562838": "mangadex_zh_hans",
             "3279300917142951720": "manhuawu",
+            "5092568988625041973": "hanman18",
             "6485938153129890061": "readblackclovermangaonline",
             "1330793582354406642": "readfairytailedenszeromangaonline",
             "808850989053853006": "readjujutsukaisenmangaonline",
@@ -575,7 +576,7 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         self.assertEqual(
             shared_candidates - override_identities - reviewed_shared, e3_candidates
         )
-        self.assertEqual(len(e3_candidates), 1595)
+        self.assertEqual(len(e3_candidates), 1594)
 
     def test_current_pin_classification_count_regression(self):
         counts = self.plan["summary"]["eligibilityCounts"]
@@ -585,11 +586,11 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         )
         self.assertEqual(
             counts["modules"],
-            {"E0": 13, "E1": 0, "E2": 3, "E3": 789, "E4": 0, "E5": 0, "E6": 591},
+            {"E0": 14, "E1": 0, "E2": 3, "E3": 788, "E4": 0, "E5": 0, "E6": 591},
         )
         self.assertEqual(
             counts["candidates"],
-            {"E0": 20, "E1": 0, "E2": 6, "E3": 1595, "E4": 0, "E5": 0, "E6": 591},
+            {"E0": 21, "E1": 0, "E2": 6, "E3": 1594, "E4": 0, "E5": 0, "E6": 591},
         )
         self.assertEqual(
             self.plan["summary"]["patchStateCounts"]["candidates"],
@@ -646,10 +647,10 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
             second, second_summary = invoke()
             self.assertEqual(first, second)
             self.assertEqual(first_summary, second_summary)
-            self.assertEqual(len(first), 2316943)
+            self.assertEqual(len(first), 2316986)
             self.assertEqual(
                 hashlib.sha256(first).hexdigest(),
-                "d25c1897087aaa7f5769ecbffd4c0f92883a4490be409eb114c3e5b0332ddd08",
+                "e56ef580dc8934553f43f773210440bdd582ab3405a1568362887b329a002ade",
             )
             self.assertEqual(before, snapshot())
 
@@ -674,6 +675,7 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
                 "mangadex_zh_hans",
                 "mangadex_zh_hant",
                 "manhuawu",
+                "hanman18",
                 "readblackclovermangaonline",
                 "readfairytailedenszeromangaonline",
                 "readjujutsukaisenmangaonline",
@@ -686,7 +688,7 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         )
         self.assertEqual(
             self.plan["summary"]["registryJoins"],
-            {"registeredCandidates": 20, "unregisteredCandidates": 2192},
+            {"registeredCandidates": 21, "unregisteredCandidates": 2191},
         )
 
     def test_mangacatalog_proposal_is_report_only(self):

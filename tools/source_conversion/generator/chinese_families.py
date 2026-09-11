@@ -19,6 +19,9 @@ def generate(ir):
     if family == "mccms":
         mccms = json.loads(Path(__file__).with_name("chinese_mccms_runtime.json").read_text(encoding="utf-8"))
         body = "\n".join(mccms["mccms"]) + "\n"
+    elif family == "manga18":
+        manga18 = json.loads(Path(__file__).with_name("chinese_manga18_runtime.json").read_text(encoding="utf-8"))
+        body = "\n".join(manga18["manga18"]) + "\n"
     else:
         body = templates[family]
     common = templates["common"]
