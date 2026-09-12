@@ -327,5 +327,23 @@
         "fileName": "hanman18.js",
         "key": "keiyoushi_5092568988625041973",
         "version": "1.0.1"
+    },
+    {
+        "name": "《崩坏3》IP站",
+        "fileName": "bh3.js",
+        "key": "keiyoushi_5943234929466346733",
+        "version": "1.0.0"
+    },
+    {
+        "name": "瓜子漫画",
+        "fileName": "guazimanhua.js",
+        "key": "keiyoushi_9103931521355991619",
+        "version": "1.0.0"
+    },
+    {
+        "name": "泰拉记事社",
+        "fileName": "terrahistoricus.js",
+        "key": "keiyoushi_4585134706567717130",
+        "version": "1.0.0"
     }
 ]

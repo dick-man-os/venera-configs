@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "0.2",
+  "id": "keiyoushi_9103931521355991619",
+  "name": "瓜子漫画",
+  "languages": [
+    "zh-Hans"
+  ],
+  "contentOrigins": [],
+  "contentWarning": "SAFE",
+  "sourceType": "html",
+  "baseUrl": "https://www.guazimanhua.com",
+  "mobileUrl": "https://www.guazimanhua.com",
+  "requiresAuth": false,
+  "requiresWebView": false,
+  "familyContract": "guazimanhua-v1",
+  "headers": {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+  },
+  "explore": {
+    "popular": {
+      "url": "https://www.guazimanhua.com/category.php?sort=hits&page={page}",
+      "method": "GET"
+    },
+    "latest": {
+      "url": "https://www.guazimanhua.com/category.php?sort=update&page={page}",
+      "method": "GET"
+    }
+  },
+  "search": {
+    "url": "https://www.guazimanhua.com/category.php",
+    "method": "GET",
+    "selector": "article.card",
+    "pagination": {
+      "nextSelector": "nav.pager a",
+      "nextText": ">",
+      "maxPage": "same-query numeric pager links"
+    }
+  },
+  "details": {
+    "url": "{comicId}",
+    "method": "GET",
+    "fields": {
+      "title": "div.mobile-comic-title",
+      "cover": "img.mobile-comic-cover[src]",
+      "description": "p.mobile-comic-desc"
+    }
+  },
+  "chapters": {
+    "url": "{comicId}",
+    "method": "GET",
+    "selector": "section.mobile-comic-all-chapters div.mobile-chapter-grid a",
+    "order": "newest-first; dedupe then reverse"
+  },
+  "pages": {
+    "url": "{chapterId}",
+    "method": "GET",
+    "selector": "section.reader-images img",
+    "fields": {
+      "imageUrl": "src"
+    },
+    "order": "response"
+  },
+  "provenance": {
+    "type": "converted",
+    "upstreamProject": "keiyoushi",
+    "upstreamPackage": "eu.kanade.tachiyomi.extension.zh.guazimanhua",
+    "upstreamSourceId": "9103931521355991619",
+    "upstreamCommit": "5a0261c718cd6d5ecf14963d837f29024c792398",
+    "upstreamVersion": "1.6.6",
+    "upstreamLicense": "Apache-2.0",
+    "converterVersion": "0.1.0",
+    "generatedTimestamp": "2026-09-12T00:00:00Z"
+  },
+  "artifactId": "guazimanhua",
+  "version": "1.0.0"
+}

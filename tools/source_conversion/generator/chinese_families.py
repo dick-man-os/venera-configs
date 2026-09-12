@@ -27,6 +27,9 @@ def generate(ir):
     elif family == "manga18":
         manga18 = json.loads(Path(__file__).with_name("chinese_manga18_runtime.json").read_text(encoding="utf-8"))
         body = "\n".join(manga18["manga18"]) + "\n"
+    elif family in {"guazimanhua", "terrahistoricus", "bh3"}:
+        template = json.loads(Path(__file__).with_name("chinese_" + family + "_runtime.json").read_text(encoding="utf-8"))
+        body = "\n".join(template[family]) + "\n"
     else:
         body = templates[family]
     common = templates["common"]

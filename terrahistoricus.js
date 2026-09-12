@@ -1,0 +1,184 @@
+// Converted from the exact upstream commit in config.provenance.
+// Apache-2.0 upstream; bounded family contract. No downloaded code is executed.
+class Keiyoushi4585134706567717130Source extends ComicSource {
+    name = "泰拉记事社";
+    key = "keiyoushi_4585134706567717130";
+    version = "1.0.0";
+    minAppVersion = "1.6.0";
+    url = "";
+    config = {"schemaVersion":"0.2","id":"keiyoushi_4585134706567717130","name":"泰拉记事社","languages":["zh-Hans"],"contentOrigins":[],"contentWarning":"SAFE","sourceType":"api","baseUrl":"https://comic.hypergryph.com","mobileUrl":"https://comic.hypergryph.com","requiresAuth":false,"requiresWebView":false,"familyContract":"terrahistoricus-v1","headers":{"Referer":"https://comic.hypergryph.com/"},"explore":{"popular":{"url":"https://comic.hypergryph.com/api/comic","method":"GET"},"latest":{"url":"https://comic.hypergryph.com/api/recentUpdate","method":"GET"}},"search":{"url":"https://comic.hypergryph.com/api/comic","method":"GET","topics":["terra-historicus","talos-ii-historicus"],"filter":"native title over both complete topic catalogs","pagination":{"maxPage":1}},"details":{"url":"{comicId}","method":"GET","fields":{"title":"data.title","cover":"data.cover","description":"data.subtitle + data.introduction"}},"chapters":{"url":"{comicId}","method":"GET","listPath":"data.episodes","identity":"opaque string cid","order":"newest-first; dedupe then reverse"},"pages":{"url":"{chapterId}","method":"GET","listPath":"data.pageInfos","fields":{"imageUrl":"{chapterId}/page?pageNum={1-based index}"},"resolution":"async onImageLoad: code0 data.url; no signed URL persistence","order":"response"},"provenance":{"type":"converted","upstreamProject":"keiyoushi","upstreamPackage":"eu.kanade.tachiyomi.extension.zh.terrahistoricus","upstreamSourceId":"4585134706567717130","upstreamCommit":"5a0261c718cd6d5ecf14963d837f29024c792398","upstreamVersion":"1.4.4","upstreamLicense":"Apache-2.0","converterVersion":"0.1.0","generatedTimestamp":"2026-09-12T00:00:00Z"},"artifactId":"terrahistoricus","version":"1.0.0"};
+    get baseUrl() { return this.config.baseUrl; }
+    get locale() { return this.config.languages[0]; }
+    get headers() { return this.config.headers; }
+    text = (el, selector) => {
+        const node = selector ? el.querySelector(selector) : el;
+        return node ? (node.text || "").trim() : "";
+    };
+    attr = (el, selector, name) => {
+        const node = selector ? el.querySelector(selector) : el;
+        return node ? node.attributes[name] || "" : "";
+    };
+    absolute = (value, base = this.baseUrl + "/") => {
+        if (typeof value !== "string" || !value) return "";
+        if (/^https?:\/\//i.test(value)) return value;
+        if (/^[a-z][a-z0-9+.-]*:/i.test(value)) throw new Error("Unsupported URL scheme");
+        const match = base.match(/^(https?:)\/\/([^/?#]+)([^?#]*)(\?[^#]*)?/i);
+        if (!match) throw new Error("Invalid URL base");
+        const origin = match[1] + "//" + match[2];
+        if (value.startsWith("//")) return match[1] + value;
+        const path = match[3] || "/";
+        if (value.startsWith("?")) return origin + path + value;
+        if (value.startsWith("#")) return origin + path + (match[4] || "") + value;
+        const at = value.search(/[?#]/);
+        const suffix = at < 0 ? "" : value.slice(at);
+        const raw = at < 0 ? value : value.slice(0, at);
+        const full = raw.startsWith("/") ? raw : path.slice(0, path.lastIndexOf("/") + 1) + raw;
+        const parts = [];
+        for (const p of full.split("/")) {
+            if (p === "..") parts.pop();
+            else if (p && p !== ".") parts.push(p);
+        }
+        return origin + "/" + parts.join("/") + (full.endsWith("/") && parts.length ? "/" : "") + suffix;
+    };
+    pageNumber = page => {
+        if (!Number.isSafeInteger(page) || page < 1) throw new Error("Invalid page");
+        return page;
+    };
+    query = (url, values) => url + "?" + values.map(([key, value]) =>
+        encodeURIComponent(key) + "=" + encodeURIComponent(String(value))).join("&");
+    array = value => {
+        if (!Array.isArray(value)) throw new Error("Malformed list response");
+        return value;
+    };
+    required = value => {
+        if (typeof value !== "string" || !value.trim()) throw new Error("Missing required value");
+        return value;
+    };
+    unique = (items, key = "id") => {
+        const seen = new Set();
+        return items.filter(item => {
+            const id = this.required(String(item[key] ?? ""));
+            if (seen.has(id)) return false;
+            seen.add(id);
+            return true;
+        });
+    };
+    request = async (url, data = undefined) => {
+        const res = data === undefined ? await Network.get(url, this.headers)
+            : await Network.post(url, {...this.headers, "Content-Type": "application/json"}, JSON.stringify(data));
+        if (res.status === 402) throw new Error("Payment required");
+        if (res.status !== 200 && res.status !== 204) throw new Error("HTTP " + res.status);
+        return res;
+    };
+    json = async (url, data = undefined) => {
+        const res = await this.request(url, data);
+        if (res.status === 204) return null;
+        const result = typeof res.body === "string" ? JSON.parse(res.body) : res.body;
+        if (!result || typeof result !== "object" || Array.isArray(result)) throw new Error("Malformed JSON response");
+        return result;
+    };
+    html = async (url, parse) => {
+        const res = await this.request(url);
+        if (res.status !== 200) throw new Error("Empty HTML response");
+        const doc = new HtmlDocument(res.body);
+        try { return parse(doc, url); } finally { doc.dispose(); }
+    };
+    chaptersObject = rows => {
+        const result = Object.create(null);
+        for (const row of this.unique(rows)) result[row.id] = row.title || "";
+        return result;
+    };
+    details = (data, chapters) => new ComicDetails({
+        title: this.required(data.title), subtitle: data.subtitle || "", subTitle: data.subtitle || "",
+        cover: data.cover || "", description: data.description || "", tags: data.tags || {}, chapters
+    });
+    explore = [
+        {title: "Popular", type: "multiPageComicList", load: page => this.catalog("popular", "", this.pageNumber(page))},
+        {title: "Latest", type: "multiPageComicList", load: page => this.catalog("latest", "", this.pageNumber(page))}
+    ];
+    search = {load: (keyword, options, page) => this.catalog("search", String(keyword), this.pageNumber(page))};
+    comic = {
+        loadInfo: async id => this.details(await this.info(id), await this.loadChapters(id)),
+        loadEp: async (comicId, epId) => ({images: await this.images(comicId, epId)}),
+        onThumbnailLoad: url => ({url, headers: this.headers}),
+        onImageLoad: url => ({url, headers: this.headers})
+    };
+    httpUrl = value => {
+        const clean = this.required(value).trim();
+        if (/[\u0000-\u0020\u007f\\]/.test(clean) || /%(?![0-9a-f]{2})/i.test(clean)) throw new Error("Invalid TerraHistoricus URL");
+        const url = this.absolute(clean);
+        if (!/^https:\/\/[a-z0-9.-]+(?::\d+)?(?:[/?#]|$)/i.test(url)) throw new Error("Invalid TerraHistoricus URL");
+        return url;
+    };
+    idPart = value => {
+        if (typeof value !== "string" || !/^[A-Za-z0-9_-]+$/.test(value)) throw new Error("Invalid TerraHistoricus string identity");
+        return value;
+    };
+    route = (value, episode = false) => {
+        const url = this.httpUrl(value), prefix = this.baseUrl + "/api/comic/";
+        const pattern = episode ? /^[A-Za-z0-9_-]+\/episode\/[A-Za-z0-9_-]+$/ : /^[A-Za-z0-9_-]+$/;
+        if (!url.startsWith(prefix) || !pattern.test(url.slice(prefix.length))) throw new Error("Invalid TerraHistoricus route");
+        return url;
+    };
+    api = async url => {
+        const result = await this.json(url);
+        if (!result || result.code !== 0 || result.data === null || typeof result.data !== "object") throw new Error("TerraHistoricus API error");
+        return result.data;
+    };
+    item = (value, latest = false) => new Comic({
+        id:this.baseUrl + "/api/comic/" + this.idPart(latest ? value.comicCid : value.cid),
+        title:this.required(value.title),cover:this.httpUrl(latest ? value.coverUrl : value.cover)
+    });
+    catalog = async (kind, keyword, page) => {
+        const topics = this.config.search.topics, searching = kind === "search", maxPage = searching ? 1 : topics.length;
+        if (page > maxPage) return {comics:[],hasMore:false,maxPage};
+        const selected = searching ? topics : [topics[page-1]], rows = [];
+        for (const topic of selected) {
+            const endpoint = kind === "latest" ? this.config.explore.latest.url : this.config.search.url;
+            const data = await this.api(this.query(endpoint,[["topicKey",topic]]));
+            rows.push(...this.array(data).map(value=>this.item(value,kind === "latest")));
+        }
+        const query = keyword.trim().toLowerCase();
+        return {comics:this.unique(rows).filter(row=>!searching || row.title.toLowerCase().includes(query)),hasMore:page < maxPage,maxPage};
+    };
+    comicData = async id => {
+        const url = this.route(id), data = await this.api(url);
+        if (Array.isArray(data) || url !== this.baseUrl + "/api/comic/" + this.idPart(data.cid)) throw new Error("TerraHistoricus comic identity mismatch");
+        return data;
+    };
+    info = async id => {
+        const data = await this.comicData(id), item = this.item(data);
+        const tags = [...(data.type === 2 ? ["相簿"] : data.type === 3 ? ["四格"] : []),...this.array(data.keywords || [])];
+        return {title:item.title,cover:item.cover,subtitle:this.array(data.authors).join("、"),
+            description:[data.subtitle ? "「" + data.subtitle + "」" : "",data.introduction || ""].filter(Boolean).join("\n"),
+            tags:tags.length ? {Genre:tags} : {}};
+    };
+    loadChapters = async id => {
+        const data = await this.comicData(id), url = this.route(id), types = ["","正篇","番外","贺图","公告"];
+        const rows = this.array(data.episodes).map(ep=>({
+            id:url + "/episode/" + this.idPart(ep.cid),
+            title:[ep.type === 1 ? ep.shortTitle || "" : types[ep.type] || "",this.required(ep.title)].filter(Boolean).join(" ")
+        }));
+        if (!rows.length) throw new Error("Missing TerraHistoricus chapters");
+        return this.chaptersObject(this.unique(rows).reverse());
+    };
+    images = async (comicId, epId) => {
+        const comic = this.route(comicId), episode = this.route(epId,true);
+        if (!episode.startsWith(comic + "/episode/")) throw new Error("TerraHistoricus episode ownership mismatch");
+        const data = await this.api(episode), pages = this.array(data.pageInfos);
+        if (!pages.length) throw new Error("TerraHistoricus chapter has no readable images");
+        return pages.map((_,i)=>episode + "/page?pageNum=" + (i+1));
+    };
+    resolvePage = async (key, comicId, epId) => {
+        const match = this.required(key).match(/^(.*)\/page\?pageNum=([1-9]\d*)$/);
+        if (!match || !Number.isSafeInteger(Number(match[2]))) throw new Error("Invalid TerraHistoricus page key");
+        const episode = this.route(match[1],true);
+        if ((comicId && !episode.startsWith(this.route(comicId) + "/episode/")) ||
+            (epId && episode !== this.route(epId,true))) throw new Error("TerraHistoricus page ownership mismatch");
+        const data = await this.api(key);
+        if (typeof data.url !== "string" || !data.url.startsWith("https://")) throw new Error("Missing TerraHistoricus signed image URL");
+        return {url:this.httpUrl(data.url),headers:this.headers};
+    };
+    init() { this.comic.onImageLoad = (key,comicId,epId) => this.resolvePage(key,comicId,epId); }
+
+}

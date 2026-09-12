@@ -20,6 +20,9 @@ from tools.source_conversion.validator.validate_registry import (
 
 
 EXPECTED_RUNTIME_KEYS = {
+    "bh3": "keiyoushi_5943234929466346733",
+    "guazimanhua": "keiyoushi_9103931521355991619",
+    "terrahistoricus": "keiyoushi_4585134706567717130",
     "baozi": "baozi",
     "ccc": "ccc",
     "comic_walker": "comic_walker",
@@ -77,6 +80,9 @@ EXPECTED_RUNTIME_KEYS = {
 }
 
 CONVERTED_ARTIFACTS = {
+    "bh3",
+    "guazimanhua",
+    "terrahistoricus",
     "comicabc",
     "dongmanmanhua_zh_hans",
     "flamecomics",
@@ -101,6 +107,9 @@ CONVERTED_ARTIFACTS = {
 }
 
 EXPECTED_CONVERTED_UPSTREAM = {
+    "bh3": ("5943234929466346733", "1.4.4", "1.4"),
+    "guazimanhua": ("9103931521355991619", "1.6.6", "1.6"),
+    "terrahistoricus": ("4585134706567717130", "1.4.4", "1.4"),
     "mangadex_zh_hans": ("5148895169070562838", "1.4.212", "1.4"),
     "mangadex_zh_hant": ("1493666528525752601", "1.4.212", "1.4"),
     "dongmanmanhua_zh_hans": ("4222375517460530289", "1.4.6", "1.4"),
@@ -169,10 +178,10 @@ class TestSourceRegistry(unittest.TestCase):
             errors = validate_registry_data(invalid_empty).with_code("SCHEMA_FIELD_VALUE")
             self.assertTrue(any(field in error.message for error in errors), field)
 
-    def test_all_54_catalog_artifacts_are_registered(self):
+    def test_all_catalog_artifacts_are_registered(self):
         index = json.loads((repo_root / "index.json").read_text(encoding="utf-8"))
         indexed_ids = {Path(entry["fileName"]).stem for entry in index}
-        self.assertEqual(len(self.artifacts), 54)
+        self.assertEqual(len(self.artifacts), 57)
         self.assertEqual(set(self.by_id), indexed_ids)
 
     def test_artifact_ids_are_unique(self):
@@ -292,7 +301,7 @@ class TestSourceRegistry(unittest.TestCase):
 
     def test_upstream_source_ids_are_json_strings(self):
         upstream_records = [item["upstream"] for item in self.artifacts if "upstream" in item]
-        self.assertEqual(len(upstream_records), 21)
+        self.assertEqual(len(upstream_records), 24)
         self.assertTrue(all(isinstance(item["sourceId"], str) for item in upstream_records))
 
         invalid = copy.deepcopy(self.registry)
@@ -467,6 +476,9 @@ class TestSourceRegistry(unittest.TestCase):
         by_file = {entry["fileName"]: entry for entry in entries}
 
         expected_names = {
+            "bh3": "《崩坏3》IP站",
+            "guazimanhua": "瓜子漫画",
+            "terrahistoricus": "泰拉记事社",
             "comicabc": "無限動漫",
             "copy_manga_multi_accounts": "拷贝漫画(多账号)",
             "dongmanmanhua_zh_hans": "Dongman Manhua",
@@ -543,6 +555,9 @@ class TestSourceRegistry(unittest.TestCase):
 
     def test_registry_linkage_does_not_change_generated_or_final_sources(self):
         CHINESE_GENERATED_NO_PATCH = {
+            "bh3",
+            "guazimanhua",
+            "terrahistoricus",
             "mangadex_zh_hans",
             "mangadex_zh_hant",
             "dongmanmanhua_zh_hans",

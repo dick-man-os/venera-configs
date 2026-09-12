@@ -342,6 +342,81 @@
           }
         }
       ]
+    },
+    "zh.guazimanhua": {
+      "canonicalLocale": "zh-Hans",
+      "files": {
+        "src/zh/guazimanhua/build.gradle.kts": "3a18b9f701a7c0e307d2457b30d7689b9c65018a2173bc01ba4a4759ea9ed0d6",
+        "src/zh/guazimanhua/src/eu/kanade/tachiyomi/extension/zh/guazimanhua/Filters.kt": "7a52dae319fbfdcfd0aa9b81abb067a26756636bdf6b942fb7eade16abfa8b80",
+        "src/zh/guazimanhua/src/eu/kanade/tachiyomi/extension/zh/guazimanhua/Guazimanhua.kt": "60ad49cd8e7403ada0715c8250731637f139f4bbbde437d2be39bfa17df5ba63"
+      },
+      "candidates": [
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "9103931521355991619",
+          "module": "zh.guazimanhua",
+          "name": "瓜子漫画",
+          "upstreamLang": "zh",
+          "baseUrl": "https://www.guazimanhua.com",
+          "contentWarning": "SAFE",
+          "version": "1.6.6",
+          "extensionLib": "1.6",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        }
+      ]
+    },
+    "zh.terrahistoricus": {
+      "canonicalLocale": "zh-Hans",
+      "files": {
+        "src/zh/terrahistoricus/build.gradle.kts": "bcc7faab2ddbcafae0dfa31cd4e583ca8839ca6180bef8d51ba77642e04d3c96",
+        "src/zh/terrahistoricus/src/eu/kanade/tachiyomi/extension/zh/terrahistoricus/TerraHistoricus.kt": "59bb6c1f9beeaffe82eeb462048dd97aed2579ac58e030e154748f7620ac5850",
+        "src/zh/terrahistoricus/src/eu/kanade/tachiyomi/extension/zh/terrahistoricus/TerraHistoricusDto.kt": "566529665795b33c7fb5a540d97044c1dddccfeeebd73859d320a01b8da83108"
+      },
+      "candidates": [
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "4585134706567717130",
+          "module": "zh.terrahistoricus",
+          "name": "泰拉记事社",
+          "upstreamLang": "zh",
+          "baseUrl": "https://comic.hypergryph.com",
+          "contentWarning": "SAFE",
+          "version": "1.4.4",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        }
+      ]
+    },
+    "zh.bh3": {
+      "canonicalLocale": "zh-Hans",
+      "files": {
+        "src/zh/bh3/build.gradle.kts": "b80f3c042860cd94976a6121566b8bc31df67d4e283646a29f25c7565f4575d6",
+        "src/zh/bh3/src/eu/kanade/tachiyomi/extension/zh/bh3/BH3.kt": "661d04b264a51230eb2bb87603cc6e645390d2d69f0195161a75553e06a97e5e",
+        "src/zh/bh3/src/eu/kanade/tachiyomi/extension/zh/bh3/Dto.kt": "d7375756fea104f9fae4dc75f57441390fa47709f4914e901f383a1e635455b3"
+      },
+      "candidates": [
+        {
+          "project": "keiyoushi/extensions-source",
+          "sourceId": "5943234929466346733",
+          "module": "zh.bh3",
+          "name": "《崩坏3》IP站",
+          "upstreamLang": "zh",
+          "baseUrl": "https://comic.bh3.com",
+          "contentWarning": "SAFE",
+          "version": "1.4.4",
+          "extensionLib": "1.4",
+          "compatibility": {
+            "metadataResolution": "static",
+            "extraction": "unclassified"
+          }
+        }
+      ]
     }
   }
 }

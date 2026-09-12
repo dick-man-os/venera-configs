@@ -16,6 +16,7 @@ MANGA18_MODULES = {"zh.hanman18"}
 ENABLED = {
     "all.globalcomix", "all.namicomi", "zh.dongmanmanhua", "zh.iqiyi",
     "all.yellownote", "all.mangadex", *MCCMS_MODULES, *MANGA18_MODULES,
+    "zh.guazimanhua", "zh.terrahistoricus", "zh.bh3",
 }
 
 
@@ -212,6 +213,31 @@ def operation_contract(family, locale, base, candidate=None):
                          "order": fields["chapterOrder"]},
             "pages": {"url": "{chapterId}", "method": "GET", "decoder": fields["reader"],
                       "rejectDirectoryUrls": True, "order": "response"}}
+    if family == "guazimanhua":
+        return {
+            "explore": {"popular": {"url": base + "/category.php?sort=hits&page={page}", "method": "GET"},
+                        "latest": {"url": base + "/category.php?sort=update&page={page}", "method": "GET"}},
+            "search": {"url": base + "/category.php", "method": "GET", "selector": "article.card",
+                       "pagination": {"nextSelector": "nav.pager a", "nextText": ">", "maxPage": "same-query numeric pager links"}},
+            "details": {"url": "{comicId}", "method": "GET", "fields": {"title": "div.mobile-comic-title", "cover": "img.mobile-comic-cover[src]", "description": "p.mobile-comic-desc"}},
+            "chapters": {"url": "{comicId}", "method": "GET", "selector": "section.mobile-comic-all-chapters div.mobile-chapter-grid a", "order": "newest-first; dedupe then reverse"},
+            "pages": {"url": "{chapterId}", "method": "GET", "selector": "section.reader-images img", "fields": {"imageUrl": "src"}, "order": "response"}}
+    if family == "terrahistoricus":
+        return {
+            "explore": {"popular": {"url": base + "/api/comic", "method": "GET"},
+                        "latest": {"url": base + "/api/recentUpdate", "method": "GET"}},
+            "search": {"url": base + "/api/comic", "method": "GET", "topics": ["terra-historicus", "talos-ii-historicus"],
+                       "filter": "native title over both complete topic catalogs", "pagination": {"maxPage": 1}},
+            "details": {"url": "{comicId}", "method": "GET", "fields": {"title": "data.title", "cover": "data.cover", "description": "data.subtitle + data.introduction"}},
+            "chapters": {"url": "{comicId}", "method": "GET", "listPath": "data.episodes", "identity": "opaque string cid", "order": "newest-first; dedupe then reverse"},
+            "pages": {"url": "{chapterId}", "method": "GET", "listPath": "data.pageInfos", "fields": {"imageUrl": "{chapterId}/page?pageNum={1-based index}"}, "resolution": "async onImageLoad: code0 data.url; no signed URL persistence", "order": "response"}}
+    if family == "bh3":
+        return {
+            "explore": {"popular": {"url": base + "/book", "method": "GET", "maxPage": 1}},
+            "search": {"url": base + "/book", "method": "GET", "selector": "a[href*=book]", "filter": "normalized native title over complete finite catalog", "pagination": {"maxPage": 1}},
+            "details": {"url": "{comicId}", "method": "GET", "fields": {"title": "div.title", "cover": "img.cover[src]", "description": "div.detail_info1"}},
+            "chapters": {"url": "{comicId}/get_chapter", "method": "GET", "isJson": True, "listPath": "$", "identity": "bookid/chapterid strings", "order": "newest-first; dedupe then reverse"},
+            "pages": {"url": "{chapterId}", "method": "GET", "selector": "img.lazy.comic_img", "fields": {"imageUrl": "data-original"}, "order": "response"}}
     raise ValueError("Unknown reviewed family")
 
 
@@ -228,7 +254,7 @@ def make_ir(candidate, timestamp):
         "schemaVersion": "0.2", "id": "keiyoushi_" + candidate["sourceId"],
         "name": display_name, "languages": [locale], "contentOrigins": [],
         "contentWarning": candidate["contentWarning"],
-        "sourceType": "api" if family in {"globalcomix", "namicomi", "mangadex"} else "hybrid" if family == "iqiyi" else "html",
+        "sourceType": "api" if family in {"globalcomix", "namicomi", "mangadex", "terrahistoricus"} else "hybrid" if family in {"iqiyi", "bh3"} else "html",
         "baseUrl": base, "mobileUrl": base.replace("//www.", "//m.") if family == "mccms" else base,
         "requiresAuth": False, "requiresWebView": False,
         "familyContract": family + "-v1",
@@ -246,8 +272,10 @@ def make_ir(candidate, timestamp):
         ir["headers"]["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"
     if family == "mccms":
         ir["headers"] = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"}
-    if family == "manga18":
+    if family in {"manga18", "terrahistoricus", "bh3"}:
         ir["headers"] = {"Referer": base + "/"}
+    if family == "guazimanhua":
+        ir["headers"] = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"}
     return ir
 
 

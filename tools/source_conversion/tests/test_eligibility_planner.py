@@ -586,11 +586,11 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         )
         self.assertEqual(
             counts["modules"],
-            {"E0": 14, "E1": 0, "E2": 3, "E3": 788, "E4": 0, "E5": 0, "E6": 591},
+            {"E0": 17, "E1": 0, "E2": 3, "E3": 788, "E4": 0, "E5": 0, "E6": 588},
         )
         self.assertEqual(
             counts["candidates"],
-            {"E0": 21, "E1": 0, "E2": 6, "E3": 1594, "E4": 0, "E5": 0, "E6": 591},
+            {"E0": 24, "E1": 0, "E2": 6, "E3": 1594, "E4": 0, "E5": 0, "E6": 588},
         )
         self.assertEqual(
             self.plan["summary"]["patchStateCounts"]["candidates"],
@@ -647,10 +647,10 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
             second, second_summary = invoke()
             self.assertEqual(first, second)
             self.assertEqual(first_summary, second_summary)
-            self.assertEqual(len(first), 2316986)
+            self.assertEqual(len(first), 2317075)
             self.assertEqual(
                 hashlib.sha256(first).hexdigest(),
-                "e56ef580dc8934553f43f773210440bdd582ab3405a1568362887b329a002ade",
+                "900e7b3d9705a4d438aface21b6b10bb8b7c94e0abda7dd98d8509a7c55591ca",
             )
             self.assertEqual(before, snapshot())
 
@@ -663,6 +663,9 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         self.assertEqual(
             registered,
             {
+                "bh3",
+                "guazimanhua",
+                "terrahistoricus",
                 "webtoons",
                 "webtoons_zh_hant",
                 "manhuashe",
@@ -688,7 +691,7 @@ class TestEligibilityPlannerCurrentPin(unittest.TestCase):
         )
         self.assertEqual(
             self.plan["summary"]["registryJoins"],
-            {"registeredCandidates": 21, "unregisteredCandidates": 2191},
+            {"registeredCandidates": 24, "unregisteredCandidates": 2188},
         )
 
     def test_mangacatalog_proposal_is_report_only(self):

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "0.2",
+  "id": "keiyoushi_4585134706567717130",
+  "name": "泰拉记事社",
+  "languages": [
+    "zh-Hans"
+  ],
+  "contentOrigins": [],
+  "contentWarning": "SAFE",
+  "sourceType": "api",
+  "baseUrl": "https://comic.hypergryph.com",
+  "mobileUrl": "https://comic.hypergryph.com",
+  "requiresAuth": false,
+  "requiresWebView": false,
+  "familyContract": "terrahistoricus-v1",
+  "headers": {
+    "Referer": "https://comic.hypergryph.com/"
+  },
+  "explore": {
+    "popular": {
+      "url": "https://comic.hypergryph.com/api/comic",
+      "method": "GET"
+    },
+    "latest": {
+      "url": "https://comic.hypergryph.com/api/recentUpdate",
+      "method": "GET"
+    }
+  },
+  "search": {
+    "url": "https://comic.hypergryph.com/api/comic",
+    "method": "GET",
+    "topics": [
+      "terra-historicus",
+      "talos-ii-historicus"
+    ],
+    "filter": "native title over both complete topic catalogs",
+    "pagination": {
+      "maxPage": 1
+    }
+  },
+  "details": {
+    "url": "{comicId}",
+    "method": "GET",
+    "fields": {
+      "title": "data.title",
+      "cover": "data.cover",
+      "description": "data.subtitle + data.introduction"
+    }
+  },
+  "chapters": {
+    "url": "{comicId}",
+    "method": "GET",
+    "listPath": "data.episodes",
+    "identity": "opaque string cid",
+    "order": "newest-first; dedupe then reverse"
+  },
+  "pages": {
+    "url": "{chapterId}",
+    "method": "GET",
+    "listPath": "data.pageInfos",
+    "fields": {
+      "imageUrl": "{chapterId}/page?pageNum={1-based index}"
+    },
+    "resolution": "async onImageLoad: code0 data.url; no signed URL persistence",
+    "order": "response"
+  },
+  "provenance": {
+    "type": "converted",
+    "upstreamProject": "keiyoushi",
+    "upstreamPackage": "eu.kanade.tachiyomi.extension.zh.terrahistoricus",
+    "upstreamSourceId": "4585134706567717130",
+    "upstreamCommit": "5a0261c718cd6d5ecf14963d837f29024c792398",
+    "upstreamVersion": "1.4.4",
+    "upstreamLicense": "Apache-2.0",
+    "converterVersion": "0.1.0",
+    "generatedTimestamp": "2026-09-12T00:00:00Z"
+  },
+  "artifactId": "terrahistoricus",
+  "version": "1.0.0"
+}

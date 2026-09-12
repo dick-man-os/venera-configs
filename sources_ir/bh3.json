@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "0.2",
+  "id": "keiyoushi_5943234929466346733",
+  "name": "《崩坏3》IP站",
+  "languages": [
+    "zh-Hans"
+  ],
+  "contentOrigins": [],
+  "contentWarning": "SAFE",
+  "sourceType": "hybrid",
+  "baseUrl": "https://comic.bh3.com",
+  "mobileUrl": "https://comic.bh3.com",
+  "requiresAuth": false,
+  "requiresWebView": false,
+  "familyContract": "bh3-v1",
+  "headers": {
+    "Referer": "https://comic.bh3.com/"
+  },
+  "explore": {
+    "popular": {
+      "url": "https://comic.bh3.com/book",
+      "method": "GET",
+      "maxPage": 1
+    }
+  },
+  "search": {
+    "url": "https://comic.bh3.com/book",
+    "method": "GET",
+    "selector": "a[href*=book]",
+    "filter": "normalized native title over complete finite catalog",
+    "pagination": {
+      "maxPage": 1
+    }
+  },
+  "details": {
+    "url": "{comicId}",
+    "method": "GET",
+    "fields": {
+      "title": "div.title",
+      "cover": "img.cover[src]",
+      "description": "div.detail_info1"
+    }
+  },
+  "chapters": {
+    "url": "{comicId}/get_chapter",
+    "method": "GET",
+    "isJson": true,
+    "listPath": "$",
+    "identity": "bookid/chapterid strings",
+    "order": "newest-first; dedupe then reverse"
+  },
+  "pages": {
+    "url": "{chapterId}",
+    "method": "GET",
+    "selector": "img.lazy.comic_img",
+    "fields": {
+      "imageUrl": "data-original"
+    },
+    "order": "response"
+  },
+  "provenance": {
+    "type": "converted",
+    "upstreamProject": "keiyoushi",
+    "upstreamPackage": "eu.kanade.tachiyomi.extension.zh.bh3",
+    "upstreamSourceId": "5943234929466346733",
+    "upstreamCommit": "5a0261c718cd6d5ecf14963d837f29024c792398",
+    "upstreamVersion": "1.4.4",
+    "upstreamLicense": "Apache-2.0",
+    "converterVersion": "0.1.0",
+    "generatedTimestamp": "2026-09-12T00:00:00Z"
+  },
+  "artifactId": "bh3",
+  "version": "1.0.0"
+}

@@ -1,0 +1,366 @@
+{
+  "schemaVersion": "1",
+  "milestone": "9I PHASE-B",
+  "date": "2026-09-12",
+  "hostCommit": "126a462debbe5b05a8c8d6e3dcb1b67fff1ebcdf",
+  "transport": "anonymous Dart HttpClient; actual unchanged Host QuickJS, DOM and Flutter codec",
+  "requestSummary": {
+    "metadataRequests": 41,
+    "decodedImageRequests": 27,
+    "http200": 68,
+    "failures": 0
+  },
+  "sources": [
+    {
+      "artifact": "guazimanhua",
+      "status": "PASS",
+      "search": {
+        "query": "我",
+        "count": 35,
+        "maxPage": 75,
+        "hasMore": true
+      },
+      "laterSearch": {
+        "count": 36,
+        "maxPage": 75
+      },
+      "terminalSearch": {
+        "count": 22,
+        "maxPage": 75,
+        "hasMore": false
+      },
+      "catalogCounts": null,
+      "title": "斗罗大陆",
+      "chapterCount": 605,
+      "string0210Preserved": null,
+      "navigation": {
+        "oldestPrevious": null,
+        "oldestNext": "https://www.guazimanhua.com/chapter.php?id=1668722",
+        "middlePrevious": "https://www.guazimanhua.com/chapter.php?id=1676272",
+        "middleNext": "https://www.guazimanhua.com/chapter.php?id=1676327",
+        "latestNext": null
+      },
+      "readers": [
+        {
+          "chapter": "https://www.guazimanhua.com/chapter.php?id=1668692",
+          "title": "第1话 唐三穿越",
+          "position": 0,
+          "pageCount": 19,
+          "samples": [
+            {
+              "page": 1,
+              "status": 200,
+              "bytes": 224815,
+              "width": 900,
+              "height": 1667
+            },
+            {
+              "page": 10,
+              "status": 200,
+              "bytes": 224185,
+              "width": 900,
+              "height": 1599
+            },
+            {
+              "page": 19,
+              "status": 200,
+              "bytes": 184188,
+              "width": 900,
+              "height": 1697
+            }
+          ]
+        },
+        {
+          "chapter": "https://www.guazimanhua.com/chapter.php?id=1676301",
+          "title": "第235话 十万年圣柱石（2）",
+          "position": 302,
+          "pageCount": 36,
+          "samples": [
+            {
+              "page": 1,
+              "status": 200,
+              "bytes": 181839,
+              "width": 800,
+              "height": 1486
+            },
+            {
+              "page": 19,
+              "status": 200,
+              "bytes": 131920,
+              "width": 800,
+              "height": 1422
+            },
+            {
+              "page": 36,
+              "status": 200,
+              "bytes": 70081,
+              "width": 800,
+              "height": 937
+            }
+          ]
+        },
+        {
+          "chapter": "https://www.guazimanhua.com/chapter.php?id=1684715",
+          "title": "第369话 最后一个条件（上）",
+          "position": 604,
+          "pageCount": 39,
+          "samples": [
+            {
+              "page": 1,
+              "status": 200,
+              "bytes": 235307,
+              "width": 900,
+              "height": 1657
+            },
+            {
+              "page": 20,
+              "status": 200,
+              "bytes": 225984,
+              "width": 900,
+              "height": 1599
+            },
+            {
+              "page": 39,
+              "status": 200,
+              "bytes": 204008,
+              "width": 900,
+              "height": 1649
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "terrahistoricus",
+      "status": "PASS",
+      "search": {
+        "query": "罗德岛",
+        "count": 5,
+        "maxPage": 1,
+        "hasMore": false
+      },
+      "laterSearch": null,
+      "terminalSearch": null,
+      "catalogCounts": [
+        21,
+        5
+      ],
+      "title": "罗德岛源石记事——莱茵生命",
+      "chapterCount": 13,
+      "string0210Preserved": true,
+      "navigation": {
+        "oldestPrevious": null,
+        "oldestNext": "https://comic.hypergryph.com/api/comic/1421/episode/7424",
+        "middlePrevious": "https://comic.hypergryph.com/api/comic/1421/episode/4936",
+        "middleNext": "https://comic.hypergryph.com/api/comic/1421/episode/3181",
+        "latestNext": null
+      },
+      "readers": [
+        {
+          "chapter": "https://comic.hypergryph.com/api/comic/1421/episode/1508",
+          "title": "预告 过往荆棘，誓约不灭",
+          "position": 0,
+          "pageCount": 8,
+          "samples": [
+            {
+              "page": 1,
+              "status": 200,
+              "bytes": 1227989,
+              "width": 1200,
+              "height": 1691
+            },
+            {
+              "page": 5,
+              "status": 200,
+              "bytes": 1298735,
+              "width": 1200,
+              "height": 1691
+            },
+            {
+              "page": 8,
+              "status": 200,
+              "bytes": 1360984,
+              "width": 1200,
+              "height": 1940
+            }
+          ],
+          "fullChapterAsyncResolution": 8,
+          "stableKeysUnchanged": true
+        },
+        {
+          "chapter": "https://comic.hypergryph.com/api/comic/1421/episode/1507",
+          "title": "06 物是人非",
+          "position": 6,
+          "pageCount": 71,
+          "samples": [
+            {
+              "page": 1,
+              "status": 200,
+              "bytes": 1015795,
+              "width": 1200,
+              "height": 1691
+            },
+            {
+              "page": 36,
+              "status": 200,
+              "bytes": 927122,
+              "width": 1200,
+              "height": 1691
+            },
+            {
+              "page": 71,
+              "status": 200,
+              "bytes": 1189853,
+              "width": 1200,
+              "height": 1691
+            }
+          ]
+        },
+        {
+          "chapter": "https://comic.hypergryph.com/api/comic/1421/episode/1505",
+          "title": "番外 Silence",
+          "position": 12,
+          "pageCount": 46,
+          "samples": [
+            {
+              "page": 1,
+              "status": 200,
+              "bytes": 1534925,
+              "width": 1200,
+              "height": 1691
+            },
+            {
+              "page": 24,
+              "status": 200,
+              "bytes": 901826,
+              "width": 1200,
+              "height": 1691
+            },
+            {
+              "page": 46,
+              "status": 200,
+              "bytes": 631205,
+              "width": 1200,
+              "height": 1691
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "artifact": "bh3",
+      "status": "PASS",
+      "search": {
+        "query": "第二次崩坏",
+        "count": 1,
+        "maxPage": 1,
+        "hasMore": false
+      },
+      "laterSearch": null,
+      "terminalSearch": null,
+      "catalogCounts": [
+        23
+      ],
+      "title": "第二次崩坏",
+      "chapterCount": 67,
+      "string0210Preserved": null,
+      "navigation": {
+        "oldestPrevious": null,
+        "oldestNext": "https://comic.bh3.com/book/1012/2",
+        "middlePrevious": "https://comic.bh3.com/book/1012/33",
+        "middleNext": "https://comic.bh3.com/book/1012/35",
+        "latestNext": null
+      },
+      "readers": [
+        {
+          "chapter": "https://comic.bh3.com/book/1012/1",
+          "title": "楔子 诡变",
+          "position": 0,
+          "pageCount": 24,
+          "samples": [
+            {
+              "page": 1,
+              "status": 200,
+              "bytes": 174829,
+              "width": 800,
+              "height": 1131
+            },
+            {
+              "page": 13,
+              "status": 200,
+              "bytes": 213231,
+              "width": 800,
+              "height": 1131
+            },
+            {
+              "page": 24,
+              "status": 200,
+              "bytes": 159637,
+              "width": 800,
+              "height": 1131
+            }
+          ]
+        },
+        {
+          "chapter": "https://comic.bh3.com/book/1012/34",
+          "title": "第三十二话 战前演说",
+          "position": 33,
+          "pageCount": 18,
+          "samples": [
+            {
+              "page": 1,
+              "status": 200,
+              "bytes": 270989,
+              "width": 800,
+              "height": 1131
+            },
+            {
+              "page": 10,
+              "status": 200,
+              "bytes": 139986,
+              "width": 800,
+              "height": 1131
+            },
+            {
+              "page": 18,
+              "status": 200,
+              "bytes": 201953,
+              "width": 800,
+              "height": 1131
+            }
+          ]
+        },
+        {
+          "chapter": "https://comic.bh3.com/book/1012/67",
+          "title": "后日谈 归处",
+          "position": 66,
+          "pageCount": 22,
+          "samples": [
+            {
+              "page": 1,
+              "status": 200,
+              "bytes": 269012,
+              "width": 800,
+              "height": 1131
+            },
+            {
+              "page": 12,
+              "status": 200,
+              "bytes": 199367,
+              "width": 800,
+              "height": 1131
+            },
+            {
+              "page": 22,
+              "status": 200,
+              "bytes": 90928,
+              "width": 800,
+              "height": 1131
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "signedUrlsPersisted": false
+}

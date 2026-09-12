@@ -787,6 +787,75 @@
         "commit": "5a0261c718cd6d5ecf14963d837f29024c792398",
         "theme": "manga18"
       }
+    },
+    {
+      "artifactId": "bh3",
+      "runtimeKey": "keiyoushi_5943234929466346733",
+      "catalogName": "《崩坏3》IP站",
+      "locales": [
+        "zh-Hans"
+      ],
+      "providerId": "bh3",
+      "siteUrl": "https://comic.bh3.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated",
+        "transport": "hybrid"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "zh.bh3",
+        "sourceId": "5943234929466346733",
+        "version": "1.4.4",
+        "extensionLib": "1.4",
+        "commit": "5a0261c718cd6d5ecf14963d837f29024c792398"
+      }
+    },
+    {
+      "artifactId": "guazimanhua",
+      "runtimeKey": "keiyoushi_9103931521355991619",
+      "catalogName": "瓜子漫画",
+      "locales": [
+        "zh-Hans"
+      ],
+      "providerId": "guazimanhua",
+      "siteUrl": "https://www.guazimanhua.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated",
+        "transport": "html"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "zh.guazimanhua",
+        "sourceId": "9103931521355991619",
+        "version": "1.6.6",
+        "extensionLib": "1.6",
+        "commit": "5a0261c718cd6d5ecf14963d837f29024c792398"
+      }
+    },
+    {
+      "artifactId": "terrahistoricus",
+      "runtimeKey": "keiyoushi_4585134706567717130",
+      "catalogName": "泰拉记事社",
+      "locales": [
+        "zh-Hans"
+      ],
+      "providerId": "terrahistoricus",
+      "siteUrl": "https://comic.hypergryph.com",
+      "contentWarning": "SAFE",
+      "implementation": {
+        "producer": "generated",
+        "transport": "api"
+      },
+      "upstream": {
+        "project": "keiyoushi/extensions-source",
+        "module": "zh.terrahistoricus",
+        "sourceId": "4585134706567717130",
+        "version": "1.4.4",
+        "extensionLib": "1.4",
+        "commit": "5a0261c718cd6d5ecf14963d837f29024c792398"
+      }
     }
   ]
 }
