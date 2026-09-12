@@ -3,10 +3,10 @@
 class Keiyoushi3279300917142951720Source extends ComicSource {
     name = "漫画屋";
     key = "keiyoushi_3279300917142951720";
-    version = "1.0.0";
+    version = "1.0.1";
     minAppVersion = "1.6.0";
     url = "";
-    config = {"schemaVersion":"0.2","id":"keiyoushi_3279300917142951720","name":"漫画屋","languages":["zh-Hans"],"contentOrigins":[],"contentWarning":"SAFE","sourceType":"html","baseUrl":"https://www.mhua5.com","mobileUrl":"https://m.mhua5.com","requiresAuth":false,"requiresWebView":false,"familyContract":"mccms-v1","headers":{"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"},"explore":{"popular":{"url":"https://www.mhua5.com/category/order/hits/page/{page}","method":"GET"},"latest":{"url":"https://www.mhua5.com/category/order/addtime/page/{page}","method":"GET"}},"search":{"url":"https://www.mhua5.com/search/{query}/{page}","method":"GET","selector":".common-comic-item","pagination":{"mode":"paired-links"},"fields":{"variant":"default","listing":".common-comic-item","title":".comic__title > a","cover":"img","coverAttr":"data-original","detailsRoot":".de-info__box","detailTitle":".comic-title","detailCover":"img","detailCoverAttr":"src","detailAuthor":".name","detailDescription":".intro-total","detailTags":".comic-status a","chapters":".chapter__list-box > li","chapterName":"a","chapterOrder":"oldest-first","reader":"html-lazy","readerSelector":"img[data-original]","readerAttr":"data-original","detailsBase":"desktop","pagination":"paired-links"}},"details":{"url":"{comicId}","method":"GET","selector":".de-info__box","fields":{"variant":"default","listing":".common-comic-item","title":".comic__title > a","cover":"img","coverAttr":"data-original","detailsRoot":".de-info__box","detailTitle":".comic-title","detailCover":"img","detailCoverAttr":"src","detailAuthor":".name","detailDescription":".intro-total","detailTags":".comic-status a","chapters":".chapter__list-box > li","chapterName":"a","chapterOrder":"oldest-first","reader":"html-lazy","readerSelector":"img[data-original]","readerAttr":"data-original","detailsBase":"desktop","pagination":"paired-links"}},"chapters":{"url":"{comicId}","method":"GET","selector":".chapter__list-box > li","fields":{"name":"a"},"order":"oldest-first"},"pages":{"url":"{chapterId}","method":"GET","decoder":"html-lazy","selector":"img[data-original]","fields":{"imageUrl":"data-original"},"order":"response"},"provenance":{"type":"converted","upstreamProject":"keiyoushi","upstreamPackage":"eu.kanade.tachiyomi.extension.zh.manhuawu","upstreamSourceId":"3279300917142951720","upstreamCommit":"5a0261c718cd6d5ecf14963d837f29024c792398","upstreamVersion":"1.4.9","upstreamLicense":"Apache-2.0","converterVersion":"0.1.0","generatedTimestamp":"2026-09-11T03:59:34Z"},"artifactId":"manhuawu","version":"1.0.0"};
+    config = {"schemaVersion":"0.2","id":"keiyoushi_3279300917142951720","name":"漫画屋","languages":["zh-Hans"],"contentOrigins":[],"contentWarning":"SAFE","sourceType":"html","baseUrl":"https://www.mhua5.com","mobileUrl":"https://m.mhua5.com","requiresAuth":false,"requiresWebView":false,"familyContract":"mccms-v1","headers":{"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"},"explore":{"popular":{"url":"https://www.mhua5.com/category/order/hits/page/{page}","method":"GET"},"latest":{"url":"https://www.mhua5.com/category/order/addtime/page/{page}","method":"GET"}},"search":{"url":"https://www.mhua5.com/search/{query}/{page}","method":"GET","selector":".common-comic-item","pagination":{"mode":"paired-links"},"fields":{"variant":"default","listing":".common-comic-item","title":".comic__title > a","cover":"img","coverAttr":"data-original","detailsRoot":".de-info__box","detailTitle":".comic-title","detailCover":"img","detailCoverAttr":"src","detailAuthor":".name","detailDescription":".intro-total","detailTags":".comic-status a","chapters":".chapter__list-box > li","chapterName":"a","chapterOrder":"oldest-first","reader":"html-lazy","readerSelector":"img[data-original]","readerAttr":"data-original","detailsBase":"desktop","pagination":"paired-links"}},"details":{"url":"{comicId}","method":"GET","selector":".de-info__box","fields":{"variant":"default","listing":".common-comic-item","title":".comic__title > a","cover":"img","coverAttr":"data-original","detailsRoot":".de-info__box","detailTitle":".comic-title","detailCover":"img","detailCoverAttr":"src","detailAuthor":".name","detailDescription":".intro-total","detailTags":".comic-status a","chapters":".chapter__list-box > li","chapterName":"a","chapterOrder":"oldest-first","reader":"html-lazy","readerSelector":"img[data-original]","readerAttr":"data-original","detailsBase":"desktop","pagination":"paired-links"}},"chapters":{"url":"{comicId}","method":"GET","selector":".chapter__list-box > li","fields":{"name":"a"},"order":"oldest-first"},"pages":{"url":"{chapterId}","method":"GET","decoder":"html-lazy","selector":"img[data-original]","fields":{"imageUrl":"data-original"},"order":"response"},"provenance":{"type":"converted","upstreamProject":"keiyoushi","upstreamPackage":"eu.kanade.tachiyomi.extension.zh.manhuawu","upstreamSourceId":"3279300917142951720","upstreamCommit":"5a0261c718cd6d5ecf14963d837f29024c792398","upstreamVersion":"1.4.9","upstreamLicense":"Apache-2.0","converterVersion":"0.1.0","generatedTimestamp":"2026-09-12T00:00:00Z"},"artifactId":"manhuawu","version":"1.0.1"};
     get baseUrl() { return this.config.baseUrl; }
     get locale() { return this.config.languages[0]; }
     get headers() { return this.config.headers; }
@@ -150,7 +150,7 @@ class Keiyoushi3279300917142951720Source extends ComicSource {
                 return new Comic({id:this.sourceId(href, request),title,cover:this.absolute(coverValue,request),
                     tags:this.config.contentWarning === "NSFW" ? ["NSFW"] : []});
             }).filter(Boolean);
-            return {comics:this.unique(rows),hasMore:this.hasNext(doc,request)};
+            return this.catalogResult(kind,rows,doc,request,page);
         });
     };
     info = async id => {
@@ -232,6 +232,21 @@ class Keiyoushi3279300917142951720Source extends ComicSource {
         const body = await this.rawReader(url, mobile);
         const values = decoder === "miaoqu-xor-base64" ? this.decodeMiaoqu(body,epId) : this.decodeSixmh(body);
         return this.imageList(values,url);
+    };
+    catalogResult = (kind, rows, doc, request, page) => {
+        const result = {comics:this.unique(rows),hasMore:this.hasNext(doc,request)};
+        if (kind !== "search") return result;
+        const last = doc.querySelector("#Pagination a.end");
+        const href = last ? this.attr(last,null,"href") : "";
+        if (!href) return result;
+        // The Host numbered search consumes maxPage, not hasMore.
+        // Accept only the last-page link for this exact origin and query.
+        const root = decodeURIComponent(this.sourceId(request,request)).replace(/\/[1-9]\d*$/, "");
+        const target = decodeURIComponent(this.sourceId(href,request));
+        const suffix = target === root ? "1" : target.startsWith(root + "/") ? target.slice(root.length + 1) : "";
+        const total = /^[1-9]\d*$/.test(suffix) ? Number(suffix) : NaN;
+        if (Number.isSafeInteger(total)) { result.maxPage = total; result.hasMore = page < total; }
+        return result;
     };
 
 }

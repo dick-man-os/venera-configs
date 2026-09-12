@@ -1,0 +1,2506 @@
+{
+  "scope": "9I-R1 source-only runtime rescue; 9I new sources remain precomputed only",
+  "baseline": {
+    "configsParent": "4804fc7ffa83ae6ef9a3cb86acb887c5052746a3",
+    "branch": "feature/source-compat",
+    "hostCommit": "126a462debbe5b05a8c8d6e3dcb1b67fff1ebcdf",
+    "physicalUpstream": "5e06c412c0264b18120fd963fdd6efb529f3fa29",
+    "canonicalPin": "5a0261c718cd6d5ecf14963d837f29024c792398",
+    "baselineTests": 657
+  },
+  "manhuawuSearch": [
+    {
+      "label": "manhuawu-douluo-1",
+      "timeUTC": "2026-09-12T06:05:43.031703+00:00",
+      "requestUrl": "https://www.mhua5.com/search/%E6%96%97%E7%BD%97%E5%A4%A7%E9%99%86/1",
+      "host": "www.mhua5.com",
+      "requestHeaders": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://www.mhua5.com/search/%E6%96%97%E7%BD%97%E5%A4%A7%E9%99%86/1",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": null,
+      "contentEncoding": null,
+      "bytesRead": 33072,
+      "magic": "3c21444f43545950452068746d6c3e0d0a3c68746d6c3e0d",
+      "sha256": "b6fc4aa578bb1043844276cddc374405c9300ce05a3044f11174edd8f6fcc1ee",
+      "boundedTruncation": false,
+      "cards": [
+        {
+          "title": "斗罗大陆3龙王传说",
+          "href": "/index.php/comic/douluodalu3longwangchuanshuo",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodalu3longwangchuanshuo"
+        },
+        {
+          "title": "斗罗大陆4终极斗罗",
+          "href": "/index.php/comic/douluodalu4zhongjidouluo",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodalu4zhongjidouluo"
+        },
+        {
+          "title": "斗罗大陆外传 唐门英雄传",
+          "href": "/index.php/comic/douluodaluwaichuantangmenyingxiongchuan",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodaluwaichuantangmenyingxiongchuan"
+        },
+        {
+          "title": "斗罗大陆 II 绝世唐门",
+          "href": "/index.php/comic/douluodaluiijueshitangmen",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodaluiijueshitangmen"
+        },
+        {
+          "title": "斗罗大陆 5 重生唐三",
+          "href": "/index.php/comic/douluodalu5zhongshengtangsan",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodalu5zhongshengtangsan"
+        },
+        {
+          "title": "斗罗大陆 第三部 龙王传说",
+          "href": "/index.php/comic/douluodaludisanbulongwangchuanshuo",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodaludisanbulongwangchuanshuo"
+        },
+        {
+          "title": "斗罗大陆",
+          "href": "/index.php/comic/douluodalu",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodalu"
+        },
+        {
+          "title": "斗罗大陆外传神界传说",
+          "href": "/index.php/comic/douluodaluwaichuanshenjiechuanshuo",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodaluwaichuanshenjiechuanshuo"
+        },
+        {
+          "title": "斗罗大陆",
+          "href": "/index.php/comic/douluodalu",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodalu"
+        },
+        {
+          "title": "斗罗大陆4终极斗罗",
+          "href": "/index.php/comic/douluodalu4zhongjidouluo",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodalu4zhongjidouluo"
+        },
+        {
+          "title": "斗罗大陆 II 绝世唐门",
+          "href": "/index.php/comic/douluodaluiijueshitangmen",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodaluiijueshitangmen"
+        },
+        {
+          "title": "斗罗大陆 第三部 龙王传说",
+          "href": "/index.php/comic/douluodaludisanbulongwangchuanshuo",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodaludisanbulongwangchuanshuo"
+        },
+        {
+          "title": "斗罗大陆3龙王传说",
+          "href": "/index.php/comic/douluodalu3longwangchuanshuo",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodalu3longwangchuanshuo"
+        },
+        {
+          "title": "斗罗大陆 5 重生唐三",
+          "href": "/index.php/comic/douluodalu5zhongshengtangsan",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodalu5zhongshengtangsan"
+        },
+        {
+          "title": "斗罗大陆外传唐门英雄传",
+          "href": "/index.php/comic/douluodaluwaichuantangmenyingxiongchuan",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodaluwaichuantangmenyingxiongchuan"
+        },
+        {
+          "title": "斗罗大陆外传神界传说",
+          "href": "/index.php/comic/douluodaluwaichuanshenjiechuanshuo",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodaluwaichuanshenjiechuanshuo"
+        },
+        {
+          "title": "斗罗大陆外传 唐门英雄传",
+          "href": "/index.php/comic/douluodaluwaichuantangmenyingxiongchuan",
+          "resolved": "https://www.mhua5.com/index.php/comic/douluodaluwaichuantangmenyingxiongchuan"
+        }
+      ],
+      "rawCardCount": 17,
+      "pager": [
+        "<div id=\"Pagination\" style=\"display:none;\">\n<div>\n<a class=\"prev\" href=\"/index.php/search/斗罗大陆\">上一页</a>\n<a class=\"first\" href=\"/index.php/search/斗罗大陆\">首页</a>\n<a class=\"on\" href=\"/index.php/search/斗罗大陆\">1</a>\n<a class=\"end\" href=\"/index.php/search/斗罗大陆\">末页</a>\n<a class=\"next\" href=\"/index.php/search/斗罗大陆\">下一页</a>\n</div>\n</div>"
+      ],
+      "paginationLinks": [
+        {
+          "text": "上一页",
+          "href": "/index.php/search/斗罗大陆"
+        },
+        {
+          "text": "首页",
+          "href": "/index.php/search/斗罗大陆"
+        },
+        {
+          "text": "1",
+          "href": "/index.php/search/斗罗大陆"
+        },
+        {
+          "text": "末页",
+          "href": "/index.php/search/斗罗大陆"
+        },
+        {
+          "text": "下一页",
+          "href": "/index.php/search/斗罗大陆"
+        }
+      ],
+      "actualHostRuntimeBefore": {
+        "ok": true,
+        "data": {
+          "comics": [
+            {
+              "id": "/comic/douluodalu3longwangchuanshuo",
+              "title": "斗罗大陆3龙王传说",
+              "cover": "https://static-tw.baozimh.com/cover/douluodalu3longwangchuanshuo-shenman.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/douluodalu4zhongjidouluo",
+              "title": "斗罗大陆4终极斗罗",
+              "cover": "https://static-tw.baozimh.com/cover/douluodalu4zhongjidouluo-shenman.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/douluodaluwaichuantangmenyingxiongchuan",
+              "title": "斗罗大陆外传 唐门英雄传",
+              "cover": "https://static-tw.baozimh.com/cover/douluodaluwaichuantangmenyingxiongchuan-shenmanjun.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/douluodaluiijueshitangmen",
+              "title": "斗罗大陆 II 绝世唐门",
+              "cover": "https://static-tw.baozimh.com/cover/douluodaluiijueshitangmen-shenmanjun.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/douluodalu5zhongshengtangsan",
+              "title": "斗罗大陆 5 重生唐三",
+              "cover": "https://static-tw.baozimh.com/cover/douluodalu5zhongshengtangsan-shenmanjun.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/douluodaludisanbulongwangchuanshuo",
+              "title": "斗罗大陆 第三部 龙王传说",
+              "cover": "https://static-tw.baozimh.com/cover/douluodaludisanbulongwangchuanshuo-shenmanjun.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/douluodalu",
+              "title": "斗罗大陆",
+              "cover": "https://static-tw.baozimh.com/cover/douluodalu-fengxuandongman.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/douluodaluwaichuanshenjiechuanshuo",
+              "title": "斗罗大陆外传神界传说",
+              "cover": "https://static-tw.baozimh.com/cover/douluodaluwaichuanshenjiechuanshuo-shenman.jpg?w=285&h=375&q=100",
+              "tags": []
+            }
+          ],
+          "hasMore": false
+        }
+      },
+      "actualHostRuntimeAfter": {
+        "ok": true,
+        "data": {
+          "comics": [
+            {
+              "id": "/comic/douluodalu3longwangchuanshuo",
+              "title": "斗罗大陆3龙王传说",
+              "cover": "https://static-tw.baozimh.com/cover/douluodalu3longwangchuanshuo-shenman.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/douluodalu4zhongjidouluo",
+              "title": "斗罗大陆4终极斗罗",
+              "cover": "https://static-tw.baozimh.com/cover/douluodalu4zhongjidouluo-shenman.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/douluodaluwaichuantangmenyingxiongchuan",
+              "title": "斗罗大陆外传 唐门英雄传",
+              "cover": "https://static-tw.baozimh.com/cover/douluodaluwaichuantangmenyingxiongchuan-shenmanjun.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/douluodaluiijueshitangmen",
+              "title": "斗罗大陆 II 绝世唐门",
+              "cover": "https://static-tw.baozimh.com/cover/douluodaluiijueshitangmen-shenmanjun.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/douluodalu5zhongshengtangsan",
+              "title": "斗罗大陆 5 重生唐三",
+              "cover": "https://static-tw.baozimh.com/cover/douluodalu5zhongshengtangsan-shenmanjun.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/douluodaludisanbulongwangchuanshuo",
+              "title": "斗罗大陆 第三部 龙王传说",
+              "cover": "https://static-tw.baozimh.com/cover/douluodaludisanbulongwangchuanshuo-shenmanjun.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/douluodalu",
+              "title": "斗罗大陆",
+              "cover": "https://static-tw.baozimh.com/cover/douluodalu-fengxuandongman.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/douluodaluwaichuanshenjiechuanshuo",
+              "title": "斗罗大陆外传神界传说",
+              "cover": "https://static-tw.baozimh.com/cover/douluodaluwaichuanshenjiechuanshuo-shenman.jpg?w=285&h=375&q=100",
+              "tags": []
+            }
+          ],
+          "hasMore": false,
+          "maxPage": 1
+        }
+      }
+    },
+    {
+      "label": "manhuawu-douluo-2",
+      "timeUTC": "2026-09-12T06:05:43.776999+00:00",
+      "requestUrl": "https://www.mhua5.com/search/%E6%96%97%E7%BD%97%E5%A4%A7%E9%99%86/2",
+      "host": "www.mhua5.com",
+      "requestHeaders": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://www.mhua5.com/search/%E6%96%97%E7%BD%97%E5%A4%A7%E9%99%86/2",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": null,
+      "contentEncoding": null,
+      "bytesRead": 17535,
+      "magic": "3c21444f43545950452068746d6c3e0d0a3c68746d6c3e0d",
+      "sha256": "dce38b2e7549e889ff87988bc9507aa7bb538ceda6b2496c3fc1fb876c0020f1",
+      "boundedTruncation": false,
+      "cards": [],
+      "rawCardCount": 0,
+      "pager": [
+        "<div id=\"Pagination\" style=\"display:none;\">\n<div>\n<a class=\"prev\" href=\"/index.php/search/斗罗大陆\">上一页</a>\n<a class=\"first\" href=\"/index.php/search/斗罗大陆\">首页</a>\n<a class=\"on\" href=\"/index.php/search/斗罗大陆\">1</a>\n<a class=\"end\" href=\"/index.php/search/斗罗大陆\">末页</a>\n<a class=\"next\" href=\"/index.php/search/斗罗大陆\">下一页</a>\n</div>\n</div>"
+      ],
+      "paginationLinks": [
+        {
+          "text": "上一页",
+          "href": "/index.php/search/斗罗大陆"
+        },
+        {
+          "text": "首页",
+          "href": "/index.php/search/斗罗大陆"
+        },
+        {
+          "text": "1",
+          "href": "/index.php/search/斗罗大陆"
+        },
+        {
+          "text": "末页",
+          "href": "/index.php/search/斗罗大陆"
+        },
+        {
+          "text": "下一页",
+          "href": "/index.php/search/斗罗大陆"
+        }
+      ],
+      "actualHostRuntimeBefore": {
+        "ok": true,
+        "data": {
+          "comics": [],
+          "hasMore": false
+        }
+      },
+      "actualHostRuntimeAfter": {
+        "ok": true,
+        "data": {
+          "comics": [],
+          "hasMore": false,
+          "maxPage": 1
+        }
+      }
+    },
+    {
+      "label": "manhuawu-tower-1",
+      "timeUTC": "2026-09-12T06:05:44.320729+00:00",
+      "requestUrl": "https://www.mhua5.com/search/%E7%A5%9E%E4%B9%8B%E5%A1%94/1",
+      "host": "www.mhua5.com",
+      "requestHeaders": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://www.mhua5.com/search/%E7%A5%9E%E4%B9%8B%E5%A1%94/1",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": null,
+      "contentEncoding": null,
+      "bytesRead": 22803,
+      "magic": "3c21444f43545950452068746d6c3e0d0a3c68746d6c3e0d",
+      "sha256": "4865d560cc87700ed6d0f407a4d64c4f3c52e9f3c9b6ba7f53e4de5f0ac93a7b",
+      "boundedTruncation": false,
+      "cards": [
+        {
+          "title": "神之塔外傳:烏雷克·馬奇努",
+          "href": "/index.php/comic/shenzhitawaichuanwuleikemaqinu",
+          "resolved": "https://www.mhua5.com/index.php/comic/shenzhitawaichuanwuleikemaqinu"
+        },
+        {
+          "title": "神之塔（신의 탑）  -  咚漫漫畫",
+          "href": "/index.php/comic/shenzhitadongmanmanhua",
+          "resolved": "https://www.mhua5.com/index.php/comic/shenzhitadongmanmanhua"
+        },
+        {
+          "title": "神之塔（신의 탑）  -  咚漫漫畫",
+          "href": "/index.php/comic/shenzhitadongmanmanhua",
+          "resolved": "https://www.mhua5.com/index.php/comic/shenzhitadongmanmanhua"
+        },
+        {
+          "title": "神之塔（신의 탑）",
+          "href": "/index.php/comic/shenzhita",
+          "resolved": "https://www.mhua5.com/index.php/comic/shenzhita"
+        },
+        {
+          "title": "神之塔",
+          "href": "/index.php/comic/shenzhita",
+          "resolved": "https://www.mhua5.com/index.php/comic/shenzhita"
+        },
+        {
+          "title": "神之塔",
+          "href": "/index.php/comic/shenzhita",
+          "resolved": "https://www.mhua5.com/index.php/comic/shenzhita"
+        }
+      ],
+      "rawCardCount": 6,
+      "pager": [
+        "<div id=\"Pagination\" style=\"display:none;\">\n<div>\n<a class=\"prev\" href=\"/index.php/search/神之塔\">上一页</a>\n<a class=\"first\" href=\"/index.php/search/神之塔\">首页</a>\n<a class=\"on\" href=\"/index.php/search/神之塔\">1</a>\n<a class=\"end\" href=\"/index.php/search/神之塔\">末页</a>\n<a class=\"next\" href=\"/index.php/search/神之塔\">下一页</a>\n</div>\n</div>"
+      ],
+      "paginationLinks": [
+        {
+          "text": "上一页",
+          "href": "/index.php/search/神之塔"
+        },
+        {
+          "text": "首页",
+          "href": "/index.php/search/神之塔"
+        },
+        {
+          "text": "1",
+          "href": "/index.php/search/神之塔"
+        },
+        {
+          "text": "末页",
+          "href": "/index.php/search/神之塔"
+        },
+        {
+          "text": "下一页",
+          "href": "/index.php/search/神之塔"
+        }
+      ],
+      "actualHostRuntimeBefore": {
+        "ok": true,
+        "data": {
+          "comics": [
+            {
+              "id": "/comic/shenzhitawaichuanwuleikemaqinu",
+              "title": "神之塔外傳:烏雷克·馬奇努",
+              "cover": "https://static-tw.baozimh.com/cover/shenzhitawaichuanwuleikemaqinu-siusiu.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/shenzhitadongmanmanhua",
+              "title": "神之塔（신의 탑）  -  咚漫漫畫",
+              "cover": "https://static-tw.baozimh.com/cover/shenzhitasinyitab-dongmanmanhua.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/shenzhita",
+              "title": "神之塔（신의 탑）",
+              "cover": "https://static-tw.baozimh.com/cover/shenzhitasinyitab-dongmanmanhua.jpg?w=285&h=375&q=100",
+              "tags": []
+            }
+          ],
+          "hasMore": false
+        }
+      },
+      "actualHostRuntimeAfter": {
+        "ok": true,
+        "data": {
+          "comics": [
+            {
+              "id": "/comic/shenzhitawaichuanwuleikemaqinu",
+              "title": "神之塔外傳:烏雷克·馬奇努",
+              "cover": "https://static-tw.baozimh.com/cover/shenzhitawaichuanwuleikemaqinu-siusiu.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/shenzhitadongmanmanhua",
+              "title": "神之塔（신의 탑）  -  咚漫漫畫",
+              "cover": "https://static-tw.baozimh.com/cover/shenzhitasinyitab-dongmanmanhua.jpg?w=285&h=375&q=100",
+              "tags": []
+            },
+            {
+              "id": "/comic/shenzhita",
+              "title": "神之塔（신의 탑）",
+              "cover": "https://static-tw.baozimh.com/cover/shenzhitasinyitab-dongmanmanhua.jpg?w=285&h=375&q=100",
+              "tags": []
+            }
+          ],
+          "hasMore": false,
+          "maxPage": 1
+        }
+      }
+    },
+    {
+      "label": "manhuawu-tower-2",
+      "timeUTC": "2026-09-12T06:05:46.853817+00:00",
+      "requestUrl": "https://www.mhua5.com/search/%E7%A5%9E%E4%B9%8B%E5%A1%94/2",
+      "host": "www.mhua5.com",
+      "requestHeaders": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://www.mhua5.com/search/%E7%A5%9E%E4%B9%8B%E5%A1%94/2",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": null,
+      "contentEncoding": null,
+      "bytesRead": 17513,
+      "magic": "3c21444f43545950452068746d6c3e0d0a3c68746d6c3e0d",
+      "sha256": "f0152d6e50dd919279ebb8f1376c122f367fbdf472a8b52601fe9db4af5577e9",
+      "boundedTruncation": false,
+      "cards": [],
+      "rawCardCount": 0,
+      "pager": [
+        "<div id=\"Pagination\" style=\"display:none;\">\n<div>\n<a class=\"prev\" href=\"/index.php/search/神之塔\">上一页</a>\n<a class=\"first\" href=\"/index.php/search/神之塔\">首页</a>\n<a class=\"on\" href=\"/index.php/search/神之塔\">1</a>\n<a class=\"end\" href=\"/index.php/search/神之塔\">末页</a>\n<a class=\"next\" href=\"/index.php/search/神之塔\">下一页</a>\n</div>\n</div>"
+      ],
+      "paginationLinks": [
+        {
+          "text": "上一页",
+          "href": "/index.php/search/神之塔"
+        },
+        {
+          "text": "首页",
+          "href": "/index.php/search/神之塔"
+        },
+        {
+          "text": "1",
+          "href": "/index.php/search/神之塔"
+        },
+        {
+          "text": "末页",
+          "href": "/index.php/search/神之塔"
+        },
+        {
+          "text": "下一页",
+          "href": "/index.php/search/神之塔"
+        }
+      ]
+    }
+  ],
+  "manhuawuDistinctDetails": [
+    {
+      "label": "tower-detail-1",
+      "timeUTC": "2026-09-12T06:14:27.459952+00:00",
+      "requestUrl": "https://www.mhua5.com/index.php/comic/shenzhitawaichuanwuleikemaqinu",
+      "host": "www.mhua5.com",
+      "requestHeaders": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://www.mhua5.com/index.php/comic/shenzhitawaichuanwuleikemaqinu",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": null,
+      "contentEncoding": null,
+      "bytesRead": 92578,
+      "magic": "3c21444f43545950452068746d6c3e0d0a3c68746d6c3e0d",
+      "sha256": "5830a10d87a0dd2be1199afdc9d3f93ff4725d99372c38b030d7d51d3d78c715",
+      "boundedTruncation": false,
+      "title": "神之塔外傳:烏雷克·馬奇努  - 漫画屋-漫画大全-免费漫画在线看-最好看的漫画",
+      "canonical": [],
+      "chapterLinks": []
+    },
+    {
+      "label": "tower-detail-2",
+      "timeUTC": "2026-09-12T06:14:29.003908+00:00",
+      "requestUrl": "https://www.mhua5.com/index.php/comic/shenzhitadongmanmanhua",
+      "host": "www.mhua5.com",
+      "requestHeaders": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://www.mhua5.com/index.php/comic/shenzhitadongmanmanhua",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": null,
+      "contentEncoding": null,
+      "bytesRead": 66447,
+      "magic": "3c21444f43545950452068746d6c3e0d0a3c68746d6c3e0d",
+      "sha256": "ef20c985bd13fdb2e4115aecb03820ec522bf5cd090f10ee794f96f764ab83b7",
+      "boundedTruncation": false,
+      "title": "神之塔（신의 탑）  -  咚漫漫畫  - 漫画屋-漫画大全-免费漫画在线看-最好看的漫画",
+      "canonical": [],
+      "chapterLinks": []
+    },
+    {
+      "label": "tower-detail-3",
+      "timeUTC": "2026-09-12T06:14:30.493243+00:00",
+      "requestUrl": "https://www.mhua5.com/index.php/comic/shenzhita",
+      "host": "www.mhua5.com",
+      "requestHeaders": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://www.mhua5.com/index.php/comic/shenzhita",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": null,
+      "contentEncoding": null,
+      "bytesRead": 321158,
+      "magic": "3c21444f43545950452068746d6c3e0d0a3c68746d6c3e0d",
+      "sha256": "efbdfc2c2cb0b6b10b0e821b699c9f2a13269902f33c9c115965d28fbc5c9d12",
+      "boundedTruncation": false,
+      "title": "神之塔 - 漫画屋-漫画大全-免费漫画在线看-最好看的漫画",
+      "canonical": [],
+      "chapterLinks": []
+    }
+  ],
+  "manhuawuRealPages": [
+    {
+      "label": "manhuawu-fight-1",
+      "timeUTC": "2026-09-12T06:16:45.223337+00:00",
+      "requestUrl": "https://www.mhua5.com/search/%E6%96%97/1",
+      "host": "www.mhua5.com",
+      "requestHeaders": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://www.mhua5.com/search/%E6%96%97/1",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": null,
+      "contentEncoding": null,
+      "bytesRead": 44760,
+      "magic": "3c21444f43545950452068746d6c3e0d0a3c68746d6c3e0d",
+      "sha256": "60662ba29e939d71a48e9a32767f8939d58e8f5438a065a1be99b6ac927f4f09",
+      "boundedTruncation": false,
+      "rawCardCount": 30,
+      "pagination": [
+        "<div id=\"Pagination\">\n<div>\n<a class=\"prev\" href=\"/index.php/search/斗\">上一页</a>\n<a class=\"first\" href=\"/index.php/search/斗\">首页</a>\n<a class=\"on\" href=\"/index.php/search/斗\">1</a><a href=\"/index.php/search/斗/2\">2</a><a href=\"/index.php/search/斗/3\">3</a><a href=\"/index.php/search/斗/4\">4</a><a href=\"/index.php/search/斗/5\">5</a><a href=\"/index.php/search/斗/6\">6</a><a href=\"/index.php/search/斗/7\">7</a><a href=\"/index.php/search/斗/8\">8</a><a href=\"/index.php/search/斗/9\">9</a><a href=\"/index.php/search/斗/10\">10</a><a href=\"/index.php/search/斗/20\">20</a>\n<a class=\"end\" href=\"/index.php/search/斗/20\">末页</a>\n<a class=\"next\" href=\"/index.php/search/斗/2\">下一页</a>\n</div>\n</div>"
+      ]
+    },
+    {
+      "label": "manhuawu-fight-2",
+      "timeUTC": "2026-09-12T06:16:47.053097+00:00",
+      "requestUrl": "https://www.mhua5.com/search/%E6%96%97/2",
+      "host": "www.mhua5.com",
+      "requestHeaders": {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://www.mhua5.com/search/%E6%96%97/2",
+      "contentType": "text/html; charset=utf-8",
+      "contentLength": null,
+      "contentEncoding": null,
+      "bytesRead": 44426,
+      "magic": "3c21444f43545950452068746d6c3e0d0a3c68746d6c3e0d",
+      "sha256": "a79bf9ec0afff8483dc057f8750d88fc4273f49acaabaef0a6d3629dc304da94",
+      "boundedTruncation": false,
+      "rawCardCount": 30,
+      "pagination": [
+        "<div id=\"Pagination\">\n<div>\n<a class=\"prev\" href=\"/index.php/search/斗\">上一页</a>\n<a class=\"first\" href=\"/index.php/search/斗\">首页</a>\n<a href=\"/index.php/search/斗\">1</a><a class=\"on\" href=\"/index.php/search/斗/2\">2</a><a href=\"/index.php/search/斗/3\">3</a><a href=\"/index.php/search/斗/4\">4</a><a href=\"/index.php/search/斗/5\">5</a><a href=\"/index.php/search/斗/6\">6</a><a href=\"/index.php/search/斗/7\">7</a><a href=\"/index.php/search/斗/8\">8</a><a href=\"/index.php/search/斗/9\">9</a><a href=\"/index.php/search/斗/10\">10</a><a href=\"/index.php/search/斗/20\">20</a>\n<a class=\"end\" href=\"/index.php/search/斗/20\">末页</a>\n<a class=\"next\" href=\"/index.php/search/斗/3\">下一页</a>\n</div>\n</div>"
+      ]
+    }
+  ],
+  "hanman18ChapterCount": {
+    "label": "han-secret-detail",
+    "upstreamChapterItems": 320,
+    "chapterAnchors": 320,
+    "uniqueChapterIdentities": 317,
+    "duplicateIdentities": {
+      "https://hanman18.com/manhwa/mimijiaohua/219": [
+        "第219話-不知道他們約會都在幹嘛…",
+        "第215話-排隊等子豪上"
+      ],
+      "https://hanman18.com/manhwa/mimijiaohua/218": [
+        "第218話-媽媽不能跟女兒共用男人",
+        "第214話-解鎖4P初體驗"
+      ],
+      "https://hanman18.com/manhwa/mimijiaohua/217": [
+        "第217話-子豪…阿姨不是你的玩具!!",
+        "第213話-子豪要被趕出家門了?!"
+      ]
+    },
+    "firstLast": [
+      {
+        "title": "第320話-懷念這顆鮑的觸感",
+        "href": "https://hanman18.com/manhwa/mimijiaohua/320"
+      },
+      {
+        "title": "第319話-已經熟到都出水了",
+        "href": "https://hanman18.com/manhwa/mimijiaohua/319"
+      },
+      {
+        "title": "第2話-你要…學學看嗎?",
+        "href": "https://hanman18.com/manhwa/mimijiaohua/2"
+      },
+      {
+        "title": "第1話-門縫傳出呻吟聲",
+        "href": "https://hanman18.com/manhwa/mimijiaohua/1"
+      }
+    ],
+    "before": {
+      "sourceUniqueChapters": 317,
+      "oldestId": "/manhwa/mimijiaohua/1",
+      "latestId": "/manhwa/mimijiaohua/320",
+      "oldToNew": true
+    },
+    "after": {
+      "sourceUniqueChapters": 317,
+      "oldestId": "/manhwa/mimijiaohua/1",
+      "latestId": "/manhwa/mimijiaohua/320",
+      "oldToNew": true
+    }
+  },
+  "hanman18Readers": [
+    {
+      "label": "han-friend-reader-0",
+      "timeUTC": "2026-09-12T06:07:17.369594+00:00",
+      "requestUrl": "https://hanman18.com/manhwa/youqingwanshui/115",
+      "host": "hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://hanman18.com/manhwa/youqingwanshui/115",
+      "contentType": "text/html; charset=UTF-8",
+      "contentLength": null,
+      "contentEncoding": null,
+      "bytesRead": 151632,
+      "magic": "3c21444f43545950452068746d6c3e0a3c68746d6c206c61",
+      "sha256": "f9cac3e623c8dbad7211aaa1d629822b9b23f3420798a03c887f61adf1adc42a",
+      "boundedTruncation": false,
+      "chapter": {
+        "title": "最終話-曾經的好友",
+        "href": "https://hanman18.com/manhwa/youqingwanshui/115"
+      },
+      "positionNewestFirst": 0,
+      "manifestFound": true,
+      "manifestCount": 0,
+      "sourceUsableCount": 0,
+      "entriesFirstLast": [],
+      "actualHostRuntimeBefore": {
+        "ok": true,
+        "imageCount": 0
+      },
+      "actualHostRuntimeAfter": {
+        "ok": false,
+        "imageCount": 0,
+        "error": "Error: HANMAN18: upstream chapter has no readable images"
+      }
+    },
+    {
+      "label": "han-friend-reader-1",
+      "timeUTC": "2026-09-12T06:07:18.579562+00:00",
+      "requestUrl": "https://hanman18.com/manhwa/youqingwanshui/114",
+      "host": "hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://hanman18.com/manhwa/youqingwanshui/114",
+      "contentType": "text/html; charset=UTF-8",
+      "contentLength": null,
+      "contentEncoding": null,
+      "bytesRead": 161097,
+      "magic": "3c21444f43545950452068746d6c3e0a3c68746d6c206c61",
+      "sha256": "37930e91eea470376d83870cb0ecadfcb913bc41d47d0bf00e4f3bca49f3cef1",
+      "boundedTruncation": false,
+      "chapter": {
+        "title": "第114話-比星空還耀眼的澄雅",
+        "href": "https://hanman18.com/manhwa/youqingwanshui/114"
+      },
+      "positionNewestFirst": 1,
+      "manifestFound": true,
+      "manifestCount": 105,
+      "sourceUsableCount": 105,
+      "entriesFirstLast": [
+        {
+          "position": 1,
+          "encoded": "aHR0cHM6Ly9hem1pbnYyLmhhbm1hbjE4LmNvbS91cGxvYWRzL2NoYXB0ZXJzLzU5MDgzLzAxLmpwZw==",
+          "rawDecoded": "https://azminv2.hanman18.com/uploads/chapters/59083/01.jpg",
+          "url": "https://azminv2.hanman18.com/uploads/chapters/59083/01.jpg",
+          "directory": false
+        },
+        {
+          "position": 2,
+          "encoded": "aHR0cHM6Ly9hem1pbnYyLmhhbm1hbjE4LmNvbS91cGxvYWRzL2NoYXB0ZXJzLzU5MDgzLzAyLmpwZw==",
+          "rawDecoded": "https://azminv2.hanman18.com/uploads/chapters/59083/02.jpg",
+          "url": "https://azminv2.hanman18.com/uploads/chapters/59083/02.jpg",
+          "directory": false
+        },
+        {
+          "position": 104,
+          "encoded": "aHR0cHM6Ly9hem1pbnYyLmhhbm1hbjE4LmNvbS91cGxvYWRzL2NoYXB0ZXJzLzU5MDgzLzEwNC5qcGc=",
+          "rawDecoded": "https://azminv2.hanman18.com/uploads/chapters/59083/104.jpg",
+          "url": "https://azminv2.hanman18.com/uploads/chapters/59083/104.jpg",
+          "directory": false
+        },
+        {
+          "position": 105,
+          "encoded": "aHR0cHM6Ly9hem1pbnYyLmhhbm1hbjE4LmNvbS91cGxvYWRzL2NoYXB0ZXJzLzU5MDgzLzEwNS5qcGc=",
+          "rawDecoded": "https://azminv2.hanman18.com/uploads/chapters/59083/105.jpg",
+          "url": "https://azminv2.hanman18.com/uploads/chapters/59083/105.jpg",
+          "directory": false
+        }
+      ],
+      "actualHostRuntimeBefore": {
+        "ok": true,
+        "imageCount": 105
+      },
+      "actualHostRuntimeAfter": {
+        "ok": true,
+        "imageCount": 105,
+        "error": null
+      }
+    },
+    {
+      "label": "han-friend-reader-57",
+      "timeUTC": "2026-09-12T06:07:21.476919+00:00",
+      "requestUrl": "https://hanman18.com/manhwa/youqingwanshui/58",
+      "host": "hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://hanman18.com/manhwa/youqingwanshui/58",
+      "contentType": "text/html; charset=UTF-8",
+      "contentLength": null,
+      "contentEncoding": null,
+      "bytesRead": 153142,
+      "magic": "3c21444f43545950452068746d6c3e0a3c68746d6c206c61",
+      "sha256": "b8d598a740b7465116716d4a75f2f0a1f30291b1503735aac7f13fb4782ec04c",
+      "boundedTruncation": false,
+      "chapter": {
+        "title": "第58話-怎麼辦~我好變態",
+        "href": "https://hanman18.com/manhwa/youqingwanshui/58"
+      },
+      "positionNewestFirst": 57,
+      "manifestFound": true,
+      "manifestCount": 14,
+      "sourceUsableCount": 14,
+      "entriesFirstLast": [
+        {
+          "position": 1,
+          "encoded": "aHR0cHM6Ly9hem1pbnYyLmhhbm1hbjE4LmNvbS91cGxvYWRzL2NoYXB0ZXJzLzM5MDA1LzAxLmpwZw==",
+          "rawDecoded": "https://azminv2.hanman18.com/uploads/chapters/39005/01.jpg",
+          "url": "https://azminv2.hanman18.com/uploads/chapters/39005/01.jpg",
+          "directory": false
+        },
+        {
+          "position": 2,
+          "encoded": "aHR0cHM6Ly9hem1pbnYyLmhhbm1hbjE4LmNvbS91cGxvYWRzL2NoYXB0ZXJzLzM5MDA1LzAyLmpwZw==",
+          "rawDecoded": "https://azminv2.hanman18.com/uploads/chapters/39005/02.jpg",
+          "url": "https://azminv2.hanman18.com/uploads/chapters/39005/02.jpg",
+          "directory": false
+        },
+        {
+          "position": 13,
+          "encoded": "aHR0cHM6Ly9hem1pbnYyLmhhbm1hbjE4LmNvbS91cGxvYWRzL2NoYXB0ZXJzLzM5MDA1LzEzLmpwZw==",
+          "rawDecoded": "https://azminv2.hanman18.com/uploads/chapters/39005/13.jpg",
+          "url": "https://azminv2.hanman18.com/uploads/chapters/39005/13.jpg",
+          "directory": false
+        },
+        {
+          "position": 14,
+          "encoded": "aHR0cHM6Ly9hem1pbnYyLmhhbm1hbjE4LmNvbS91cGxvYWRzL2NoYXB0ZXJzLzM5MDA1LzE0LmpwZw==",
+          "rawDecoded": "https://azminv2.hanman18.com/uploads/chapters/39005/14.jpg",
+          "url": "https://azminv2.hanman18.com/uploads/chapters/39005/14.jpg",
+          "directory": false
+        }
+      ],
+      "actualHostRuntimeBefore": {
+        "ok": true,
+        "imageCount": 14
+      },
+      "actualHostRuntimeAfter": {
+        "ok": true,
+        "imageCount": 14,
+        "error": null
+      }
+    },
+    {
+      "label": "han-friend-reader-114",
+      "timeUTC": "2026-09-12T06:07:24.017687+00:00",
+      "requestUrl": "https://hanman18.com/manhwa/youqingwanshui/1",
+      "host": "hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://hanman18.com/manhwa/youqingwanshui/1",
+      "contentType": "text/html; charset=UTF-8",
+      "contentLength": null,
+      "contentEncoding": null,
+      "bytesRead": 156807,
+      "magic": "3c21444f43545950452068746d6c3e0a3c68746d6c206c61",
+      "sha256": "d28de612fad54f282063de2796a99e0724552142823f5d982f82684c26241fca",
+      "boundedTruncation": false,
+      "chapter": {
+        "title": "第1話-男人被誰吹都會硬",
+        "href": "https://hanman18.com/manhwa/youqingwanshui/1"
+      },
+      "positionNewestFirst": 114,
+      "manifestFound": true,
+      "manifestCount": 59,
+      "sourceUsableCount": 59,
+      "entriesFirstLast": [
+        {
+          "position": 1,
+          "encoded": "aHR0cHM6Ly9hem1pbnYyLmhhbm1hbjE4LmNvbS91cGxvYWRzL2NoYXB0ZXJzLzMwMzY5LzAxLmpwZw==",
+          "rawDecoded": "https://azminv2.hanman18.com/uploads/chapters/30369/01.jpg",
+          "url": "https://azminv2.hanman18.com/uploads/chapters/30369/01.jpg",
+          "directory": false
+        },
+        {
+          "position": 2,
+          "encoded": "aHR0cHM6Ly9hem1pbnYyLmhhbm1hbjE4LmNvbS91cGxvYWRzL2NoYXB0ZXJzLzMwMzY5LzAyLmpwZw==",
+          "rawDecoded": "https://azminv2.hanman18.com/uploads/chapters/30369/02.jpg",
+          "url": "https://azminv2.hanman18.com/uploads/chapters/30369/02.jpg",
+          "directory": false
+        },
+        {
+          "position": 58,
+          "encoded": "aHR0cHM6Ly9hem1pbnYyLmhhbm1hbjE4LmNvbS91cGxvYWRzL2NoYXB0ZXJzLzMwMzY5LzU4LmpwZw==",
+          "rawDecoded": "https://azminv2.hanman18.com/uploads/chapters/30369/58.jpg",
+          "url": "https://azminv2.hanman18.com/uploads/chapters/30369/58.jpg",
+          "directory": false
+        },
+        {
+          "position": 59,
+          "encoded": "aHR0cHM6Ly9hem1pbnYyLmhhbm1hbjE4LmNvbS91cGxvYWRzL2NoYXB0ZXJzLzMwMzY5LzU5LmpwZw==",
+          "rawDecoded": "https://azminv2.hanman18.com/uploads/chapters/30369/59.jpg",
+          "url": "https://azminv2.hanman18.com/uploads/chapters/30369/59.jpg",
+          "directory": false
+        }
+      ],
+      "actualHostRuntimeBefore": {
+        "ok": true,
+        "imageCount": 59
+      },
+      "actualHostRuntimeAfter": {
+        "ok": true,
+        "imageCount": 59,
+        "error": null
+      }
+    }
+  ],
+  "imageRequestQualification": "Anonymous source Referer plus venera/v2.3.2 UA derived from the pinned Host downloader and pubspec, not captured from the physical user request. HTML requests used Host webUA. Bad image 40 also returned identical bytes under browser UA and chapter Referer.",
+  "imageRepresentativeEvidence": [
+    {
+      "label": "han-image-114-1",
+      "timeUTC": "2026-09-12T06:08:28.181059+00:00",
+      "requestUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/01.jpg",
+      "host": "azminv2.hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "venera/v2.3.2"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/01.jpg",
+      "contentType": "image/jpeg",
+      "contentLength": "29826",
+      "contentEncoding": null,
+      "bytesRead": 29826,
+      "magic": "ffd8ffe000104a46494600010101006000600000ffe10022",
+      "sha256": "a6abe2fee6b5eb3b512c8ad9bd6c674c3ae0360a230ad3817f829b4a031bccc9",
+      "boundedTruncation": false,
+      "chapter": "114",
+      "manifestPosition": 1,
+      "rawExtractedUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/01.jpg",
+      "normalizedUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/01.jpg",
+      "format": "JPEG",
+      "width": 720,
+      "height": 800,
+      "mode": "RGB",
+      "frames": 1,
+      "fullPillowDecode": "PASS",
+      "actualFlutterCodec": {
+        "ok": true,
+        "width": 720,
+        "height": 800
+      }
+    },
+    {
+      "label": "han-image-114-38",
+      "timeUTC": "2026-09-12T06:08:28.182059+00:00",
+      "requestUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/38.jpg",
+      "host": "azminv2.hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "venera/v2.3.2"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/38.jpg",
+      "contentType": "image/jpeg",
+      "contentLength": "31401",
+      "contentEncoding": null,
+      "bytesRead": 31401,
+      "magic": "ffd8ffdb00430006040506050406060506070706080a100a",
+      "sha256": "4b0cd56bde45ac8f0d41d5213a7ba7918c7c34dfed9fd645bc0062dda40a23e9",
+      "boundedTruncation": false,
+      "chapter": "114",
+      "manifestPosition": 38,
+      "rawExtractedUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/38.jpg",
+      "normalizedUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/38.jpg",
+      "format": "JPEG",
+      "width": 720,
+      "height": 400,
+      "mode": "RGB",
+      "frames": 1,
+      "fullPillowDecode": "PASS",
+      "actualFlutterCodec": {
+        "ok": true,
+        "width": 720,
+        "height": 400
+      }
+    },
+    {
+      "label": "han-image-114-39",
+      "timeUTC": "2026-09-12T06:08:28.183060+00:00",
+      "requestUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/39.jpg",
+      "host": "azminv2.hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "venera/v2.3.2"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/39.jpg",
+      "contentType": "image/jpeg",
+      "contentLength": "11785",
+      "contentEncoding": null,
+      "bytesRead": 11785,
+      "magic": "ffd8ffdb00430006040506050406060506070706080a100a",
+      "sha256": "065b47f00abf53bfa384a484ee667ce6c3d49515cbf38b4750d0672084ae95f5",
+      "boundedTruncation": false,
+      "chapter": "114",
+      "manifestPosition": 39,
+      "rawExtractedUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/39.jpg",
+      "normalizedUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/39.jpg",
+      "format": "JPEG",
+      "width": 720,
+      "height": 800,
+      "mode": "RGB",
+      "frames": 1,
+      "fullPillowDecode": "PASS",
+      "actualFlutterCodec": {
+        "ok": true,
+        "width": 720,
+        "height": 800
+      }
+    },
+    {
+      "label": "han-image-114-40",
+      "timeUTC": "2026-09-12T06:08:28.833896+00:00",
+      "requestUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/40.jpg",
+      "host": "azminv2.hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "venera/v2.3.2"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/40.jpg",
+      "contentType": "image/jpeg",
+      "contentLength": "41079",
+      "contentEncoding": null,
+      "bytesRead": 41079,
+      "magic": "ffd8ffdb00430006040506050406060506070706080a100a",
+      "sha256": "7e6abf1998ed35cf016f0f8dc0f03eb9ab46d0258ae136d23e7676b2ee79bc78",
+      "boundedTruncation": false,
+      "chapter": "114",
+      "manifestPosition": 40,
+      "rawExtractedUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/40.jpg",
+      "normalizedUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/40.jpg",
+      "format": "JPEG",
+      "width": 720,
+      "height": 800,
+      "mode": "RGB",
+      "frames": 1,
+      "fullPillowDecode": "OSError: image file is truncated (3 bytes not processed)",
+      "actualFlutterCodec": {
+        "ok": false,
+        "error": "Exception: Codec failed to produce an image, possibly due to invalid image data.",
+        "stack": ""
+      }
+    },
+    {
+      "label": "han-image-114-53",
+      "timeUTC": "2026-09-12T06:08:28.834900+00:00",
+      "requestUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/53.jpg",
+      "host": "azminv2.hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "venera/v2.3.2"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/53.jpg",
+      "contentType": "image/jpeg",
+      "contentLength": "46516",
+      "contentEncoding": null,
+      "bytesRead": 46516,
+      "magic": "ffd8ffdb00430006040506050406060506070706080a100a",
+      "sha256": "282e1d074da87066fcf4eb7f55b34972cfe57fd88d23ba4faefb9677b7e49e8a",
+      "boundedTruncation": false,
+      "chapter": "114",
+      "manifestPosition": 53,
+      "rawExtractedUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/53.jpg",
+      "normalizedUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/53.jpg",
+      "format": "JPEG",
+      "width": 720,
+      "height": 800,
+      "mode": "RGB",
+      "frames": 1,
+      "fullPillowDecode": "PASS",
+      "actualFlutterCodec": {
+        "ok": true,
+        "width": 720,
+        "height": 800
+      }
+    },
+    {
+      "label": "han-image-114-105",
+      "timeUTC": "2026-09-12T06:08:28.835904+00:00",
+      "requestUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/105.jpg",
+      "host": "azminv2.hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "venera/v2.3.2"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/105.jpg",
+      "contentType": "image/jpeg",
+      "contentLength": "7714",
+      "contentEncoding": null,
+      "bytesRead": 7714,
+      "magic": "ffd8ffdb00430006040506050406060506070706080a100a",
+      "sha256": "1781d2e94086a2caed7eec1acdecaef6686b24470fbd2c5ca2055ef46ed7edbd",
+      "boundedTruncation": false,
+      "chapter": "114",
+      "manifestPosition": 105,
+      "rawExtractedUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/105.jpg",
+      "normalizedUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/105.jpg",
+      "format": "JPEG",
+      "width": 720,
+      "height": 713,
+      "mode": "RGB",
+      "frames": 1,
+      "fullPillowDecode": "PASS",
+      "actualFlutterCodec": {
+        "ok": true,
+        "width": 720,
+        "height": 713
+      }
+    },
+    {
+      "label": "han-image-58-1",
+      "timeUTC": "2026-09-12T06:08:29.291137+00:00",
+      "requestUrl": "https://azminv2.hanman18.com/uploads/chapters/39005/01.jpg",
+      "host": "azminv2.hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "venera/v2.3.2"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://azminv2.hanman18.com/uploads/chapters/39005/01.jpg",
+      "contentType": "image/jpeg",
+      "contentLength": "759353",
+      "contentEncoding": null,
+      "bytesRead": 759353,
+      "magic": "ffd8ffe000104a46494600010100000100010000ffe00010",
+      "sha256": "f9fb69d73ffbc9cb4b14b43585cea9abd76c0c907e543664eaf91a315ab9e708",
+      "boundedTruncation": false,
+      "chapter": "58",
+      "manifestPosition": 1,
+      "rawExtractedUrl": "https://azminv2.hanman18.com/uploads/chapters/39005/01.jpg",
+      "normalizedUrl": "https://azminv2.hanman18.com/uploads/chapters/39005/01.jpg",
+      "format": "JPEG",
+      "width": 720,
+      "height": 8853,
+      "mode": "RGB",
+      "frames": 1,
+      "fullPillowDecode": "PASS",
+      "actualFlutterCodec": {
+        "ok": true,
+        "width": 720,
+        "height": 8853
+      }
+    },
+    {
+      "label": "han-image-58-8",
+      "timeUTC": "2026-09-12T06:08:29.309164+00:00",
+      "requestUrl": "https://azminv2.hanman18.com/uploads/chapters/39005/08.jpg",
+      "host": "azminv2.hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "venera/v2.3.2"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://azminv2.hanman18.com/uploads/chapters/39005/08.jpg",
+      "contentType": "image/jpeg",
+      "contentLength": "462555",
+      "contentEncoding": null,
+      "bytesRead": 462555,
+      "magic": "ffd8ffe000104a46494600010100000100010000ffe00010",
+      "sha256": "0564fb088cc1d82da65eb6fbac69a7d1271ff67c42f4b1dee59341e02f3de696",
+      "boundedTruncation": false,
+      "chapter": "58",
+      "manifestPosition": 8,
+      "rawExtractedUrl": "https://azminv2.hanman18.com/uploads/chapters/39005/08.jpg",
+      "normalizedUrl": "https://azminv2.hanman18.com/uploads/chapters/39005/08.jpg",
+      "format": "JPEG",
+      "width": 720,
+      "height": 6592,
+      "mode": "RGB",
+      "frames": 1,
+      "fullPillowDecode": "PASS",
+      "actualFlutterCodec": {
+        "ok": true,
+        "width": 720,
+        "height": 6592
+      }
+    },
+    {
+      "label": "han-image-58-14",
+      "timeUTC": "2026-09-12T06:08:29.314188+00:00",
+      "requestUrl": "https://azminv2.hanman18.com/uploads/chapters/39005/14.jpg",
+      "host": "azminv2.hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "venera/v2.3.2"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://azminv2.hanman18.com/uploads/chapters/39005/14.jpg",
+      "contentType": "image/jpeg",
+      "contentLength": "592230",
+      "contentEncoding": null,
+      "bytesRead": 592230,
+      "magic": "ffd8ffe000104a46494600010100000100010000ffe00010",
+      "sha256": "9c733a408570b31de1e04877dc799c5db68749dee30a9ba074e607efc12ccbd5",
+      "boundedTruncation": false,
+      "chapter": "58",
+      "manifestPosition": 14,
+      "rawExtractedUrl": "https://azminv2.hanman18.com/uploads/chapters/39005/14.jpg",
+      "normalizedUrl": "https://azminv2.hanman18.com/uploads/chapters/39005/14.jpg",
+      "format": "JPEG",
+      "width": 720,
+      "height": 8633,
+      "mode": "RGB",
+      "frames": 1,
+      "fullPillowDecode": "PASS",
+      "actualFlutterCodec": {
+        "ok": true,
+        "width": 720,
+        "height": 8633
+      }
+    },
+    {
+      "label": "han-image-1-1",
+      "timeUTC": "2026-09-12T06:08:31.169114+00:00",
+      "requestUrl": "https://azminv2.hanman18.com/uploads/chapters/30369/01.jpg",
+      "host": "azminv2.hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "venera/v2.3.2"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://azminv2.hanman18.com/uploads/chapters/30369/01.jpg",
+      "contentType": "image/jpeg",
+      "contentLength": "117897",
+      "contentEncoding": null,
+      "bytesRead": 117897,
+      "magic": "ffd8ffe000104a46494600010100000100010000ffdb0043",
+      "sha256": "23bcbcc66c970d7fe5ff5c7e633d662a67e688ffb132606f1ea88484542172d8",
+      "boundedTruncation": false,
+      "chapter": "1",
+      "manifestPosition": 1,
+      "rawExtractedUrl": "https://azminv2.hanman18.com/uploads/chapters/30369/01.jpg",
+      "normalizedUrl": "https://azminv2.hanman18.com/uploads/chapters/30369/01.jpg",
+      "format": "JPEG",
+      "width": 720,
+      "height": 3008,
+      "mode": "RGB",
+      "frames": 1,
+      "fullPillowDecode": "PASS",
+      "actualFlutterCodec": {
+        "ok": true,
+        "width": 720,
+        "height": 3008
+      }
+    },
+    {
+      "label": "han-image-1-30",
+      "timeUTC": "2026-09-12T06:08:31.406044+00:00",
+      "requestUrl": "https://azminv2.hanman18.com/uploads/chapters/30369/30.jpg",
+      "host": "azminv2.hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "venera/v2.3.2"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://azminv2.hanman18.com/uploads/chapters/30369/30.jpg",
+      "contentType": "image/jpeg",
+      "contentLength": "239243",
+      "contentEncoding": null,
+      "bytesRead": 239243,
+      "magic": "ffd8ffe000104a46494600010100000100010000ffdb0043",
+      "sha256": "5f379417218c4bdaf2a76236182a47a24ece72595047ec3bf4ccaac5291fbe73",
+      "boundedTruncation": false,
+      "chapter": "1",
+      "manifestPosition": 30,
+      "rawExtractedUrl": "https://azminv2.hanman18.com/uploads/chapters/30369/30.jpg",
+      "normalizedUrl": "https://azminv2.hanman18.com/uploads/chapters/30369/30.jpg",
+      "format": "JPEG",
+      "width": 720,
+      "height": 3008,
+      "mode": "RGB",
+      "frames": 1,
+      "fullPillowDecode": "PASS",
+      "actualFlutterCodec": {
+        "ok": true,
+        "width": 720,
+        "height": 3008
+      }
+    },
+    {
+      "label": "han-image-1-59",
+      "timeUTC": "2026-09-12T06:08:31.590113+00:00",
+      "requestUrl": "https://azminv2.hanman18.com/uploads/chapters/30369/59.jpg",
+      "host": "azminv2.hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "venera/v2.3.2"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://azminv2.hanman18.com/uploads/chapters/30369/59.jpg",
+      "contentType": "image/jpeg",
+      "contentLength": "246899",
+      "contentEncoding": null,
+      "bytesRead": 246899,
+      "magic": "ffd8ffe100304578696600004d4d002a0000000800010131",
+      "sha256": "3a0c291a619aa4edaa7704807481d42bd8a4e106d8db569ee2fd37ac14e3de48",
+      "boundedTruncation": false,
+      "chapter": "1",
+      "manifestPosition": 59,
+      "rawExtractedUrl": "https://azminv2.hanman18.com/uploads/chapters/30369/59.jpg",
+      "normalizedUrl": "https://azminv2.hanman18.com/uploads/chapters/30369/59.jpg",
+      "format": "JPEG",
+      "width": 720,
+      "height": 2684,
+      "mode": "RGB",
+      "frames": 1,
+      "fullPillowDecode": "PASS",
+      "actualFlutterCodec": {
+        "ok": true,
+        "width": 720,
+        "height": 2684
+      }
+    },
+    {
+      "label": "han-image-114-64",
+      "timeUTC": "2026-09-12T06:10:22.462821+00:00",
+      "requestUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/64.jpg",
+      "host": "azminv2.hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "venera/v2.3.2"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/64.jpg",
+      "contentType": "image/jpeg",
+      "contentLength": "58308",
+      "contentEncoding": null,
+      "bytesRead": 58308,
+      "magic": "ffd8ffdb0043000302020302020303030304030304050805",
+      "sha256": "ac2a9e05c85496015f918aa08c6ace9305629923712564c9960576e88e8e4b09",
+      "boundedTruncation": false,
+      "chapter": "114",
+      "manifestPosition": 64,
+      "rawExtractedUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/64.jpg",
+      "normalizedUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/64.jpg",
+      "endMagic": "6f0d52c1ed3a7c37688a1e3ff72f7d0e",
+      "format": "JPEG",
+      "width": 720,
+      "height": 800,
+      "fullPillowDecode": "OSError: image file is truncated (122 bytes not processed)",
+      "actualFlutterCodec": {
+        "ok": false,
+        "error": "Exception: Codec failed to produce an image, possibly due to invalid image data.",
+        "stack": ""
+      }
+    }
+  ],
+  "imageAudit": {
+    "manifestEntries": 105,
+    "uniqueEntries": 105,
+    "http200Count": 105,
+    "strictPillowPassCount": 103,
+    "corruptManifestPositions": [
+      40,
+      64
+    ],
+    "flutterReproducedSameCodecError": [
+      40,
+      64
+    ],
+    "filteredByRescue": 0
+  },
+  "image40HeaderComparison": [
+    {
+      "label": "han-bad40-browser",
+      "timeUTC": "2026-09-12T06:10:31.462654+00:00",
+      "requestUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/40.jpg",
+      "host": "azminv2.hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/40.jpg",
+      "contentType": "image/jpeg",
+      "contentLength": "41079",
+      "contentEncoding": null,
+      "bytesRead": 41079,
+      "magic": "ffd8ffdb00430006040506050406060506070706080a100a",
+      "sha256": "7e6abf1998ed35cf016f0f8dc0f03eb9ab46d0258ae136d23e7676b2ee79bc78",
+      "boundedTruncation": false,
+      "endMagic": "668dcdd2549342180663d2039778f24a"
+    },
+    {
+      "label": "han-bad40-chapter-referer",
+      "timeUTC": "2026-09-12T06:10:31.927589+00:00",
+      "requestUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/40.jpg",
+      "host": "azminv2.hanman18.com",
+      "requestHeaders": {
+        "Referer": "https://hanman18.com/manhwa/youqingwanshui/114",
+        "User-Agent": "venera/v2.3.2"
+      },
+      "limit": 20000000,
+      "status": 200,
+      "finalUrl": "https://azminv2.hanman18.com/uploads/chapters/59083/40.jpg",
+      "contentType": "image/jpeg",
+      "contentLength": "41079",
+      "contentEncoding": null,
+      "bytesRead": 41079,
+      "magic": "ffd8ffdb00430006040506050406060506070706080a100a",
+      "sha256": "7e6abf1998ed35cf016f0f8dc0f03eb9ab46d0258ae136d23e7676b2ee79bc78",
+      "boundedTruncation": false,
+      "endMagic": "668dcdd2549342180663d2039778f24a"
+    }
+  ],
+  "invalidArgument": {
+    "independentlyReproducedChapter": "/manhwa/youqingwanshui/115",
+    "upstreamManifest": "var slides_p_path = [];",
+    "sourceBefore": {
+      "images": []
+    },
+    "hostTrace": [
+      "foundation/comic_source/parser.dart:850 accepts images list",
+      "pages/reader/images.dart:99 assigns successful empty list",
+      "pages/reader/reader.dart:150 calculates maxPage 0 for one-image mode",
+      "pages/reader/scaffold.dart:653 and 874 invoke page.clamp(1,maxPage)"
+    ],
+    "diagnosticStack": [
+      "int.clamp (dart:core-patch/integers.dart:273:7)",
+      "source-owned runtime replay: 1.clamp(1,0)"
+    ],
+    "exception": "Invalid argument(s): 1",
+    "physicalLogQualification": "No matching current physical log was available; this is an independent replay using unchanged Host JS/HTML/Base64 and actual Dart boundary semantics. The screenshot chapter remains uncertain.",
+    "sourceAfterError": "Error: HANMAN18: upstream chapter has no readable images"
+  },
+  "materializationCheck": {
+    "mode": "check",
+    "schemaVersion": "1.1",
+    "digestVersion": "2",
+    "reviewState": [
+      {
+        "relativePath": "_template_.js",
+        "sha256": "add0d2becb3e1fe3f2ec556b8eb9cb939f66e5d89832db1e6e7baa42a0c0b6d7"
+      },
+      {
+        "relativePath": "_venera_.js",
+        "sha256": "770d98fba9c84712b7d65bd3856b70f9d8ed5058399d8f5ec0975a5a987b57b6"
+      },
+      {
+        "relativePath": "baihehui.js",
+        "sha256": "6e2399acfe1759117cc3e8311221c171103435207a0f5716b11e11f695cfc14c"
+      },
+      {
+        "relativePath": "baozi.js",
+        "sha256": "cea31d4f0a83c2afacb07815939fe261bddc3a1e57e6c2b7e559312e126b1270"
+      },
+      {
+        "relativePath": "ccc.js",
+        "sha256": "d7db634cd6a66782fb69787d8f0209a39f47e814a1abba7c9ebdb5e4fca3fde9"
+      },
+      {
+        "relativePath": "comic_walker.js",
+        "sha256": "ec3f823b114fd6b96cb0f9fe3a8d700906bce1006ee53c99e6ef94176a884972"
+      },
+      {
+        "relativePath": "comicabc.js",
+        "sha256": "0d0a609a717d8acc54fcf146cd741824050950a52eceda837eceef4f19e45669"
+      },
+      {
+        "relativePath": "comick.js",
+        "sha256": "2e4bac1e35ddd2c9283eb8f468535fc321fbcc634df2f46a55856bee4143f588"
+      },
+      {
+        "relativePath": "copy_manga.js",
+        "sha256": "e0f0ed4687d23ef5295c1766eade6917da275a01bc54ce105bbd99bfe95263a0"
+      },
+      {
+        "relativePath": "copy_manga_multi_accounts.js",
+        "sha256": "b56c662fdd06dadb0f0cd1229be7714b07a5a6e9b193a079307044784ec2505b"
+      },
+      {
+        "relativePath": "dongmanmanhua_zh_hans.js",
+        "sha256": "7e84df0f670e882e5de8bd83b1ba84d4850a07524d7b42dfccdd2b4658374a5e"
+      },
+      {
+        "relativePath": "ehentai.js",
+        "sha256": "ce848a5b1a6af1bf559e137c214f69cef3cb0adcc58295413cad8db7dc9eba89"
+      },
+      {
+        "relativePath": "flamecomics.js",
+        "sha256": "7a9baefec29d23d12f1fe3a1d4abcacc62ee60f1c19335dc4f271d923427b677"
+      },
+      {
+        "relativePath": "globalcomix_zh_hans.js",
+        "sha256": "804199df53feb1a3ecd358a11ec655cf1a9b17b9f98bda0c6d3beee2fdb2ab73"
+      },
+      {
+        "relativePath": "goda.js",
+        "sha256": "c9d4f5efb90f791544b95e06140dc06052733ee4434a308af30a0690efd6d100"
+      },
+      {
+        "relativePath": "hanman18.js",
+        "sha256": "8f8df45bf46748f553d15e7032962cb7f8a436045933cc91cd8742cd3bf581cd"
+      },
+      {
+        "relativePath": "happy.js",
+        "sha256": "ecd47c407421c45b258fe593c7aa4cad53b21890b534a34cfc51fe8141c7728a"
+      },
+      {
+        "relativePath": "hcomic.js",
+        "sha256": "75762396c1cb57649a43059db01ac4c8a0e29a02878e31e5c73ea131095eb464"
+      },
+      {
+        "relativePath": "hitomi.js",
+        "sha256": "c9f54ac2c0f290d31272c7920a9c7810767309ee929b13e169997e5f501bb524"
+      },
+      {
+        "relativePath": "hot_manga.js",
+        "sha256": "18b3e8aa2956ebdd0546fc9ab6b58dac7f4eb628fe56922d49269aa5a90ac2f5"
+      },
+      {
+        "relativePath": "ikmmh.js",
+        "sha256": "d2797d9747df97dbbb1ef25a50bef82c989e43b132314d8eea0063aa98d52ae5"
+      },
+      {
+        "relativePath": "index.json",
+        "sha256": "6f7ca9aea6ffdc25d6a5016a0877ea7c165d7569ce30bd09afde58499d2d01b6"
+      },
+      {
+        "relativePath": "jcomic.js",
+        "sha256": "49c90b34cc02e6d2c263383b136e9a27458c580253dc3022bb75c3d641ee5416"
+      },
+      {
+        "relativePath": "jm.js",
+        "sha256": "94c0cb6c9a48d8d0ad1705a363a52f83fb1ffb47f7c64d0cb5a02c7f639d023d"
+      },
+      {
+        "relativePath": "kavita.js",
+        "sha256": "d89c79b44fa8288c1cb15c7d8cbd577c99f42eb1ef7b2578ebc76e468f39d054"
+      },
+      {
+        "relativePath": "komga.js",
+        "sha256": "2de870436c88aac4b9fb318e2eee60747c38b1975a6203b97dee7a909e473f11"
+      },
+      {
+        "relativePath": "komiic.js",
+        "sha256": "e6184cc765fe46c281d081b3b84e655da7097a15d88cd1e72a20a15948304c0b"
+      },
+      {
+        "relativePath": "lanraragi.js",
+        "sha256": "3022effa92b1ba1a2c286f9663a4f4bb9257f988e77c62207c41f2a72095f2ae"
+      },
+      {
+        "relativePath": "manga_dex.js",
+        "sha256": "3ddd5a70b41b4f88f89ff02821bd88e45e2a6e957dc5b90e5527b8f368c66aeb"
+      },
+      {
+        "relativePath": "mangadex_zh_hans.js",
+        "sha256": "5c8c708fcd112931900655a3d229878a6ee4f7dc1ae3e7ac4956735dbf0aced6"
+      },
+      {
+        "relativePath": "mangadex_zh_hant.js",
+        "sha256": "abac3deef8d05ea810f013c1b6c19a32cba0503f20ad90baa858df6b5bfd720f"
+      },
+      {
+        "relativePath": "manhuagui.js",
+        "sha256": "92ce8a147e6d27b1f4a73eaa4ec0feaff70a3cf8f53b4149aec45de4f57e4747"
+      },
+      {
+        "relativePath": "manhuaren.js",
+        "sha256": "4c2e302fd1f8881a39c518ccab1838c962eeb65fd55370bd86310fd0ebcfbd46"
+      },
+      {
+        "relativePath": "manhuashe.js",
+        "sha256": "1e9a44c05b576b35987da746260b7786d2465d78fffec43bfafc4d2babf5d961"
+      },
+      {
+        "relativePath": "manhuawu.js",
+        "sha256": "d5ea6ba05da37404a23f6d3677de8f29fd4808bf5e5bbd1c09ae36c6ebc8609c"
+      },
+      {
+        "relativePath": "manwaba.js",
+        "sha256": "22b522e39c9ffc288049294a5924580dc5c44abce323e7f5b408b17e3fe5da8f"
+      },
+      {
+        "relativePath": "mh1234.js",
+        "sha256": "17d910952f7de6d47b10cca2302193e84b7ae1873219f91dfa927d0cc4e8897e"
+      },
+      {
+        "relativePath": "mh18.js",
+        "sha256": "88ba802dbc33988702b9cc3b9e8d2b669acc46d3f76d2040fd91832504a637ee"
+      },
+      {
+        "relativePath": "mxs.js",
+        "sha256": "3b4d9702d653af6b5c70405899c51bcfde37b89d4a26b34e62307eae7f994438"
+      },
+      {
+        "relativePath": "mycomic.js",
+        "sha256": "3d5cea40b147ee93a20834abca96f97a8ac9d6e881d561a766f94e345e9c2da6"
+      },
+      {
+        "relativePath": "namicomi_zh_hans.js",
+        "sha256": "b5da51d5c24537f44c8a54b1fa3b6a4ec30718a3a7a6db6732b2e632759d2c18"
+      },
+      {
+        "relativePath": "namicomi_zh_hant.js",
+        "sha256": "bcc3f333c5cebd2c691b0781bf4cae7bc2d9329433ef5e341c83e7342812a5dc"
+      },
+      {
+        "relativePath": "nhentai.js",
+        "sha256": "ae1a0c612075219d044ff6ed7ee960af5dac9f5da63835abe9ccbeb8c861175d"
+      },
+      {
+        "relativePath": "picacg.js",
+        "sha256": "21c7b50d54b99fadfd0f3da9ea05c786d8a286eadb9ead461a61f9637f8a8f52"
+      },
+      {
+        "relativePath": "readblackclovermangaonline.js",
+        "sha256": "fe87914fc7e38e768e9560899238b5b039347a481cd6f8f05b934040ef61ae48"
+      },
+      {
+        "relativePath": "readfairytailedenszeromangaonline.js",
+        "sha256": "7e9dce6f57eb5f06f6885bbf215a20b8a5cb975d32f5a8c9247998140f7d8504"
+      },
+      {
+        "relativePath": "readjujutsukaisenmangaonline.js",
+        "sha256": "609e1c8a0e33f4b9ebe5b8fa7b25d06b5b2e141c267e62fb6ff2cfbce4c46680"
+      },
+      {
+        "relativePath": "readkingdommangaonline.js",
+        "sha256": "b9b9a3afa15737be7bab0c3f70297e8fb618f7b89ff41a5c4ca1ff1c6bf565de"
+      },
+      {
+        "relativePath": "readnanatsunotaizai7deadlysinsmangaonline.js",
+        "sha256": "33209e085d69ed40217fe4f7eb4a0fc1d4756d3ffef753b91e9ec5a65f158a36"
+      },
+      {
+        "relativePath": "readonepiecemangaonline.js",
+        "sha256": "b2d61cee9bd74b6ab59f87a3baba12c12e19411a4373a2d6cccd728bf9698eca"
+      },
+      {
+        "relativePath": "readsololevelingmangamanhwaonline.js",
+        "sha256": "c073ff98bdd52fd4856f6cadb7acc6803b465fe807d140c5bf5b6e6f82d45c1a"
+      },
+      {
+        "relativePath": "readtokyoghoulretokyoghoulmangaonline.js",
+        "sha256": "a2e3a5b2095cfefa20f312254de1edbf76c9f2e6723733583e7ece6645b75b5f"
+      },
+      {
+        "relativePath": "shonen_jump_plus.js",
+        "sha256": "8ae72bcd6c343149d9763488cad8c3fd24f953dc9db52a1de0c96bdfad9458e6"
+      },
+      {
+        "relativePath": "sources_generated/comicabc.base.js",
+        "sha256": "b057039e565f58c325e8bdd14a188d076872becb9e5aaf4f487829724f076790"
+      },
+      {
+        "relativePath": "sources_generated/dongmanmanhua_zh_hans.base.js",
+        "sha256": "7e84df0f670e882e5de8bd83b1ba84d4850a07524d7b42dfccdd2b4658374a5e"
+      },
+      {
+        "relativePath": "sources_generated/flamecomics.base.js",
+        "sha256": "f4697c06cac36bdd8a9e45c64f30f4a5d6384b9f4d1197358814cb869a8c8839"
+      },
+      {
+        "relativePath": "sources_generated/globalcomix_zh_hans.base.js",
+        "sha256": "804199df53feb1a3ecd358a11ec655cf1a9b17b9f98bda0c6d3beee2fdb2ab73"
+      },
+      {
+        "relativePath": "sources_generated/hanman18.base.js",
+        "sha256": "8f8df45bf46748f553d15e7032962cb7f8a436045933cc91cd8742cd3bf581cd"
+      },
+      {
+        "relativePath": "sources_generated/mangadex_zh_hans.base.js",
+        "sha256": "5c8c708fcd112931900655a3d229878a6ee4f7dc1ae3e7ac4956735dbf0aced6"
+      },
+      {
+        "relativePath": "sources_generated/mangadex_zh_hant.base.js",
+        "sha256": "abac3deef8d05ea810f013c1b6c19a32cba0503f20ad90baa858df6b5bfd720f"
+      },
+      {
+        "relativePath": "sources_generated/manhuashe.base.js",
+        "sha256": "32e9918aef7681dee37ae1010aaf4addfa21cdeef6a8845a0d778a082ff41f7c"
+      },
+      {
+        "relativePath": "sources_generated/manhuawu.base.js",
+        "sha256": "d5ea6ba05da37404a23f6d3677de8f29fd4808bf5e5bbd1c09ae36c6ebc8609c"
+      },
+      {
+        "relativePath": "sources_generated/namicomi_zh_hans.base.js",
+        "sha256": "b5da51d5c24537f44c8a54b1fa3b6a4ec30718a3a7a6db6732b2e632759d2c18"
+      },
+      {
+        "relativePath": "sources_generated/namicomi_zh_hant.base.js",
+        "sha256": "bcc3f333c5cebd2c691b0781bf4cae7bc2d9329433ef5e341c83e7342812a5dc"
+      },
+      {
+        "relativePath": "sources_generated/readblackclovermangaonline.base.js",
+        "sha256": "fe87914fc7e38e768e9560899238b5b039347a481cd6f8f05b934040ef61ae48"
+      },
+      {
+        "relativePath": "sources_generated/readfairytailedenszeromangaonline.base.js",
+        "sha256": "7e9dce6f57eb5f06f6885bbf215a20b8a5cb975d32f5a8c9247998140f7d8504"
+      },
+      {
+        "relativePath": "sources_generated/readjujutsukaisenmangaonline.base.js",
+        "sha256": "c9e6f7d9aae2517673241aa1675c24cef43e37da6d29cd9233a60abbed0ff970"
+      },
+      {
+        "relativePath": "sources_generated/readkingdommangaonline.base.js",
+        "sha256": "b9b9a3afa15737be7bab0c3f70297e8fb618f7b89ff41a5c4ca1ff1c6bf565de"
+      },
+      {
+        "relativePath": "sources_generated/readnanatsunotaizai7deadlysinsmangaonline.base.js",
+        "sha256": "33209e085d69ed40217fe4f7eb4a0fc1d4756d3ffef753b91e9ec5a65f158a36"
+      },
+      {
+        "relativePath": "sources_generated/readonepiecemangaonline.base.js",
+        "sha256": "b2d61cee9bd74b6ab59f87a3baba12c12e19411a4373a2d6cccd728bf9698eca"
+      },
+      {
+        "relativePath": "sources_generated/readsololevelingmangamanhwaonline.base.js",
+        "sha256": "c073ff98bdd52fd4856f6cadb7acc6803b465fe807d140c5bf5b6e6f82d45c1a"
+      },
+      {
+        "relativePath": "sources_generated/readtokyoghoulretokyoghoulmangaonline.base.js",
+        "sha256": "a2e3a5b2095cfefa20f312254de1edbf76c9f2e6723733583e7ece6645b75b5f"
+      },
+      {
+        "relativePath": "sources_generated/webtoons.base.js",
+        "sha256": "339b50fd91314d49518bfcbe195df9f01c29b13e83d2a4031fdd13d3ca5c091f"
+      },
+      {
+        "relativePath": "sources_generated/webtoons_zh_hant.base.js",
+        "sha256": "9a7cd530e4229d5474d67bc4b3c507b5137e581b6ceb912886eecc9d038ceb5d"
+      },
+      {
+        "relativePath": "sources_ir/comicabc.json",
+        "sha256": "583dbc1556ae8ab08b27a44d486b179b60ae3036390a462391cb1bdba6e3e807"
+      },
+      {
+        "relativePath": "sources_ir/dongmanmanhua_zh_hans.json",
+        "sha256": "081b8d4e53e93aa2ac94d96988e745ea5b6f785e2cd413ded662aaca839e7bb0"
+      },
+      {
+        "relativePath": "sources_ir/flamecomics.json",
+        "sha256": "b9424bd58fab53a8b51d99d55becbbab25eb9bf303784e384aa54aeea074514f"
+      },
+      {
+        "relativePath": "sources_ir/globalcomix_zh_hans.json",
+        "sha256": "12be1775330a147e510587c66ff75852349658be392911b7295d22d7946db7d1"
+      },
+      {
+        "relativePath": "sources_ir/hanman18.json",
+        "sha256": "af48fd3dec334efc95c27ac3b7808d67c7ebb0bad300b7e1d0ca75e23324a293"
+      },
+      {
+        "relativePath": "sources_ir/mangadex_zh_hans.json",
+        "sha256": "f7bd6d98c7917a75d5eb805e84606d951c4c3f820955717d4ef4f331b9ef9b4d"
+      },
+      {
+        "relativePath": "sources_ir/mangadex_zh_hant.json",
+        "sha256": "9d30b68403d54f8e243b110f83091d093aa5bbb207e2fe214615b6ef86a48541"
+      },
+      {
+        "relativePath": "sources_ir/manhuashe.json",
+        "sha256": "eecda403ca1085d09228a2bd5acf86486b7fddce209ff41a56e73ef8831323fe"
+      },
+      {
+        "relativePath": "sources_ir/manhuawu.json",
+        "sha256": "bbfef543b725643ff3b51965614e95f2546402304420ea8d39605c3c9e449e28"
+      },
+      {
+        "relativePath": "sources_ir/namicomi_zh_hans.json",
+        "sha256": "34997ca3900766f17a5e6b66a67728af735f3f4111fff08f5b71a8cc103ad7b1"
+      },
+      {
+        "relativePath": "sources_ir/namicomi_zh_hant.json",
+        "sha256": "0eae382e3ee3bac864809d602eae5cf82fb6b1e91e5f4f55b5789291ef59b7c3"
+      },
+      {
+        "relativePath": "sources_ir/readblackclovermangaonline.json",
+        "sha256": "4dadc5f4a8b187d2f26fd9ce3fcb7f435ad7a17bdd03ed959daab1678604019a"
+      },
+      {
+        "relativePath": "sources_ir/readfairytailedenszeromangaonline.json",
+        "sha256": "114b6ad381f4acd488c13ab4c1c0c0254c31aa25824d551442102e4ee32a2857"
+      },
+      {
+        "relativePath": "sources_ir/readjujutsukaisenmangaonline.json",
+        "sha256": "c6ff78e032eed96174365a229e49451bfe1483b57b825dc3996e1ed8cb9bf681"
+      },
+      {
+        "relativePath": "sources_ir/readkingdommangaonline.json",
+        "sha256": "3d2b2f0094180d91d02bb6f1005760e651a2dce52a8898275d623bc11764a8e2"
+      },
+      {
+        "relativePath": "sources_ir/readnanatsunotaizai7deadlysinsmangaonline.json",
+        "sha256": "4a56772b8fc5a57be6234ccf44bbf58c3fffd7bf77608f565dfb3e5ee137f9c6"
+      },
+      {
+        "relativePath": "sources_ir/readonepiecemangaonline.json",
+        "sha256": "70007e57a4dce011778d41651106d768bccfdcd4bf844630f2e59b9e234880a0"
+      },
+      {
+        "relativePath": "sources_ir/readsololevelingmangamanhwaonline.json",
+        "sha256": "ef5a94ede857c8840158aded84375df67dd19940a4a5aeaa4e650701102d6d85"
+      },
+      {
+        "relativePath": "sources_ir/readtokyoghoulretokyoghoulmangaonline.json",
+        "sha256": "c61c43e900c684c820c97dab4d538cc34b24ed72a93ca5f3bb180f48b4190c49"
+      },
+      {
+        "relativePath": "sources_ir/webtoons.json",
+        "sha256": "301e167c3f95b6fde7962dad47f56c3b7c3ec158de5536709d3db380fa58a187"
+      },
+      {
+        "relativePath": "sources_ir/webtoons_zh_hant.json",
+        "sha256": "eb819b576d70923ab5b525e5f6cf28b164c7b600a992cf0c1c0f49dcbda8693d"
+      },
+      {
+        "relativePath": "sources_patches/comicabc.patch.js",
+        "sha256": "c4ff32715c6aea2a8e8663df82ec1963bbcf37afc2a326743884b7e6f370dc2d"
+      },
+      {
+        "relativePath": "sources_patches/flamecomics.patch.js",
+        "sha256": "7def73cd3c6e850f3fc1e35bd171b2e84f366997f075b2036886ff54a0aac19d"
+      },
+      {
+        "relativePath": "sources_patches/manhuashe.patch.js",
+        "sha256": "b5e7d65904a9ebc5bb8cb635f33ac42ac4a23851fc55e4f223922ffb669eaffa"
+      },
+      {
+        "relativePath": "sources_patches/readjujutsukaisenmangaonline.patch.js",
+        "sha256": "96ab1d7e6b2852fc774fac458c9b0a152bcf692ca1c9520bcce6a20e60c10ed6"
+      },
+      {
+        "relativePath": "sources_patches/webtoons.patch.js",
+        "sha256": "38afc90a0017f4c6e769543d1625ec3a67c78426989c1043bddf6da66554b7b6"
+      },
+      {
+        "relativePath": "sources_patches/webtoons_zh_hant.patch.js",
+        "sha256": "5870ec6bc1571cf21973af4744fdfb5dd476aa8ce0526325c3ab27a0c4403a65"
+      },
+      {
+        "relativePath": "sources_registry.json",
+        "sha256": "d60e575edbc9ba1979a04a9ce30e11c0da49ddf1456152646e2ee3b53b5e380f"
+      },
+      {
+        "relativePath": "tools/source_conversion/audit/chinese_candidate_matrix_9g.json",
+        "sha256": "dba5c12bc2fe7e0ffb22d6893342293ba0db3c19ced9bb80970c3470fa67779d"
+      },
+      {
+        "relativePath": "tools/source_conversion/audit/chinese_candidate_matrix_9h.json",
+        "sha256": "551761b7ebc131601b4134f0dcc3ae9df21ae963261854f9f13f4cf7218e8184"
+      },
+      {
+        "relativePath": "tools/source_conversion/audit/chinese_runtime_audit_9fr2.json",
+        "sha256": "05bec11a45412dcda10341eac77e321b7a1ac36cdcd00414dd405cfcce6b26cb"
+      },
+      {
+        "relativePath": "tools/source_conversion/audit/chinese_runtime_deep_evidence_9fr2.json",
+        "sha256": "84bed25107dde23f4781ea19ecec0c6f3cb3393c418f0740c3755e56cb07fdd4"
+      },
+      {
+        "relativePath": "tools/source_conversion/extractor/common/dispatch_rules.py",
+        "sha256": "3eb100204d19527ac7335afac6a38594fae02fe189fc9b85db75e299ce7c0cd1"
+      },
+      {
+        "relativePath": "tools/source_conversion/extractor/common/gradle_parser.py",
+        "sha256": "6dbe55daeeeea2135e4bddb6d0a4a3f3c1c37c9ce4a994368d7604a5a860111b"
+      },
+      {
+        "relativePath": "tools/source_conversion/extractor/common/kotlin_parser.py",
+        "sha256": "1cb932c07adb07459a15f7059457a625309533f18ea229b2f474e1e323cbc213"
+      },
+      {
+        "relativePath": "tools/source_conversion/extractor/common/locales.py",
+        "sha256": "a47312a429a9750772c5a52952ef64291884384e48eda5b8e19249ad45dbf009"
+      },
+      {
+        "relativePath": "tools/source_conversion/extractor/common/selector_analyzer.py",
+        "sha256": "a03c3db105af5267e8f08e52512f28ff8957e1929a3c1950112aac633157ea88"
+      },
+      {
+        "relativePath": "tools/source_conversion/extractor/extract.py",
+        "sha256": "066bf3107e4c4247d9f3d20944e7d65ee5d0dfb28dc8f7e8e42618764cd9a89e"
+      },
+      {
+        "relativePath": "tools/source_conversion/extractor/generic_html_extractor.py",
+        "sha256": "21c10df3c830540eb52b21590b5a8a35f9b30e72f81594ef799e2473dbaeeff0"
+      },
+      {
+        "relativePath": "tools/source_conversion/extractor/source_adapters/chinese_contracts.json",
+        "sha256": "556ad9d92c0dc4116dbbea81ee2309d50cbc9159501c7fca4bfed083568049f8"
+      },
+      {
+        "relativePath": "tools/source_conversion/extractor/source_adapters/chinese_families.py",
+        "sha256": "e46861ddf586b2075e86bc7e8dbb72ce567edc227e0a19d572cf43865fa0ce81"
+      },
+      {
+        "relativePath": "tools/source_conversion/extractor/source_adapters/comicabc.py",
+        "sha256": "78635de0bd1728cb4bba7ddd623b59d0054de265633cc37f13864bb474085fb5"
+      },
+      {
+        "relativePath": "tools/source_conversion/extractor/source_adapters/flamecomics.py",
+        "sha256": "7b44e165066ac26ed4f878b067a7285350adf149e9ec0fb9377961c249b4732c"
+      },
+      {
+        "relativePath": "tools/source_conversion/extractor/source_adapters/mangacatalog.py",
+        "sha256": "01ac0904b7007c778eb811189cd32cade6b93532bafb94dd8fd2ec2ead2b4a15"
+      },
+      {
+        "relativePath": "tools/source_conversion/extractor/source_adapters/webtoons.py",
+        "sha256": "68caf620c4064b8c9fa1fd29aae9dddb1473b8d65958b12cd7249a45db8262d1"
+      },
+      {
+        "relativePath": "tools/source_conversion/extractor/webtoons_extractor.py",
+        "sha256": "716748e864ec3d2f050cfca2592b352b06ce7a230ee9009549f7420fd53cfc40"
+      },
+      {
+        "relativePath": "tools/source_conversion/generator/chinese_families.py",
+        "sha256": "ebc49d6049d6bdc6c4350b03311d372b04cb992e6de1f42dd8da7eec47a09263"
+      },
+      {
+        "relativePath": "tools/source_conversion/generator/chinese_manga18_runtime.json",
+        "sha256": "d8a24bb18988a9a108887e85d54c8263680c31cbaed8683c22b2a3cbef3e8254"
+      },
+      {
+        "relativePath": "tools/source_conversion/generator/chinese_mccms_runtime.json",
+        "sha256": "a7aa6dfaf80f3e2b558b44d308a2d48ad9dd0ff71266deb7a92a1853a6af0393"
+      },
+      {
+        "relativePath": "tools/source_conversion/generator/chinese_runtime.json",
+        "sha256": "1c095e602f796bab1c348d87f52860f87371e1813f0310e1e059897aada28e2c"
+      },
+      {
+        "relativePath": "tools/source_conversion/generator/js_generator.py",
+        "sha256": "42abb87f0bbe87eedef099843b4147930136c394c9ea2ed9a87af0d6e161bd9e"
+      },
+      {
+        "relativePath": "tools/source_conversion/inventory/upstream_inventory.json",
+        "sha256": "6dbfb04abad9736e94aafb3456a77232a61ef7caebd606746bd077b297573c90"
+      },
+      {
+        "relativePath": "tools/source_conversion/materializer/materialize.py",
+        "sha256": "1ed7bd7e605fa59453bc3c412e9d154f456d39f4e72ccf7355cd97bee62f26f6"
+      },
+      {
+        "relativePath": "tools/source_conversion/patcher/js_patcher.py",
+        "sha256": "b9e8b05bcc50dc5ef98892d85bd3938043dbd036d3c090fe21a25a78d48c6c1c"
+      },
+      {
+        "relativePath": "tools/source_conversion/planner/batch_reporting.py",
+        "sha256": "deb0903b38f339a5c382de9d7fefa19f3ce58d104529a465aefc2e5c4b7543a6"
+      },
+      {
+        "relativePath": "tools/source_conversion/planner/eligibility_planner.py",
+        "sha256": "eb53e0fe29ab1b5103c0727c37307a474d767abe4a7fc6816e918d70ca98830c"
+      },
+      {
+        "relativePath": "tools/source_conversion/schema/batch_report.schema.json",
+        "sha256": "c6ff45780cc4676cfffddaf0c6cdc453280646031c83936ac379d73dd3608c8f"
+      },
+      {
+        "relativePath": "tools/source_conversion/schema/ir_v0_1.schema.json",
+        "sha256": "aa1c680d03218971445744440f79abb5ed28f442543dfbfe0f3ead00d21f7108"
+      },
+      {
+        "relativePath": "tools/source_conversion/schema/ir_v0_2.schema.json",
+        "sha256": "692b2433297fb4c40d931a1ae3b5b5d3b724045fe4f95bc42f92d8af9ccfc173"
+      },
+      {
+        "relativePath": "tools/source_conversion/schema/materialization_report.schema.json",
+        "sha256": "f244ac47a6ed57f51f78bc9332822481acaf77be0d1b67ddc2bb03a723903d59"
+      },
+      {
+        "relativePath": "tools/source_conversion/schema/source_registry.schema.json",
+        "sha256": "6c8b697c7c503ef43e395a0e7e81567f3c105bb1f4b6cf57c46f7f6421148bcd"
+      },
+      {
+        "relativePath": "tools/source_conversion/schema/upstream_inventory.schema.json",
+        "sha256": "183fc32f2b2a7405896d4aec337ab6e03755ae1f1ea8bfedf4a3cd45909adbfb"
+      },
+      {
+        "relativePath": "tools/source_conversion/test_ladder.py",
+        "sha256": "54be652c44f302a02b2198a83645c422fc2798f47c95df8d9af3f14d6518a650"
+      },
+      {
+        "relativePath": "tools/source_conversion/validator/static_js_validator.py",
+        "sha256": "5de89b8821ef71ca8a6d793ad23a841d9ecc83a5dec991720c6ee2d6b68d4ddb"
+      },
+      {
+        "relativePath": "tools/source_conversion/validator/validate_batch_report.py",
+        "sha256": "64c3619118811ee90e1bbcc80a6d5b0eea33cdf54f7c51acf964db318209f053"
+      },
+      {
+        "relativePath": "tools/source_conversion/validator/validate_inventory.py",
+        "sha256": "286cd9e4ec1c0f251e71da2301cc0e7a8c9f58dcb74b7d996fd011b45b2becc6"
+      },
+      {
+        "relativePath": "tools/source_conversion/validator/validate_ir.py",
+        "sha256": "f9cb5f4e7e0b7eecb43c7bc0512070122d318e7140b70c6092ddcfc734b4675a"
+      },
+      {
+        "relativePath": "tools/source_conversion/validator/validate_registry.py",
+        "sha256": "f29b2420e03d1ad5d74c008c5812bd3afa1086cf0c8da554e5f734753b62110c"
+      },
+      {
+        "relativePath": "webtoons.js",
+        "sha256": "b31558963337d4ef3c1f6a1417b7348b1138beac3ed4b11b554ba57b531e9d78"
+      },
+      {
+        "relativePath": "webtoons_zh_hant.js",
+        "sha256": "3ed8c29f3c1306e7c8b85d88e98ddc6412637eff1d14dd67b1dce95fcb65ebbc"
+      },
+      {
+        "relativePath": "wnacg.js",
+        "sha256": "86e8034b676600d0fc7870a59fae3352844fcb54641adda904cdcbdd6373643e"
+      },
+      {
+        "relativePath": "ykmh.js",
+        "sha256": "782dc1db5a2c80354ef1812aa1f4463e8838bda4d310c3e81ee376e6754963b9"
+      },
+      {
+        "relativePath": "zaimanhua.js",
+        "sha256": "5459874b779ad547e64f22f45158e149235ddaa9d55f7f6a1be944ee96e5dee3"
+      }
+    ],
+    "registryDelta": [],
+    "indexDelta": [
+      {
+        "identity": "hanman18.js",
+        "before": {
+          "name": "HANMAN18",
+          "fileName": "hanman18.js",
+          "key": "keiyoushi_5092568988625041973",
+          "version": "1.0.0"
+        },
+        "after": {
+          "name": "HANMAN18",
+          "fileName": "hanman18.js",
+          "key": "keiyoushi_5092568988625041973",
+          "version": "1.0.1"
+        }
+      },
+      {
+        "identity": "manhuawu.js",
+        "before": {
+          "name": "漫画屋",
+          "fileName": "manhuawu.js",
+          "key": "keiyoushi_3279300917142951720",
+          "version": "1.0.0"
+        },
+        "after": {
+          "name": "漫画屋",
+          "fileName": "manhuawu.js",
+          "key": "keiyoushi_3279300917142951720",
+          "version": "1.0.1"
+        }
+      }
+    ],
+    "operation": "update",
+    "upstreamProject": "keiyoushi/extensions-source",
+    "upstreamCommit": "5a0261c718cd6d5ecf14963d837f29024c792398",
+    "generatedTimestamp": "2026-09-12T00:00:00Z",
+    "transactionDigest": "815f43310ecfc63f75326a9b81e52fc72e6665eae7207fa2639d63144b524cca",
+    "artifacts": [
+      {
+        "sourceId": "5092568988625041973",
+        "artifactId": "hanman18",
+        "providerId": "hanman18",
+        "expectedCurrentLocalVersion": "1.0.0",
+        "newLocalVersion": "1.0.1"
+      },
+      {
+        "sourceId": "3279300917142951720",
+        "artifactId": "manhuawu",
+        "providerId": "manhuawu",
+        "expectedCurrentLocalVersion": "1.0.0",
+        "newLocalVersion": "1.0.1"
+      }
+    ],
+    "targets": [
+      {
+        "relativePath": "hanman18.js",
+        "sha256": "8f0c91fc2ff210c352a0a2ba7982115b74d0489cb0516e7ee48e43f348cb92bd",
+        "byteLength": 12381
+      },
+      {
+        "relativePath": "index.json",
+        "sha256": "922cb401e83a1b127af2b9b5a45bb3ab164dde54d803098c75a8f54f207d2a15",
+        "byteLength": 8437
+      },
+      {
+        "relativePath": "manhuawu.js",
+        "sha256": "332684c72b4866b0badee8f831499bd6ed2b87146838df1f4bebc78752572edc",
+        "byteLength": 17366
+      },
+      {
+        "relativePath": "sources_generated/hanman18.base.js",
+        "sha256": "8f0c91fc2ff210c352a0a2ba7982115b74d0489cb0516e7ee48e43f348cb92bd",
+        "byteLength": 12381
+      },
+      {
+        "relativePath": "sources_generated/manhuawu.base.js",
+        "sha256": "332684c72b4866b0badee8f831499bd6ed2b87146838df1f4bebc78752572edc",
+        "byteLength": 17366
+      },
+      {
+        "relativePath": "sources_ir/hanman18.json",
+        "sha256": "8161e05a3df8a5ca641bf2d8d715d5797e3d91965d8fbf02b6651f36a3408fd0",
+        "byteLength": 3031
+      },
+      {
+        "relativePath": "sources_ir/manhuawu.json",
+        "sha256": "67cb8d52b688f68c986510eb3df1d5a65810692134d932bdc9e5db6935ddb8b9",
+        "byteLength": 3324
+      }
+    ],
+    "validation": "PASS",
+    "determinism": "PASS",
+    "currentState": [
+      {
+        "relativePath": "hanman18.js",
+        "sha256": "8f8df45bf46748f553d15e7032962cb7f8a436045933cc91cd8742cd3bf581cd"
+      },
+      {
+        "relativePath": "index.json",
+        "sha256": "6f7ca9aea6ffdc25d6a5016a0877ea7c165d7569ce30bd09afde58499d2d01b6"
+      },
+      {
+        "relativePath": "manhuawu.js",
+        "sha256": "d5ea6ba05da37404a23f6d3677de8f29fd4808bf5e5bbd1c09ae36c6ebc8609c"
+      },
+      {
+        "relativePath": "sources_generated/hanman18.base.js",
+        "sha256": "8f8df45bf46748f553d15e7032962cb7f8a436045933cc91cd8742cd3bf581cd"
+      },
+      {
+        "relativePath": "sources_generated/manhuawu.base.js",
+        "sha256": "d5ea6ba05da37404a23f6d3677de8f29fd4808bf5e5bbd1c09ae36c6ebc8609c"
+      },
+      {
+        "relativePath": "sources_ir/hanman18.json",
+        "sha256": "af48fd3dec334efc95c27ac3b7808d67c7ebb0bad300b7e1d0ca75e23324a293"
+      },
+      {
+        "relativePath": "sources_ir/manhuawu.json",
+        "sha256": "bbfef543b725643ff3b51965614e95f2546402304420ea8d39605c3c9e449e28"
+      },
+      {
+        "relativePath": "sources_registry.json",
+        "sha256": "d60e575edbc9ba1979a04a9ce30e11c0da49ddf1456152646e2ee3b53b5e380f"
+      }
+    ]
+  },
+  "determinism": {
+    "materialized": [
+      {
+        "artifact": "comicabc",
+        "family": "other-generator-path",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "b057039e565f58c325e8bdd14a188d076872becb9e5aaf4f487829724f076790",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "dongmanmanhua_zh_hans",
+        "family": "dongmanmanhua-v1",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "01fbb823ee530ccb3ef244e516229c381b88232376f7aeb152fe9995fff9e7d2",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "flamecomics",
+        "family": "other-generator-path",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "81e22cc0940435ed081e8f4d9be9d7876b93fd2121cf09b5005461022193406f",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "globalcomix_zh_hans",
+        "family": "globalcomix-v1",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "4197559f7e6ffc44f5a7b6a3b48b2e04cacb38378c18cdf6468694ce4035a10c",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "hanman18",
+        "family": "manga18-v1",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "3cea84b371bf46694483cb2293091e32149eaa65234a98da60e17f904c55b4e3",
+        "unchangedFromParent": false
+      },
+      {
+        "artifact": "mangadex_zh_hans",
+        "family": "mangadex-v1",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "fb6218b17de4473a51a64185dbc7d96bc15798b793be3b44e9eb16b5755d9929",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "mangadex_zh_hant",
+        "family": "mangadex-v1",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "a4479507b41e179078ee4da162f33225fc653b4ecf0ebd366b22d9d7be6ef69d",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "manhuashe",
+        "family": "other-generator-path",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "32e9918aef7681dee37ae1010aaf4addfa21cdeef6a8845a0d778a082ff41f7c",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "manhuawu",
+        "family": "mccms-v1",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "351cc3c41d4619ac4fa0d8caa61a6d555f772bff4520c76daef4d034280bd249",
+        "unchangedFromParent": false
+      },
+      {
+        "artifact": "namicomi_zh_hans",
+        "family": "namicomi-v1",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "65c83cc7bfc341dc33ce5ffd67fc61c7c495a4c5c6319c54a36220e95085bf61",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "namicomi_zh_hant",
+        "family": "namicomi-v1",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "e583f0989fcca65177a69a3dbae1643bbb2a8af516fa4e7d86ad0fda0695af21",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "readblackclovermangaonline",
+        "family": "other-generator-path",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "dd6239bef980de5f7dfe8a0f59b735c14017051e1986ba15efd00372ff05ebe8",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "readfairytailedenszeromangaonline",
+        "family": "other-generator-path",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "7bff5022c9e1929ad46b6ac0c00e89dd2f13944b52a2dca0021a09ef2d6d0dbc",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "readjujutsukaisenmangaonline",
+        "family": "other-generator-path",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "e73082c15138e2f7375fe546de5badb14eaaf1fa5d99155fe7d9243655e799f8",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "readkingdommangaonline",
+        "family": "other-generator-path",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "36dfd6a8e8803b07fb4d6b7eb93ea5a7132b0f6575ca0ad725082d72108cdddc",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "readnanatsunotaizai7deadlysinsmangaonline",
+        "family": "other-generator-path",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "4386854aff0bc1fbd595c2013b38402cabb86f43928a749389b461594a0648b7",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "readonepiecemangaonline",
+        "family": "other-generator-path",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "d066eaa39acf3264e8054b1cd862a6fe2c280b728593759fdae2ff2001261f73",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "readsololevelingmangamanhwaonline",
+        "family": "other-generator-path",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "0368d3b3d51a073c4dc9026a84b9039cf3dc3b7d5f0020322faf0cd7b06fc881",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "readtokyoghoulretokyoghoulmangaonline",
+        "family": "other-generator-path",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "eb3f8d33e9f9d16b413c10f43c6fe2f86d8f8d31e3a86ede34b5c2ccdb10d429",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "webtoons",
+        "family": "other-generator-path",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "0e59a69bdfa558c940cc5b351eb1050db5bd57ae0082b71f7edde175b2104bd5",
+        "unchangedFromParent": true
+      },
+      {
+        "artifact": "webtoons_zh_hant",
+        "family": "other-generator-path",
+        "regenerationIdentical": true,
+        "canonicalBaseIdentical": true,
+        "canonicalFinalIdentical": true,
+        "sha256": "9a7cd530e4229d5474d67bc4b3c507b5137e581b6ceb912886eecc9d038ceb5d",
+        "unchangedFromParent": true
+      }
+    ],
+    "closedConsumers": [
+      {
+        "module": "all.globalcomix",
+        "sourceId": "3451257781273481191",
+        "locale": "zh-Hant",
+        "unchangedFromParent": true,
+        "sha256": "789b94b12e2a3327958b0daf4c2790be801f80cc974095f0710ff9ed6f0665b1"
+      },
+      {
+        "module": "all.globalcomix",
+        "sourceId": "7151191693036508367",
+        "locale": "zh-Hans",
+        "unchangedFromParent": true,
+        "sha256": "c478bc8ec1d0f077780e08733bc8ed7d313be0d8de471c8b597527bb3eef018e"
+      },
+      {
+        "module": "all.namicomi",
+        "sourceId": "1163192659786040070",
+        "locale": "zh-Hans",
+        "unchangedFromParent": true,
+        "sha256": "002b4e3e424179cb222470e210d59c77f6d4a5a95fd7c6c26b77646383eb12b3"
+      },
+      {
+        "module": "all.namicomi",
+        "sourceId": "7859611418350123856",
+        "locale": "zh-Hant",
+        "unchangedFromParent": true,
+        "sha256": "e002368d8a936bece984555ee48f41ebce26c23b255787b3e90dda32245889c9"
+      },
+      {
+        "module": "zh.dongmanmanhua",
+        "sourceId": "4222375517460530289",
+        "locale": "zh-Hans",
+        "unchangedFromParent": true,
+        "sha256": "a093b0f43319bb3036b52ee75eea3438d9f0af9509d2b3c5ea053b9f0e0a877a"
+      },
+      {
+        "module": "zh.iqiyi",
+        "sourceId": "2198877009406729694",
+        "locale": "zh-Hans",
+        "unchangedFromParent": true,
+        "sha256": "5dffdc952678526999921dd6de43cc589f82d5aea48ab1c86e2c2f04bcbf77a5"
+      },
+      {
+        "module": "all.yellownote",
+        "sourceId": "170542391855030753",
+        "locale": "zh-Hans",
+        "unchangedFromParent": true,
+        "sha256": "dbae111a9ac9166646a9d516558498859a71561591a640527ef3f1aa1d45c10e"
+      },
+      {
+        "module": "all.yellownote",
+        "sourceId": "4899554363948814001",
+        "locale": "zh-Hant",
+        "unchangedFromParent": true,
+        "sha256": "0cad7aa46d6bbbfd35f9a508799a63718b4a4a3333f37d6071638045f784d9ca"
+      },
+      {
+        "module": "zh.manhuawu",
+        "sourceId": "3279300917142951720",
+        "locale": "zh-Hans",
+        "unchangedFromParent": false,
+        "sha256": "b01644239605d40256ebf43582a9dc449bdf81899d12c39ab7fa85df5e1d5570"
+      },
+      {
+        "module": "zh.miaoqu",
+        "sourceId": "116946528518438525",
+        "locale": "zh-Hans",
+        "unchangedFromParent": true,
+        "sha256": "039c48c6d724d64ff5ae4ef3bd8a0e843e4ae712cbef3d2a278a7bcbf52288e4"
+      },
+      {
+        "module": "zh.sixmh",
+        "sourceId": "5183325399429659419",
+        "locale": "zh-Hans",
+        "unchangedFromParent": true,
+        "sha256": "7789eda63dffc8becf69a2e80dd2bbd02fdad16e5d9bd5481e81654c40edcd14"
+      },
+      {
+        "module": "zh.hanman18",
+        "sourceId": "5092568988625041973",
+        "locale": "zh-Hant",
+        "unchangedFromParent": false,
+        "sha256": "15986f9403ecbd799c9977e4a3f83c0b54f314e429c7a5a618347d1c8e54f447"
+      },
+      {
+        "module": "all.mangadex",
+        "sourceId": "1493666528525752601",
+        "locale": "zh-Hant",
+        "unchangedFromParent": true,
+        "sha256": "eac8b15c5ad888c69ddfd6d653d4d23746259aa6acd727303bc2ab22767410a5"
+      },
+      {
+        "module": "all.mangadex",
+        "sourceId": "5148895169070562838",
+        "locale": "zh-Hans",
+        "unchangedFromParent": true,
+        "sha256": "ff88894054476092fca69fd7b33e47f6e0217bb43acb1899b14d93bdba0b3f42"
+      }
+    ],
+    "trackedFilesCompared": 210,
+    "changedTrackedFiles": [
+      "hanman18.js",
+      "index.json",
+      "manhuawu.js",
+      "sources_generated/hanman18.base.js",
+      "sources_generated/manhuawu.base.js",
+      "sources_ir/hanman18.json",
+      "sources_ir/manhuawu.json",
+      "tools/source_conversion/generator/chinese_families.py",
+      "tools/source_conversion/generator/chinese_manga18_runtime.json",
+      "tools/source_conversion/generator/chinese_mccms_runtime.json"
+    ],
+    "phaseAEvidenceCompared": 25,
+    "phaseAChangedEvidence": []
+  },
+  "remainingUpstreamIssues": [
+    "Chapter 115 has no upstream image entries. The new error reports this; it does not restore pages.",
+    "Chapter 114 manifests valid page URLs whose CDN returns corrupt JPEG entities at 40 and 64. No artwork is dropped or fabricated."
+  ],
+  "windowsGate": "FAIL remains pending physical retest; automation is not physical acceptance",
+  "tests": {
+    "baseline": {
+      "passed": 657,
+      "failures": 0,
+      "errors": 0
+    },
+    "targeted": {
+      "passed": 63,
+      "failures": 0,
+      "errors": 0
+    },
+    "fullAfter": {
+      "passed": 665,
+      "failures": 0,
+      "errors": 0,
+      "elapsedSeconds": 192.941
+    },
+    "hostBefore": {
+      "passed": 2
+    },
+    "hostAfter": {
+      "passed": 5,
+      "sourceOwnedPersistedTests": 3,
+      "temporaryDiagnosticTests": 2
+    },
+    "logSha256": {
+      "baseline.err": "4a963e3821ce4c516189acbf483c96c30da4147eeb60299db4abd3a4b6b983c4",
+      "targeted.log": "dc2e7d2278ebc56822ed4ce227e73362265d0a1a2bf6dfac951ea980ff540b2c",
+      "full-after.log": "6dc29f67e252c82150779a634b3565e46b62289b02b451e172e25618877b0931",
+      "host-before.log": "794532b15be4b94fc76946a83dec401768689627deb61b09cf52bbb8da5aec5f",
+      "host-after.log": "2b3528440b998fdce6b3e78b3ec83259702e727d66dec8a4e9ddb65902f5f757"
+    }
+  }
+}

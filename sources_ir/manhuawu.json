@@ -111,8 +111,8 @@
     "upstreamVersion": "1.4.9",
     "upstreamLicense": "Apache-2.0",
     "converterVersion": "0.1.0",
-    "generatedTimestamp": "2026-09-11T03:59:34Z"
+    "generatedTimestamp": "2026-09-12T00:00:00Z"
   },
   "artifactId": "manhuawu",
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

@@ -95,8 +95,8 @@
     "upstreamVersion": "1.4.3",
     "upstreamLicense": "Apache-2.0",
     "converterVersion": "0.1.0",
-    "generatedTimestamp": "2026-09-11T19:22:31Z"
+    "generatedTimestamp": "2026-09-12T00:00:00Z"
   },
   "artifactId": "hanman18",
-  "version": "1.0.0"
+  "version": "1.0.1"
 }

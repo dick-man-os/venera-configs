@@ -19,6 +19,11 @@ def generate(ir):
     if family == "mccms":
         mccms = json.loads(Path(__file__).with_name("chinese_mccms_runtime.json").read_text(encoding="utf-8"))
         body = "\n".join(mccms["mccms"]) + "\n"
+        catalog_result = "{comics:this.unique(rows),hasMore:this.hasNext(doc,request)}"
+        if ir["provenance"]["upstreamSourceId"] == "3279300917142951720":
+            body += "\n".join(mccms["manhuawu"]) + "\n"
+            catalog_result = "this.catalogResult(kind,rows,doc,request,page)"
+        body = body.replace("__MCCMS_CATALOG_RESULT__", catalog_result)
     elif family == "manga18":
         manga18 = json.loads(Path(__file__).with_name("chinese_manga18_runtime.json").read_text(encoding="utf-8"))
         body = "\n".join(manga18["manga18"]) + "\n"

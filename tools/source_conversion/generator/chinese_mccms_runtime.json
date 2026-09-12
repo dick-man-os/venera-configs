@@ -47,7 +47,7 @@
     "                return new Comic({id:this.sourceId(href, request),title,cover:this.absolute(coverValue,request),",
     "                    tags:this.config.contentWarning === \"NSFW\" ? [\"NSFW\"] : []});",
     "            }).filter(Boolean);",
-    "            return {comics:this.unique(rows),hasMore:this.hasNext(doc,request)};",
+    "            return __MCCMS_CATALOG_RESULT__;",
     "        });",
     "    };",
     "    info = async id => {",
@@ -129,6 +129,23 @@
     "        const body = await this.rawReader(url, mobile);",
     "        const values = decoder === \"miaoqu-xor-base64\" ? this.decodeMiaoqu(body,epId) : this.decodeSixmh(body);",
     "        return this.imageList(values,url);",
+    "    };"
+  ],
+  "manhuawu": [
+    "    catalogResult = (kind, rows, doc, request, page) => {",
+    "        const result = {comics:this.unique(rows),hasMore:this.hasNext(doc,request)};",
+    "        if (kind !== \"search\") return result;",
+    "        const last = doc.querySelector(\"#Pagination a.end\");",
+    "        const href = last ? this.attr(last,null,\"href\") : \"\";",
+    "        if (!href) return result;",
+    "        // The Host numbered search consumes maxPage, not hasMore.",
+    "        // Accept only the last-page link for this exact origin and query.",
+    "        const root = decodeURIComponent(this.sourceId(request,request)).replace(/\\/[1-9]\\d*$/, \"\");",
+    "        const target = decodeURIComponent(this.sourceId(href,request));",
+    "        const suffix = target === root ? \"1\" : target.startsWith(root + \"/\") ? target.slice(root.length + 1) : \"\";",
+    "        const total = /^[1-9]\\d*$/.test(suffix) ? Number(suffix) : NaN;",
+    "        if (Number.isSafeInteger(total)) { result.maxPage = total; result.hasMore = page < total; }",
+    "        return result;",
     "    };"
   ]
 }
